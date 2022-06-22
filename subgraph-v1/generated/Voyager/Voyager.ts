@@ -10,6 +10,106 @@ import {
   BigInt
 } from "@graphprotocol/graph-ts";
 
+export class DiamondCut extends ethereum.Event {
+  get params(): DiamondCut__Params {
+    return new DiamondCut__Params(this);
+  }
+}
+
+export class DiamondCut__Params {
+  _event: DiamondCut;
+
+  constructor(event: DiamondCut) {
+    this._event = event;
+  }
+
+  get _diamondCut(): Array<DiamondCut_diamondCutStruct> {
+    return this._event.parameters[0].value.toTupleArray<
+      DiamondCut_diamondCutStruct
+    >();
+  }
+
+  get _init(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get _calldata(): Bytes {
+    return this._event.parameters[2].value.toBytes();
+  }
+}
+
+export class DiamondCut_diamondCutStruct extends ethereum.Tuple {
+  get facetAddress(): Address {
+    return this[0].toAddress();
+  }
+
+  get action(): i32 {
+    return this[1].toI32();
+  }
+
+  get functionSelectors(): Array<Bytes> {
+    return this[2].toBytesArray();
+  }
+}
+
+export class OwnershipTransferred extends ethereum.Event {
+  get params(): OwnershipTransferred__Params {
+    return new OwnershipTransferred__Params(this);
+  }
+}
+
+export class OwnershipTransferred__Params {
+  _event: OwnershipTransferred;
+
+  constructor(event: OwnershipTransferred) {
+    this._event = event;
+  }
+
+  get previousOwner(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get newOwner(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+}
+
+export class Paused extends ethereum.Event {
+  get params(): Paused__Params {
+    return new Paused__Params(this);
+  }
+}
+
+export class Paused__Params {
+  _event: Paused;
+
+  constructor(event: Paused) {
+    this._event = event;
+  }
+
+  get account(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
+export class Unpaused extends ethereum.Event {
+  get params(): Unpaused__Params {
+    return new Unpaused__Params(this);
+  }
+}
+
+export class Unpaused__Params {
+  _event: Unpaused;
+
+  constructor(event: Unpaused) {
+    this._event = event;
+  }
+
+  get account(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
 export class Deposit extends ethereum.Event {
   get params(): Deposit__Params {
     return new Deposit__Params(this);
@@ -122,42 +222,6 @@ export class Withdraw__Params {
   }
 }
 
-export class Paused extends ethereum.Event {
-  get params(): Paused__Params {
-    return new Paused__Params(this);
-  }
-}
-
-export class Paused__Params {
-  _event: Paused;
-
-  constructor(event: Paused) {
-    this._event = event;
-  }
-
-  get account(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-}
-
-export class Unpaused extends ethereum.Event {
-  get params(): Unpaused__Params {
-    return new Unpaused__Params(this);
-  }
-}
-
-export class Unpaused__Params {
-  _event: Unpaused;
-
-  constructor(event: Unpaused) {
-    this._event = event;
-  }
-
-  get account(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-}
-
 export class VaultCreated extends ethereum.Event {
   get params(): VaultCreated__Params {
     return new VaultCreated__Params(this);
@@ -263,6 +327,112 @@ export class VaultMarginRedeemed__Params {
 
   get _amount(): BigInt {
     return this._event.parameters[3].value.toBigInt();
+  }
+}
+
+export class Voyager__facetsResultFacets_Struct extends ethereum.Tuple {
+  get facetAddress(): Address {
+    return this[0].toAddress();
+  }
+
+  get functionSelectors(): Array<Bytes> {
+    return this[1].toBytesArray();
+  }
+}
+
+export class Voyager__getReserveFlagsResult {
+  value0: boolean;
+  value1: boolean;
+  value2: boolean;
+
+  constructor(value0: boolean, value1: boolean, value2: boolean) {
+    this.value0 = value0;
+    this.value1 = value1;
+    this.value2 = value2;
+  }
+
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromBoolean(this.value0));
+    map.set("value1", ethereum.Value.fromBoolean(this.value1));
+    map.set("value2", ethereum.Value.fromBoolean(this.value2));
+    return map;
+  }
+
+  getValue0(): boolean {
+    return this.value0;
+  }
+
+  getValue1(): boolean {
+    return this.value1;
+  }
+
+  getValue2(): boolean {
+    return this.value2;
+  }
+}
+
+export class Voyager__getReserveStatusResult {
+  value0: boolean;
+  value1: boolean;
+
+  constructor(value0: boolean, value1: boolean) {
+    this.value0 = value0;
+    this.value1 = value1;
+  }
+
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromBoolean(this.value0));
+    map.set("value1", ethereum.Value.fromBoolean(this.value1));
+    return map;
+  }
+
+  getInitialized(): boolean {
+    return this.value0;
+  }
+
+  getActivated(): boolean {
+    return this.value1;
+  }
+}
+
+export class Voyager__getVaultDebtResult {
+  value0: BigInt;
+  value1: BigInt;
+
+  constructor(value0: BigInt, value1: BigInt) {
+    this.value0 = value0;
+    this.value1 = value1;
+  }
+
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
+    map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
+    return map;
+  }
+
+  getValue0(): BigInt {
+    return this.value0;
+  }
+
+  getValue1(): BigInt {
+    return this.value1;
+  }
+}
+
+export class Voyager__getVaultConfigResultValue0Struct extends ethereum.Tuple {
+  get minMargin(): BigInt {
+    return this[0].toBigInt();
+  }
+
+  get maxMargin(): BigInt {
+    return this[1].toBigInt();
+  }
+
+  get marginRequirement(): BigInt {
+    return this[2].toBigInt();
   }
 }
 
@@ -540,105 +710,654 @@ export class Voyager__pendingSeniorWithdrawalsResult {
   }
 }
 
-export class Voyager__getReserveFlagsResult {
-  value0: boolean;
-  value1: boolean;
-  value2: boolean;
-
-  constructor(value0: boolean, value1: boolean, value2: boolean) {
-    this.value0 = value0;
-    this.value1 = value1;
-    this.value2 = value2;
-  }
-
-  toMap(): TypedMap<string, ethereum.Value> {
-    let map = new TypedMap<string, ethereum.Value>();
-    map.set("value0", ethereum.Value.fromBoolean(this.value0));
-    map.set("value1", ethereum.Value.fromBoolean(this.value1));
-    map.set("value2", ethereum.Value.fromBoolean(this.value2));
-    return map;
-  }
-
-  getValue0(): boolean {
-    return this.value0;
-  }
-
-  getValue1(): boolean {
-    return this.value1;
-  }
-
-  getValue2(): boolean {
-    return this.value2;
-  }
-}
-
-export class Voyager__getReserveStatusResult {
-  value0: boolean;
-  value1: boolean;
-
-  constructor(value0: boolean, value1: boolean) {
-    this.value0 = value0;
-    this.value1 = value1;
-  }
-
-  toMap(): TypedMap<string, ethereum.Value> {
-    let map = new TypedMap<string, ethereum.Value>();
-    map.set("value0", ethereum.Value.fromBoolean(this.value0));
-    map.set("value1", ethereum.Value.fromBoolean(this.value1));
-    return map;
-  }
-
-  getInitialized(): boolean {
-    return this.value0;
-  }
-
-  getActivated(): boolean {
-    return this.value1;
-  }
-}
-
-export class Voyager__getVaultDebtResult {
-  value0: BigInt;
-  value1: BigInt;
-
-  constructor(value0: BigInt, value1: BigInt) {
-    this.value0 = value0;
-    this.value1 = value1;
-  }
-
-  toMap(): TypedMap<string, ethereum.Value> {
-    let map = new TypedMap<string, ethereum.Value>();
-    map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
-    map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
-    return map;
-  }
-
-  getValue0(): BigInt {
-    return this.value0;
-  }
-
-  getValue1(): BigInt {
-    return this.value1;
-  }
-}
-
-export class Voyager__getVaultConfigResultValue0Struct extends ethereum.Tuple {
-  get minMargin(): BigInt {
-    return this[0].toBigInt();
-  }
-
-  get maxMargin(): BigInt {
-    return this[1].toBigInt();
-  }
-
-  get marginRequirement(): BigInt {
-    return this[2].toBigInt();
-  }
-}
-
 export class Voyager extends ethereum.SmartContract {
   static bind(address: Address): Voyager {
     return new Voyager("Voyager", address);
+  }
+
+  addressResolver(): Address {
+    let result = super.call(
+      "addressResolver",
+      "addressResolver():(address)",
+      []
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_addressResolver(): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "addressResolver",
+      "addressResolver():(address)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  facetAddress(_functionSelector: Bytes): Address {
+    let result = super.call("facetAddress", "facetAddress(bytes4):(address)", [
+      ethereum.Value.fromFixedBytes(_functionSelector)
+    ]);
+
+    return result[0].toAddress();
+  }
+
+  try_facetAddress(_functionSelector: Bytes): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "facetAddress",
+      "facetAddress(bytes4):(address)",
+      [ethereum.Value.fromFixedBytes(_functionSelector)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  facetAddresses(): Array<Address> {
+    let result = super.call(
+      "facetAddresses",
+      "facetAddresses():(address[])",
+      []
+    );
+
+    return result[0].toAddressArray();
+  }
+
+  try_facetAddresses(): ethereum.CallResult<Array<Address>> {
+    let result = super.tryCall(
+      "facetAddresses",
+      "facetAddresses():(address[])",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddressArray());
+  }
+
+  facetFunctionSelectors(_facet: Address): Array<Bytes> {
+    let result = super.call(
+      "facetFunctionSelectors",
+      "facetFunctionSelectors(address):(bytes4[])",
+      [ethereum.Value.fromAddress(_facet)]
+    );
+
+    return result[0].toBytesArray();
+  }
+
+  try_facetFunctionSelectors(
+    _facet: Address
+  ): ethereum.CallResult<Array<Bytes>> {
+    let result = super.tryCall(
+      "facetFunctionSelectors",
+      "facetFunctionSelectors(address):(bytes4[])",
+      [ethereum.Value.fromAddress(_facet)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBytesArray());
+  }
+
+  facets(): Array<Voyager__facetsResultFacets_Struct> {
+    let result = super.call("facets", "facets():((address,bytes4[])[])", []);
+
+    return result[0].toTupleArray<Voyager__facetsResultFacets_Struct>();
+  }
+
+  try_facets(): ethereum.CallResult<Array<Voyager__facetsResultFacets_Struct>> {
+    let result = super.tryCall("facets", "facets():((address,bytes4[])[])", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      value[0].toTupleArray<Voyager__facetsResultFacets_Struct>()
+    );
+  }
+
+  supportsInterface(_interfaceId: Bytes): boolean {
+    let result = super.call(
+      "supportsInterface",
+      "supportsInterface(bytes4):(bool)",
+      [ethereum.Value.fromFixedBytes(_interfaceId)]
+    );
+
+    return result[0].toBoolean();
+  }
+
+  try_supportsInterface(_interfaceId: Bytes): ethereum.CallResult<boolean> {
+    let result = super.tryCall(
+      "supportsInterface",
+      "supportsInterface(bytes4):(bool)",
+      [ethereum.Value.fromFixedBytes(_interfaceId)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
+  owner(): Address {
+    let result = super.call("owner", "owner():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_owner(): ethereum.CallResult<Address> {
+    let result = super.tryCall("owner", "owner():(address)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  paused(): boolean {
+    let result = super.call("paused", "paused():(bool)", []);
+
+    return result[0].toBoolean();
+  }
+
+  try_paused(): ethereum.CallResult<boolean> {
+    let result = super.tryCall("paused", "paused():(bool)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
+  balance(_reserve: Address, _user: Address, _tranche: i32): BigInt {
+    let result = super.call(
+      "balance",
+      "balance(address,address,uint8):(uint256)",
+      [
+        ethereum.Value.fromAddress(_reserve),
+        ethereum.Value.fromAddress(_user),
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(_tranche))
+      ]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_balance(
+    _reserve: Address,
+    _user: Address,
+    _tranche: i32
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "balance",
+      "balance(address,address,uint8):(uint256)",
+      [
+        ethereum.Value.fromAddress(_reserve),
+        ethereum.Value.fromAddress(_user),
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(_tranche))
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  getReserveFlags(_reserve: Address): Voyager__getReserveFlagsResult {
+    let result = super.call(
+      "getReserveFlags",
+      "getReserveFlags(address):(bool,bool,bool)",
+      [ethereum.Value.fromAddress(_reserve)]
+    );
+
+    return new Voyager__getReserveFlagsResult(
+      result[0].toBoolean(),
+      result[1].toBoolean(),
+      result[2].toBoolean()
+    );
+  }
+
+  try_getReserveFlags(
+    _reserve: Address
+  ): ethereum.CallResult<Voyager__getReserveFlagsResult> {
+    let result = super.tryCall(
+      "getReserveFlags",
+      "getReserveFlags(address):(bool,bool,bool)",
+      [ethereum.Value.fromAddress(_reserve)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      new Voyager__getReserveFlagsResult(
+        value[0].toBoolean(),
+        value[1].toBoolean(),
+        value[2].toBoolean()
+      )
+    );
+  }
+
+  getReserveStatus(_reserve: Address): Voyager__getReserveStatusResult {
+    let result = super.call(
+      "getReserveStatus",
+      "getReserveStatus(address):(bool,bool)",
+      [ethereum.Value.fromAddress(_reserve)]
+    );
+
+    return new Voyager__getReserveStatusResult(
+      result[0].toBoolean(),
+      result[1].toBoolean()
+    );
+  }
+
+  try_getReserveStatus(
+    _reserve: Address
+  ): ethereum.CallResult<Voyager__getReserveStatusResult> {
+    let result = super.tryCall(
+      "getReserveStatus",
+      "getReserveStatus(address):(bool,bool)",
+      [ethereum.Value.fromAddress(_reserve)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      new Voyager__getReserveStatusResult(
+        value[0].toBoolean(),
+        value[1].toBoolean()
+      )
+    );
+  }
+
+  liquidityRate(_asset: Address, _tranche: i32): BigInt {
+    let result = super.call(
+      "liquidityRate",
+      "liquidityRate(address,uint8):(uint256)",
+      [
+        ethereum.Value.fromAddress(_asset),
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(_tranche))
+      ]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_liquidityRate(
+    _asset: Address,
+    _tranche: i32
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "liquidityRate",
+      "liquidityRate(address,uint8):(uint256)",
+      [
+        ethereum.Value.fromAddress(_asset),
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(_tranche))
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  unbonding(_reserve: Address, _user: Address, _tranche: i32): BigInt {
+    let result = super.call(
+      "unbonding",
+      "unbonding(address,address,uint8):(uint256)",
+      [
+        ethereum.Value.fromAddress(_reserve),
+        ethereum.Value.fromAddress(_user),
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(_tranche))
+      ]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_unbonding(
+    _reserve: Address,
+    _user: Address,
+    _tranche: i32
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "unbonding",
+      "unbonding(address,address,uint8):(uint256)",
+      [
+        ethereum.Value.fromAddress(_reserve),
+        ethereum.Value.fromAddress(_user),
+        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(_tranche))
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  utilizationRate(_reserve: Address): BigInt {
+    let result = super.call(
+      "utilizationRate",
+      "utilizationRate(address):(uint256)",
+      [ethereum.Value.fromAddress(_reserve)]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_utilizationRate(_reserve: Address): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "utilizationRate",
+      "utilizationRate(address):(uint256)",
+      [ethereum.Value.fromAddress(_reserve)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  getVaultDebt(
+    _reserve: Address,
+    _vault: Address
+  ): Voyager__getVaultDebtResult {
+    let result = super.call(
+      "getVaultDebt",
+      "getVaultDebt(address,address):(uint256,uint256)",
+      [ethereum.Value.fromAddress(_reserve), ethereum.Value.fromAddress(_vault)]
+    );
+
+    return new Voyager__getVaultDebtResult(
+      result[0].toBigInt(),
+      result[1].toBigInt()
+    );
+  }
+
+  try_getVaultDebt(
+    _reserve: Address,
+    _vault: Address
+  ): ethereum.CallResult<Voyager__getVaultDebtResult> {
+    let result = super.tryCall(
+      "getVaultDebt",
+      "getVaultDebt(address,address):(uint256,uint256)",
+      [ethereum.Value.fromAddress(_reserve), ethereum.Value.fromAddress(_vault)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      new Voyager__getVaultDebtResult(value[0].toBigInt(), value[1].toBigInt())
+    );
+  }
+
+  interestBalance(underlyingAsset: Address): BigInt {
+    let result = super.call(
+      "interestBalance",
+      "interestBalance(address):(uint256)",
+      [ethereum.Value.fromAddress(underlyingAsset)]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_interestBalance(underlyingAsset: Address): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "interestBalance",
+      "interestBalance(address):(uint256)",
+      [ethereum.Value.fromAddress(underlyingAsset)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  principalBalance(underlyingAsset: Address): BigInt {
+    let result = super.call(
+      "principalBalance",
+      "principalBalance(address):(uint256)",
+      [ethereum.Value.fromAddress(underlyingAsset)]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_principalBalance(underlyingAsset: Address): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "principalBalance",
+      "principalBalance(address):(uint256)",
+      [ethereum.Value.fromAddress(underlyingAsset)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  createVault(owner: Address, _reserve: Address): Address {
+    let result = super.call(
+      "createVault",
+      "createVault(address,address):(address)",
+      [ethereum.Value.fromAddress(owner), ethereum.Value.fromAddress(_reserve)]
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_createVault(
+    owner: Address,
+    _reserve: Address
+  ): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "createVault",
+      "createVault(address,address):(address)",
+      [ethereum.Value.fromAddress(owner), ethereum.Value.fromAddress(_reserve)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  getAllVaults(): Array<Address> {
+    let result = super.call("getAllVaults", "getAllVaults():(address[])", []);
+
+    return result[0].toAddressArray();
+  }
+
+  try_getAllVaults(): ethereum.CallResult<Array<Address>> {
+    let result = super.tryCall(
+      "getAllVaults",
+      "getAllVaults():(address[])",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddressArray());
+  }
+
+  getAvailableCredit(_user: Address, _reserve: Address): BigInt {
+    let result = super.call(
+      "getAvailableCredit",
+      "getAvailableCredit(address,address):(uint256)",
+      [ethereum.Value.fromAddress(_user), ethereum.Value.fromAddress(_reserve)]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_getAvailableCredit(
+    _user: Address,
+    _reserve: Address
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "getAvailableCredit",
+      "getAvailableCredit(address,address):(uint256)",
+      [ethereum.Value.fromAddress(_user), ethereum.Value.fromAddress(_reserve)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  getCreditLimit(_user: Address, _reserve: Address): BigInt {
+    let result = super.call(
+      "getCreditLimit",
+      "getCreditLimit(address,address):(uint256)",
+      [ethereum.Value.fromAddress(_user), ethereum.Value.fromAddress(_reserve)]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_getCreditLimit(
+    _user: Address,
+    _reserve: Address
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "getCreditLimit",
+      "getCreditLimit(address,address):(uint256)",
+      [ethereum.Value.fromAddress(_user), ethereum.Value.fromAddress(_reserve)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  getMargin(_user: Address, _reserve: Address): BigInt {
+    let result = super.call(
+      "getMargin",
+      "getMargin(address,address):(uint256)",
+      [ethereum.Value.fromAddress(_user), ethereum.Value.fromAddress(_reserve)]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_getMargin(
+    _user: Address,
+    _reserve: Address
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "getMargin",
+      "getMargin(address,address):(uint256)",
+      [ethereum.Value.fromAddress(_user), ethereum.Value.fromAddress(_reserve)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  getVault(_owner: Address): Address {
+    let result = super.call("getVault", "getVault(address):(address)", [
+      ethereum.Value.fromAddress(_owner)
+    ]);
+
+    return result[0].toAddress();
+  }
+
+  try_getVault(_owner: Address): ethereum.CallResult<Address> {
+    let result = super.tryCall("getVault", "getVault(address):(address)", [
+      ethereum.Value.fromAddress(_owner)
+    ]);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  getVaultConfig(_reserve: Address): Voyager__getVaultConfigResultValue0Struct {
+    let result = super.call(
+      "getVaultConfig",
+      "getVaultConfig(address):((uint256,uint256,uint256))",
+      [ethereum.Value.fromAddress(_reserve)]
+    );
+
+    return changetype<Voyager__getVaultConfigResultValue0Struct>(
+      result[0].toTuple()
+    );
+  }
+
+  try_getVaultConfig(
+    _reserve: Address
+  ): ethereum.CallResult<Voyager__getVaultConfigResultValue0Struct> {
+    let result = super.tryCall(
+      "getVaultConfig",
+      "getVaultConfig(address):((uint256,uint256,uint256))",
+      [ethereum.Value.fromAddress(_reserve)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      changetype<Voyager__getVaultConfigResultValue0Struct>(value[0].toTuple())
+    );
+  }
+
+  getWithdrawableDeposit(
+    _owner: Address,
+    _reserve: Address,
+    _sponsor: Address
+  ): BigInt {
+    let result = super.call(
+      "getWithdrawableDeposit",
+      "getWithdrawableDeposit(address,address,address):(uint256)",
+      [
+        ethereum.Value.fromAddress(_owner),
+        ethereum.Value.fromAddress(_reserve),
+        ethereum.Value.fromAddress(_sponsor)
+      ]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_getWithdrawableDeposit(
+    _owner: Address,
+    _reserve: Address,
+    _sponsor: Address
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "getWithdrawableDeposit",
+      "getWithdrawableDeposit(address,address,address):(uint256)",
+      [
+        ethereum.Value.fromAddress(_owner),
+        ethereum.Value.fromAddress(_reserve),
+        ethereum.Value.fromAddress(_sponsor)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   getDrawDownDetail(
@@ -947,503 +1666,197 @@ export class Voyager extends ethereum.SmartContract {
       )
     );
   }
+}
 
-  balance(_reserve: Address, _user: Address, _tranche: i32): BigInt {
-    let result = super.call(
-      "balance",
-      "balance(address,address,uint8):(uint256)",
-      [
-        ethereum.Value.fromAddress(_reserve),
-        ethereum.Value.fromAddress(_user),
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(_tranche))
-      ]
-    );
-
-    return result[0].toBigInt();
+export class ConstructorCall extends ethereum.Call {
+  get inputs(): ConstructorCall__Inputs {
+    return new ConstructorCall__Inputs(this);
   }
 
-  try_balance(
-    _reserve: Address,
-    _user: Address,
-    _tranche: i32
-  ): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "balance",
-      "balance(address,address,uint8):(uint256)",
-      [
-        ethereum.Value.fromAddress(_reserve),
-        ethereum.Value.fromAddress(_user),
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(_tranche))
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  get outputs(): ConstructorCall__Outputs {
+    return new ConstructorCall__Outputs(this);
+  }
+}
+
+export class ConstructorCall__Inputs {
+  _call: ConstructorCall;
+
+  constructor(call: ConstructorCall) {
+    this._call = call;
   }
 
-  getReserveFlags(_reserve: Address): Voyager__getReserveFlagsResult {
-    let result = super.call(
-      "getReserveFlags",
-      "getReserveFlags(address):(bool,bool,bool)",
-      [ethereum.Value.fromAddress(_reserve)]
-    );
+  get _owner(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
 
-    return new Voyager__getReserveFlagsResult(
-      result[0].toBoolean(),
-      result[1].toBoolean(),
-      result[2].toBoolean()
-    );
+export class ConstructorCall__Outputs {
+  _call: ConstructorCall;
+
+  constructor(call: ConstructorCall) {
+    this._call = call;
+  }
+}
+
+export class DefaultCall extends ethereum.Call {
+  get inputs(): DefaultCall__Inputs {
+    return new DefaultCall__Inputs(this);
   }
 
-  try_getReserveFlags(
-    _reserve: Address
-  ): ethereum.CallResult<Voyager__getReserveFlagsResult> {
-    let result = super.tryCall(
-      "getReserveFlags",
-      "getReserveFlags(address):(bool,bool,bool)",
-      [ethereum.Value.fromAddress(_reserve)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(
-      new Voyager__getReserveFlagsResult(
-        value[0].toBoolean(),
-        value[1].toBoolean(),
-        value[2].toBoolean()
-      )
-    );
+  get outputs(): DefaultCall__Outputs {
+    return new DefaultCall__Outputs(this);
+  }
+}
+
+export class DefaultCall__Inputs {
+  _call: DefaultCall;
+
+  constructor(call: DefaultCall) {
+    this._call = call;
+  }
+}
+
+export class DefaultCall__Outputs {
+  _call: DefaultCall;
+
+  constructor(call: DefaultCall) {
+    this._call = call;
+  }
+}
+
+export class DiamondCutCall extends ethereum.Call {
+  get inputs(): DiamondCutCall__Inputs {
+    return new DiamondCutCall__Inputs(this);
   }
 
-  getReserveStatus(_reserve: Address): Voyager__getReserveStatusResult {
-    let result = super.call(
-      "getReserveStatus",
-      "getReserveStatus(address):(bool,bool)",
-      [ethereum.Value.fromAddress(_reserve)]
-    );
+  get outputs(): DiamondCutCall__Outputs {
+    return new DiamondCutCall__Outputs(this);
+  }
+}
 
-    return new Voyager__getReserveStatusResult(
-      result[0].toBoolean(),
-      result[1].toBoolean()
-    );
+export class DiamondCutCall__Inputs {
+  _call: DiamondCutCall;
+
+  constructor(call: DiamondCutCall) {
+    this._call = call;
   }
 
-  try_getReserveStatus(
-    _reserve: Address
-  ): ethereum.CallResult<Voyager__getReserveStatusResult> {
-    let result = super.tryCall(
-      "getReserveStatus",
-      "getReserveStatus(address):(bool,bool)",
-      [ethereum.Value.fromAddress(_reserve)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(
-      new Voyager__getReserveStatusResult(
-        value[0].toBoolean(),
-        value[1].toBoolean()
-      )
-    );
+  get _diamondCut(): Array<DiamondCutCall_diamondCutStruct> {
+    return this._call.inputValues[0].value.toTupleArray<
+      DiamondCutCall_diamondCutStruct
+    >();
   }
 
-  liquidityRate(_asset: Address, _tranche: i32): BigInt {
-    let result = super.call(
-      "liquidityRate",
-      "liquidityRate(address,uint8):(uint256)",
-      [
-        ethereum.Value.fromAddress(_asset),
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(_tranche))
-      ]
-    );
-
-    return result[0].toBigInt();
+  get _init(): Address {
+    return this._call.inputValues[1].value.toAddress();
   }
 
-  try_liquidityRate(
-    _asset: Address,
-    _tranche: i32
-  ): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "liquidityRate",
-      "liquidityRate(address,uint8):(uint256)",
-      [
-        ethereum.Value.fromAddress(_asset),
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(_tranche))
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  get _calldata(): Bytes {
+    return this._call.inputValues[2].value.toBytes();
+  }
+}
+
+export class DiamondCutCall__Outputs {
+  _call: DiamondCutCall;
+
+  constructor(call: DiamondCutCall) {
+    this._call = call;
+  }
+}
+
+export class DiamondCutCall_diamondCutStruct extends ethereum.Tuple {
+  get facetAddress(): Address {
+    return this[0].toAddress();
   }
 
-  unbonding(_reserve: Address, _user: Address, _tranche: i32): BigInt {
-    let result = super.call(
-      "unbonding",
-      "unbonding(address,address,uint8):(uint256)",
-      [
-        ethereum.Value.fromAddress(_reserve),
-        ethereum.Value.fromAddress(_user),
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(_tranche))
-      ]
-    );
-
-    return result[0].toBigInt();
+  get action(): i32 {
+    return this[1].toI32();
   }
 
-  try_unbonding(
-    _reserve: Address,
-    _user: Address,
-    _tranche: i32
-  ): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "unbonding",
-      "unbonding(address,address,uint8):(uint256)",
-      [
-        ethereum.Value.fromAddress(_reserve),
-        ethereum.Value.fromAddress(_user),
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(_tranche))
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  get functionSelectors(): Array<Bytes> {
+    return this[2].toBytesArray();
+  }
+}
+
+export class TransferOwnershipCall extends ethereum.Call {
+  get inputs(): TransferOwnershipCall__Inputs {
+    return new TransferOwnershipCall__Inputs(this);
   }
 
-  utilizationRate(_reserve: Address): BigInt {
-    let result = super.call(
-      "utilizationRate",
-      "utilizationRate(address):(uint256)",
-      [ethereum.Value.fromAddress(_reserve)]
-    );
+  get outputs(): TransferOwnershipCall__Outputs {
+    return new TransferOwnershipCall__Outputs(this);
+  }
+}
 
-    return result[0].toBigInt();
+export class TransferOwnershipCall__Inputs {
+  _call: TransferOwnershipCall;
+
+  constructor(call: TransferOwnershipCall) {
+    this._call = call;
   }
 
-  try_utilizationRate(_reserve: Address): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "utilizationRate",
-      "utilizationRate(address):(uint256)",
-      [ethereum.Value.fromAddress(_reserve)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  get _newOwner(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class TransferOwnershipCall__Outputs {
+  _call: TransferOwnershipCall;
+
+  constructor(call: TransferOwnershipCall) {
+    this._call = call;
+  }
+}
+
+export class PauseCall extends ethereum.Call {
+  get inputs(): PauseCall__Inputs {
+    return new PauseCall__Inputs(this);
   }
 
-  getVaultDebt(
-    _reserve: Address,
-    _vault: Address
-  ): Voyager__getVaultDebtResult {
-    let result = super.call(
-      "getVaultDebt",
-      "getVaultDebt(address,address):(uint256,uint256)",
-      [ethereum.Value.fromAddress(_reserve), ethereum.Value.fromAddress(_vault)]
-    );
+  get outputs(): PauseCall__Outputs {
+    return new PauseCall__Outputs(this);
+  }
+}
 
-    return new Voyager__getVaultDebtResult(
-      result[0].toBigInt(),
-      result[1].toBigInt()
-    );
+export class PauseCall__Inputs {
+  _call: PauseCall;
+
+  constructor(call: PauseCall) {
+    this._call = call;
+  }
+}
+
+export class PauseCall__Outputs {
+  _call: PauseCall;
+
+  constructor(call: PauseCall) {
+    this._call = call;
+  }
+}
+
+export class UnpauseCall extends ethereum.Call {
+  get inputs(): UnpauseCall__Inputs {
+    return new UnpauseCall__Inputs(this);
   }
 
-  try_getVaultDebt(
-    _reserve: Address,
-    _vault: Address
-  ): ethereum.CallResult<Voyager__getVaultDebtResult> {
-    let result = super.tryCall(
-      "getVaultDebt",
-      "getVaultDebt(address,address):(uint256,uint256)",
-      [ethereum.Value.fromAddress(_reserve), ethereum.Value.fromAddress(_vault)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(
-      new Voyager__getVaultDebtResult(value[0].toBigInt(), value[1].toBigInt())
-    );
+  get outputs(): UnpauseCall__Outputs {
+    return new UnpauseCall__Outputs(this);
   }
+}
 
-  interestBalance(underlyingAsset: Address): BigInt {
-    let result = super.call(
-      "interestBalance",
-      "interestBalance(address):(uint256)",
-      [ethereum.Value.fromAddress(underlyingAsset)]
-    );
+export class UnpauseCall__Inputs {
+  _call: UnpauseCall;
 
-    return result[0].toBigInt();
+  constructor(call: UnpauseCall) {
+    this._call = call;
   }
+}
 
-  try_interestBalance(underlyingAsset: Address): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "interestBalance",
-      "interestBalance(address):(uint256)",
-      [ethereum.Value.fromAddress(underlyingAsset)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
+export class UnpauseCall__Outputs {
+  _call: UnpauseCall;
 
-  principalBalance(underlyingAsset: Address): BigInt {
-    let result = super.call(
-      "principalBalance",
-      "principalBalance(address):(uint256)",
-      [ethereum.Value.fromAddress(underlyingAsset)]
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_principalBalance(underlyingAsset: Address): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "principalBalance",
-      "principalBalance(address):(uint256)",
-      [ethereum.Value.fromAddress(underlyingAsset)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
-  paused(): boolean {
-    let result = super.call("paused", "paused():(bool)", []);
-
-    return result[0].toBoolean();
-  }
-
-  try_paused(): ethereum.CallResult<boolean> {
-    let result = super.tryCall("paused", "paused():(bool)", []);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  createVault(owner: Address, _reserve: Address): Address {
-    let result = super.call(
-      "createVault",
-      "createVault(address,address):(address)",
-      [ethereum.Value.fromAddress(owner), ethereum.Value.fromAddress(_reserve)]
-    );
-
-    return result[0].toAddress();
-  }
-
-  try_createVault(
-    owner: Address,
-    _reserve: Address
-  ): ethereum.CallResult<Address> {
-    let result = super.tryCall(
-      "createVault",
-      "createVault(address,address):(address)",
-      [ethereum.Value.fromAddress(owner), ethereum.Value.fromAddress(_reserve)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
-  }
-
-  getAllVaults(): Array<Address> {
-    let result = super.call("getAllVaults", "getAllVaults():(address[])", []);
-
-    return result[0].toAddressArray();
-  }
-
-  try_getAllVaults(): ethereum.CallResult<Array<Address>> {
-    let result = super.tryCall(
-      "getAllVaults",
-      "getAllVaults():(address[])",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddressArray());
-  }
-
-  getAvailableCredit(_user: Address, _reserve: Address): BigInt {
-    let result = super.call(
-      "getAvailableCredit",
-      "getAvailableCredit(address,address):(uint256)",
-      [ethereum.Value.fromAddress(_user), ethereum.Value.fromAddress(_reserve)]
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_getAvailableCredit(
-    _user: Address,
-    _reserve: Address
-  ): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "getAvailableCredit",
-      "getAvailableCredit(address,address):(uint256)",
-      [ethereum.Value.fromAddress(_user), ethereum.Value.fromAddress(_reserve)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
-  getCreditLimit(_user: Address, _reserve: Address): BigInt {
-    let result = super.call(
-      "getCreditLimit",
-      "getCreditLimit(address,address):(uint256)",
-      [ethereum.Value.fromAddress(_user), ethereum.Value.fromAddress(_reserve)]
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_getCreditLimit(
-    _user: Address,
-    _reserve: Address
-  ): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "getCreditLimit",
-      "getCreditLimit(address,address):(uint256)",
-      [ethereum.Value.fromAddress(_user), ethereum.Value.fromAddress(_reserve)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
-  getMargin(_user: Address, _reserve: Address): BigInt {
-    let result = super.call(
-      "getMargin",
-      "getMargin(address,address):(uint256)",
-      [ethereum.Value.fromAddress(_user), ethereum.Value.fromAddress(_reserve)]
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_getMargin(
-    _user: Address,
-    _reserve: Address
-  ): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "getMargin",
-      "getMargin(address,address):(uint256)",
-      [ethereum.Value.fromAddress(_user), ethereum.Value.fromAddress(_reserve)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
-  getVault(_owner: Address): Address {
-    let result = super.call("getVault", "getVault(address):(address)", [
-      ethereum.Value.fromAddress(_owner)
-    ]);
-
-    return result[0].toAddress();
-  }
-
-  try_getVault(_owner: Address): ethereum.CallResult<Address> {
-    let result = super.tryCall("getVault", "getVault(address):(address)", [
-      ethereum.Value.fromAddress(_owner)
-    ]);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
-  }
-
-  getVaultConfig(_reserve: Address): Voyager__getVaultConfigResultValue0Struct {
-    let result = super.call(
-      "getVaultConfig",
-      "getVaultConfig(address):((uint256,uint256,uint256))",
-      [ethereum.Value.fromAddress(_reserve)]
-    );
-
-    return changetype<Voyager__getVaultConfigResultValue0Struct>(
-      result[0].toTuple()
-    );
-  }
-
-  try_getVaultConfig(
-    _reserve: Address
-  ): ethereum.CallResult<Voyager__getVaultConfigResultValue0Struct> {
-    let result = super.tryCall(
-      "getVaultConfig",
-      "getVaultConfig(address):((uint256,uint256,uint256))",
-      [ethereum.Value.fromAddress(_reserve)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(
-      changetype<Voyager__getVaultConfigResultValue0Struct>(value[0].toTuple())
-    );
-  }
-
-  getWithdrawableDeposit(
-    _owner: Address,
-    _reserve: Address,
-    _sponsor: Address
-  ): BigInt {
-    let result = super.call(
-      "getWithdrawableDeposit",
-      "getWithdrawableDeposit(address,address,address):(uint256)",
-      [
-        ethereum.Value.fromAddress(_owner),
-        ethereum.Value.fromAddress(_reserve),
-        ethereum.Value.fromAddress(_sponsor)
-      ]
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_getWithdrawableDeposit(
-    _owner: Address,
-    _reserve: Address,
-    _sponsor: Address
-  ): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "getWithdrawableDeposit",
-      "getWithdrawableDeposit(address,address,address):(uint256)",
-      [
-        ethereum.Value.fromAddress(_owner),
-        ethereum.Value.fromAddress(_reserve),
-        ethereum.Value.fromAddress(_sponsor)
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  constructor(call: UnpauseCall) {
+    this._call = call;
   }
 }
 
@@ -1809,58 +2222,6 @@ export class RepayCall__Outputs {
   _call: RepayCall;
 
   constructor(call: RepayCall) {
-    this._call = call;
-  }
-}
-
-export class PauseCall extends ethereum.Call {
-  get inputs(): PauseCall__Inputs {
-    return new PauseCall__Inputs(this);
-  }
-
-  get outputs(): PauseCall__Outputs {
-    return new PauseCall__Outputs(this);
-  }
-}
-
-export class PauseCall__Inputs {
-  _call: PauseCall;
-
-  constructor(call: PauseCall) {
-    this._call = call;
-  }
-}
-
-export class PauseCall__Outputs {
-  _call: PauseCall;
-
-  constructor(call: PauseCall) {
-    this._call = call;
-  }
-}
-
-export class UnpauseCall extends ethereum.Call {
-  get inputs(): UnpauseCall__Inputs {
-    return new UnpauseCall__Inputs(this);
-  }
-
-  get outputs(): UnpauseCall__Outputs {
-    return new UnpauseCall__Outputs(this);
-  }
-}
-
-export class UnpauseCall__Inputs {
-  _call: UnpauseCall;
-
-  constructor(call: UnpauseCall) {
-    this._call = call;
-  }
-}
-
-export class UnpauseCall__Outputs {
-  _call: UnpauseCall;
-
-  constructor(call: UnpauseCall) {
     this._call = call;
   }
 }

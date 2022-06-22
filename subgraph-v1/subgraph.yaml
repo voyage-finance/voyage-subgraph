@@ -1,0 +1,52 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: Voyager
+    network: fuji
+    source:
+      address: "0xed4B20ed8f97a23F5770225aA30C322CCda060E8"
+      abi: Voyager
+      startBlock: 10893068
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Pool
+        - Deposit
+        - ReserveActivated
+        - ReserveInitialized
+        - Withdraw
+        - Paused
+        - Unpaused
+        - VaultCreated
+        - VaultInitialized
+        - VaultMarginCredited
+        - VaultMarginRedeemed
+      abis:
+        - name: Voyager
+          file: ./abis/Voyager.json
+      eventHandlers:
+        - event: Deposit(indexed address,indexed address,indexed uint8,uint256)
+          handler: handleDeposit
+        - event: ReserveActivated(indexed address)
+          handler: handleReserveActivated
+        - event: ReserveInitialized(indexed address,address,address,address,uint256)
+          handler: handleReserveInitialized
+        - event: Withdraw(indexed address,indexed address,indexed uint8,uint256)
+          handler: handleWithdraw
+        - event: Paused(address)
+          handler: handlePaused
+        - event: Unpaused(address)
+          handler: handleUnpaused
+        - event: VaultCreated(address,address,uint256)
+          handler: handleVaultCreated
+        - event: VaultInitialized(address,address)
+          handler: handleVaultInitialized
+        - event: VaultMarginCredited(indexed address,indexed address,address,uint256)
+          handler: handleVaultMarginCredited
+        - event: VaultMarginRedeemed(indexed address,indexed address,address,uint256)
+          handler: handleVaultMarginRedeemed
+      file: ./src/voyager.ts

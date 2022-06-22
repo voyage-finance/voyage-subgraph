@@ -1,0 +1,27 @@
+type PoolConfiguration @entity {
+  id: ID!
+  pool: Pool!
+  marginRequirement: BigInt!
+  marginMin: BigInt!
+  marginMax: BigInt!
+  loanTenure: BigInt!
+  optimalTrancheRatio: BigInt!
+  optimalIncomeRatio: BigInt!
+}
+
+type Pool @entity {
+  id: ID!
+  isActive: Boolean!
+  underlyingAsset: Bytes!
+  symbol: String!
+  decimals: BigInt!
+  juniorTrancheTotalLiquidity: BigInt!
+  juniorTrancheLiquidityRate: BigInt!
+  seniorTrancheTotalLiquidity: BigInt!
+  seniorTrancheAvailableLiquidity: BigInt!
+  seniorTrancheLiquidityRate: BigInt!
+  totalLiquidity: BigInt!
+  totalBorrow: BigInt!
+  trancheRatio: BigInt!
+  configuration: PoolConfiguration
+}

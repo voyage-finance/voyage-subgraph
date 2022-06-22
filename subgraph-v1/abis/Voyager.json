@@ -1,0 +1,972 @@
+[
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_user", "type": "address" },
+      { "internalType": "address", "name": "_reserve", "type": "address" },
+      { "internalType": "uint256", "name": "_drawDownId", "type": "uint256" }
+    ],
+    "name": "getDrawDownDetail",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "uint256", "name": "principal", "type": "uint256" },
+          { "internalType": "uint256", "name": "term", "type": "uint256" },
+          { "internalType": "uint256", "name": "epoch", "type": "uint256" },
+          { "internalType": "uint256", "name": "nper", "type": "uint256" },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "principal",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "interest",
+                "type": "uint256"
+              },
+              { "internalType": "uint256", "name": "pmt", "type": "uint256" }
+            ],
+            "internalType": "struct PMT",
+            "name": "pmt",
+            "type": "tuple"
+          },
+          { "internalType": "uint256", "name": "apr", "type": "uint256" },
+          { "internalType": "uint256", "name": "borrowAt", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "nextPaymentDue",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalPrincipalPaid",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalInterestPaid",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "paidTimes", "type": "uint256" }
+        ],
+        "internalType": "struct LibLoan.DebtDetail",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_reserve", "type": "address" }
+    ],
+    "name": "getPoolConfiguration",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "marginRequirement",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "minMargin", "type": "uint256" },
+          { "internalType": "uint256", "name": "maxMargin", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "loanTenure",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "optimalTrancheRatio",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "optimalIncomeRatio",
+            "type": "uint256"
+          },
+          { "internalType": "bool", "name": "isActive", "type": "bool" }
+        ],
+        "internalType": "struct DataProviderFacet.PoolConfiguration",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "underlyingAsset",
+        "type": "address"
+      }
+    ],
+    "name": "getPoolData",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "totalLiquidity",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "juniorLiquidity",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "seniorLiquidity",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "juniorLiquidityRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "seniorLiquidityRate",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "totalDebt", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "utilizationRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "trancheRatio",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "decimals", "type": "uint256" },
+          { "internalType": "string", "name": "symbol", "type": "string" },
+          { "internalType": "bool", "name": "isActive", "type": "bool" }
+        ],
+        "internalType": "struct DataProviderFacet.PoolData",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getPoolTokens",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "string", "name": "symbol", "type": "string" },
+          {
+            "internalType": "address",
+            "name": "tokenAddress",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct DataProviderFacet.FungibleTokenData[]",
+        "name": "tokens",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_reserve", "type": "address" },
+      { "internalType": "address", "name": "_user", "type": "address" }
+    ],
+    "name": "getUserPoolData",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "juniorTrancheBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "withdrawableJuniorTrancheBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "seniorTrancheBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "withdrawableSeniorTrancheBalance",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "decimals", "type": "uint256" }
+        ],
+        "internalType": "struct DataProviderFacet.UserPoolData",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_user", "type": "address" }
+    ],
+    "name": "getUserVault",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_user", "type": "address" },
+      { "internalType": "address", "name": "_reserve", "type": "address" },
+      { "internalType": "address", "name": "_sponsor", "type": "address" }
+    ],
+    "name": "getVaultData",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "borrowRate",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "totalDebt", "type": "uint256" },
+          {
+            "components": [
+              { "internalType": "uint256", "name": "head", "type": "uint256" },
+              { "internalType": "uint256", "name": "tail", "type": "uint256" }
+            ],
+            "internalType": "struct DrawDownList",
+            "name": "drawDownList",
+            "type": "tuple"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalMargin",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "withdrawableSecurityDeposit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "creditLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "spendableBalance",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "gav", "type": "uint256" },
+          { "internalType": "uint256", "name": "ltv", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "healthFactor",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct VaultData",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_user", "type": "address" },
+      { "internalType": "address", "name": "_reserve", "type": "address" }
+    ],
+    "name": "pendingJuniorWithdrawals",
+    "outputs": [
+      { "internalType": "uint256[]", "name": "", "type": "uint256[]" },
+      { "internalType": "uint256[]", "name": "", "type": "uint256[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_user", "type": "address" },
+      { "internalType": "address", "name": "_reserve", "type": "address" }
+    ],
+    "name": "pendingSeniorWithdrawals",
+    "outputs": [
+      { "internalType": "uint256[]", "name": "", "type": "uint256[]" },
+      { "internalType": "uint256[]", "name": "", "type": "uint256[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "asset",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "enum Tranche",
+        "name": "tranche",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "Deposit",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      }
+    ],
+    "name": "ReserveActivated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_juniorDepositTokenAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_seniorDepositTokenAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_interestRateStrategyAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_optimalIncomeRatio",
+        "type": "uint256"
+      }
+    ],
+    "name": "ReserveInitialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "asset",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "enum Tranche",
+        "name": "tranche",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "Withdraw",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_asset", "type": "address" }
+    ],
+    "name": "activateReserve",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "contract ERC20", "name": "token", "type": "address" },
+      { "internalType": "address", "name": "to", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
+    ],
+    "name": "approve",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_reserve", "type": "address" },
+      { "internalType": "address", "name": "_user", "type": "address" },
+      { "internalType": "enum Tranche", "name": "_tranche", "type": "uint8" }
+    ],
+    "name": "balance",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_asset", "type": "address" },
+      { "internalType": "enum Tranche", "name": "_tranche", "type": "uint8" },
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" },
+      { "internalType": "address", "name": "_user", "type": "address" }
+    ],
+    "name": "deposit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_reserve", "type": "address" }
+    ],
+    "name": "getReserveFlags",
+    "outputs": [
+      { "internalType": "bool", "name": "", "type": "bool" },
+      { "internalType": "bool", "name": "", "type": "bool" },
+      { "internalType": "bool", "name": "", "type": "bool" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_reserve", "type": "address" }
+    ],
+    "name": "getReserveStatus",
+    "outputs": [
+      { "internalType": "bool", "name": "initialized", "type": "bool" },
+      { "internalType": "bool", "name": "activated", "type": "bool" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_asset", "type": "address" },
+      {
+        "internalType": "address",
+        "name": "_juniorDepositTokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_seniorDepositTokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_interestRateStrategyAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_loanStrategyAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_optimalIncomeRatio",
+        "type": "uint256"
+      }
+    ],
+    "name": "initReserve",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_asset", "type": "address" },
+      { "internalType": "enum Tranche", "name": "_tranche", "type": "uint8" }
+    ],
+    "name": "liquidityRate",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "contract ERC20", "name": "token", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "internalType": "address", "name": "from", "type": "address" },
+      { "internalType": "address", "name": "recipient", "type": "address" }
+    ],
+    "name": "pullToken",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_reserve", "type": "address" },
+      { "internalType": "address", "name": "_user", "type": "address" },
+      { "internalType": "enum Tranche", "name": "_tranche", "type": "uint8" }
+    ],
+    "name": "unbonding",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_reserve", "type": "address" }
+    ],
+    "name": "utilizationRate",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_asset", "type": "address" },
+      { "internalType": "enum Tranche", "name": "_tranche", "type": "uint8" },
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" },
+      { "internalType": "address payable", "name": "_user", "type": "address" }
+    ],
+    "name": "withdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_asset", "type": "address" },
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" },
+      { "internalType": "address payable", "name": "_vault", "type": "address" }
+    ],
+    "name": "borrow",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_reserve", "type": "address" },
+      { "internalType": "address", "name": "_vault", "type": "address" }
+    ],
+    "name": "getVaultDebt",
+    "outputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "underlyingAsset",
+        "type": "address"
+      }
+    ],
+    "name": "interestBalance",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_liquidator", "type": "address" },
+      { "internalType": "address", "name": "_reserve", "type": "address" },
+      { "internalType": "address", "name": "_vault", "type": "address" },
+      { "internalType": "uint256", "name": "_drawDownId", "type": "uint256" }
+    ],
+    "name": "liquidate",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "underlyingAsset",
+        "type": "address"
+      }
+    ],
+    "name": "principalBalance",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_user", "type": "address" },
+      { "internalType": "address", "name": "_asset", "type": "address" },
+      { "internalType": "uint256", "name": "_drawDown", "type": "uint256" },
+      { "internalType": "address payable", "name": "_vault", "type": "address" }
+    ],
+    "name": "repay",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "Paused",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "Unpaused",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "pause",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "paused",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "unpause",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_vault",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_numVaults",
+        "type": "uint256"
+      }
+    ],
+    "name": "VaultCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_vault",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_reserve",
+        "type": "address"
+      }
+    ],
+    "name": "VaultInitialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_vault",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_sponsor",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "VaultMarginCredited",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_vault",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_sponsor",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "VaultMarginRedeemed",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "owner", "type": "address" },
+      { "internalType": "address", "name": "_reserve", "type": "address" }
+    ],
+    "name": "createVault",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_sponsor", "type": "address" },
+      { "internalType": "address", "name": "_owner", "type": "address" },
+      { "internalType": "address", "name": "_reserve", "type": "address" },
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
+    ],
+    "name": "depositMargin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getAllVaults",
+    "outputs": [
+      { "internalType": "address[]", "name": "", "type": "address[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_user", "type": "address" },
+      { "internalType": "address", "name": "_reserve", "type": "address" }
+    ],
+    "name": "getAvailableCredit",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_user", "type": "address" },
+      { "internalType": "address", "name": "_reserve", "type": "address" }
+    ],
+    "name": "getCreditLimit",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_user", "type": "address" },
+      { "internalType": "address", "name": "_reserve", "type": "address" }
+    ],
+    "name": "getMargin",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_owner", "type": "address" }
+    ],
+    "name": "getVault",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_reserve", "type": "address" }
+    ],
+    "name": "getVaultConfig",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "uint256", "name": "minMargin", "type": "uint256" },
+          { "internalType": "uint256", "name": "maxMargin", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "marginRequirement",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct VaultConfig",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_owner", "type": "address" },
+      { "internalType": "address", "name": "_reserve", "type": "address" },
+      { "internalType": "address", "name": "_sponsor", "type": "address" }
+    ],
+    "name": "getWithdrawableDeposit",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address payable",
+        "name": "_sponsor",
+        "type": "address"
+      },
+      { "internalType": "address", "name": "_owner", "type": "address" },
+      { "internalType": "address", "name": "_reserve", "type": "address" },
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
+    ],
+    "name": "redeemMargin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_reserve", "type": "address" },
+      { "internalType": "uint256", "name": "_requirement", "type": "uint256" }
+    ],
+    "name": "setMarginRequirement",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_reserve", "type": "address" },
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
+    ],
+    "name": "setMaxMargin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_reserve", "type": "address" },
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
+    ],
+    "name": "setMinMargin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_impl", "type": "address" }
+    ],
+    "name": "updateVaultImplContract",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

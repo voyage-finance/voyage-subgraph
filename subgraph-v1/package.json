@@ -1,0 +1,16 @@
+{
+  "name": "subgraph-v1",
+  "license": "UNLICENSED",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ voyage-finance/subgraph-v1",
+    "create-local": "graph create --node http://localhost:8020/ voyage-finance/subgraph-v1",
+    "remove-local": "graph remove --node http://localhost:8020/ voyage-finance/subgraph-v1",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 voyage-finance/subgraph-v1"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.30.4",
+    "@graphprotocol/graph-ts": "0.27.0"
+  }
+}

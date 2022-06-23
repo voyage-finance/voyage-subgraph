@@ -39,7 +39,7 @@ type UserDepositData @entity {
   seniorTrancheBalance: BigInt!
   withdrawableJuniorBalance: BigInt!
   withdrawableSeniorBalance: BigInt!
-  decimals: String!
+  decimals: BigInt!
   user: UserData!
 }
 

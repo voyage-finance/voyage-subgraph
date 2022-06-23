@@ -391,13 +391,13 @@ export class UserDepositData extends Entity {
     this.set("withdrawableSeniorBalance", Value.fromBigInt(value));
   }
 
-  get decimals(): string {
+  get decimals(): BigInt {
     let value = this.get("decimals");
-    return value!.toString();
+    return value!.toBigInt();
   }
 
-  set decimals(value: string) {
-    this.set("decimals", Value.fromString(value));
+  set decimals(value: BigInt) {
+    this.set("decimals", Value.fromBigInt(value));
   }
 
   get user(): string {

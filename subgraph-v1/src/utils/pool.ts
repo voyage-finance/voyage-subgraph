@@ -1,5 +1,10 @@
 import { Address, log } from "@graphprotocol/graph-ts";
-import { Pool, PoolConfiguration } from "../../generated/schema";
+import {
+  Pool,
+  PoolConfiguration,
+  UserData,
+  UserDepositData,
+} from "../../generated/schema";
 import { Deposit, Voyager } from "../../generated/Voyager/Voyager";
 
 export function updatePoolAndConfigurationData(
@@ -56,4 +61,39 @@ export function updatePoolConfiguration(
 
   poolConfigurationEntity.save();
   return poolConfigurationEntity;
+}
+
+export function updateUserData(
+  userAddress: Address,
+  assetAddress: Address,
+  eventAddress: Address
+): UserData {
+  const voyager = Voyager.bind(eventAddress);
+  let userEntity = UserData.load(userAddress.toHex());
+  if (!userEntity) {
+    userEntity = new UserData(userAddress.toHex());
+  }
+  // save depositData
+  const userPoolData = voyager.getUserPoolData(assetAddress, userAddress);
+  let userPoolId = `${userAddress.toHex()}_${assetAddress.toHex()}`;
+  let userDepositDataEntity = UserDepositData.load(userPoolId);
+  if (!userDepositDataEntity) {
+    userDepositDataEntity = new UserDepositData(userPoolId);
+  }
+  userDepositDataEntity.underlyingAsset = assetAddress;
+  userDepositDataEntity.juniorTrancheBalance =
+    userPoolData.juniorTrancheBalance;
+  userDepositDataEntity.seniorTrancheBalance =
+    userPoolData.seniorTrancheBalance;
+  userDepositDataEntity.withdrawableJuniorBalance =
+    userPoolData.withdrawableJuniorTrancheBalance;
+  userDepositDataEntity.withdrawableSeniorBalance =
+    userPoolData.withdrawableSeniorTrancheBalance;
+  userDepositDataEntity.decimals = userPoolData.decimals;
+  userDepositDataEntity.user = userAddress.toHex();
+
+  userDepositDataEntity.save();
+  userEntity.save();
+
+  return userEntity;
 }

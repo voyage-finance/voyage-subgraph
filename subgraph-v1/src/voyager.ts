@@ -13,11 +13,12 @@ import {
   Voyager,
   Withdraw,
 } from "../generated/Voyager/Voyager";
-import { updatePoolAndConfigurationData } from "./utils/pool";
+import { updatePoolAndConfigurationData, updateUserData } from "./utils/pool";
 
 export function handleDeposit(event: Deposit): void {
   log.info("--------- triggered handleDeposit ------------", []);
   updatePoolAndConfigurationData(event.params.asset, event.address);
+  updateUserData(event.params.user, event.params.asset, event.address);
 }
 
 export function handleReserveActivated(event: ReserveActivated): void {

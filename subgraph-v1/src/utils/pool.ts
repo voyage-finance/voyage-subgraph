@@ -2,6 +2,7 @@ import { Address, log } from "@graphprotocol/graph-ts";
 import {
   Pool,
   PoolConfiguration,
+  Unbonding,
   UserData,
   UserDepositData,
 } from "../../generated/schema";
@@ -75,7 +76,7 @@ export function updateUserData(
   }
   // save depositData
   const userPoolData = voyager.getUserPoolData(assetAddress, userAddress);
-  let userPoolId = `${userAddress.toHex()}_${assetAddress.toHex()}`;
+  let userPoolId = [userAddress.toHex(), assetAddress.toHex()].join("_");
   let userDepositDataEntity = UserDepositData.load(userPoolId);
   if (!userDepositDataEntity) {
     userDepositDataEntity = new UserDepositData(userPoolId);
@@ -91,6 +92,34 @@ export function updateUserData(
     userPoolData.withdrawableSeniorTrancheBalance;
   userDepositDataEntity.decimals = userPoolData.decimals;
   userDepositDataEntity.user = userAddress.toHex();
+
+  //update unbondings
+  const jrPendings = voyager.pendingJuniorWithdrawals(
+    userAddress,
+    assetAddress
+  );
+  const srPendings = voyager.pendingSeniorWithdrawals(
+    userAddress,
+    assetAddress
+  );
+  const allTimes = jrPendings.value0.concat(srPendings.value0);
+  const allAmounts = jrPendings.value1.concat(srPendings.value1);
+
+  var unbonding: Unbonding;
+  for (let i = 0; i < allTimes.length; ++i) {
+    const uniqueId = [
+      userAddress.toHex(),
+      assetAddress.toHex(),
+      allTimes[i].toString(),
+    ].join("_");
+    const _unbonding = Unbonding.load(uniqueId);
+    unbonding = _unbonding ? _unbonding : new Unbonding(uniqueId);
+    unbonding.time = allTimes[i];
+    unbonding.amount = allAmounts[i];
+    unbonding.type = i >= jrPendings.value0.length ? "Senior" : "Junior";
+    unbonding.user = userAddress.toHex();
+    unbonding.save();
+  }
 
   userDepositDataEntity.save();
   userEntity.save();

@@ -459,13 +459,13 @@ export class Unbonding extends Entity {
     this.set("amount", Value.fromBigInt(value));
   }
 
-  get type(): i32 {
+  get type(): string {
     let value = this.get("type");
-    return value!.toI32();
+    return value!.toString();
   }
 
-  set type(value: i32) {
-    this.set("type", Value.fromI32(value));
+  set type(value: string) {
+    this.set("type", Value.fromString(value));
   }
 
   get user(): string {

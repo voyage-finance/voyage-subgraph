@@ -43,10 +43,15 @@ type UserDepositData @entity {
   user: UserData!
 }
 
+enum Tranche {
+  Senior
+  Junior
+}
+
 type Unbonding @entity {
   id: ID!
   time: BigInt!
   amount: BigInt!
-  type: Int
+  type: Tranche!
   user: UserData!
 }

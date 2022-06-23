@@ -25,3 +25,28 @@ type Pool @entity {
   trancheRatio: BigInt!
   configuration: PoolConfiguration
 }
+
+type UserData @entity {
+  id: ID!
+  depositData: [UserDepositData!]! @derivedFrom(field: "user")
+  unbondings: [Unbonding!]! @derivedFrom(field: "user")
+}
+
+type UserDepositData @entity {
+  id: ID!
+  underlyingAsset: Bytes!
+  juniorTrancheBalance: BigInt!
+  seniorTrancheBalance: BigInt!
+  withdrawableJuniorBalance: BigInt!
+  withdrawableSeniorBalance: BigInt!
+  decimals: String!
+  user: UserData!
+}
+
+type Unbonding @entity {
+  id: ID!
+  time: BigInt!
+  amount: BigInt!
+  type: Int
+  user: UserData!
+}

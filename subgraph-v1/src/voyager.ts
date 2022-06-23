@@ -16,13 +16,11 @@ import {
 import { updatePoolAndConfigurationData, updateUserData } from "./utils/pool";
 
 export function handleDeposit(event: Deposit): void {
-  log.info("--------- triggered handleDeposit ------------", []);
   updatePoolAndConfigurationData(event.params.asset, event.address);
   updateUserData(event.params.user, event.params.asset, event.address);
 }
 
 export function handleReserveActivated(event: ReserveActivated): void {
-  log.info("--------- triggered handleReserveActivated ------------", []);
   const poolId = event.params._asset.toHex();
   let pool = Pool.load(poolId);
   if (pool) {
@@ -33,35 +31,22 @@ export function handleReserveActivated(event: ReserveActivated): void {
 }
 
 export function handleReserveInitialized(event: ReserveInitialized): void {
-  log.info("--------- triggered handleReserveInitialized ------------", []);
   updatePoolAndConfigurationData(event.params._asset, event.address);
 }
 
 export function handleWithdraw(event: Withdraw): void {
-  log.info("--------- triggered handleWithdraw ------------", []);
   updatePoolAndConfigurationData(event.params.asset, event.address);
+  updateUserData(event.params.user, event.params.asset, event.address);
 }
 
-export function handlePaused(event: Paused): void {
-  log.info("--------- triggered handlePaused ------------", []);
-}
+export function handlePaused(event: Paused): void {}
 
-export function handleUnpaused(event: Unpaused): void {
-  log.info("--------- triggered handleUnpaused ------------", []);
-}
+export function handleUnpaused(event: Unpaused): void {}
 
-export function handleVaultCreated(event: VaultCreated): void {
-  log.info("--------- triggered handleVaultCreated ------------", []);
-}
+export function handleVaultCreated(event: VaultCreated): void {}
 
-export function handleVaultInitialized(event: VaultInitialized): void {
-  log.info("--------- triggered handleVaultInitialized ------------", []);
-}
+export function handleVaultInitialized(event: VaultInitialized): void {}
 
-export function handleVaultMarginCredited(event: VaultMarginCredited): void {
-  log.info("--------- triggered handleVaultMarginCredited ------------", []);
-}
+export function handleVaultMarginCredited(event: VaultMarginCredited): void {}
 
-export function handleVaultMarginRedeemed(event: VaultMarginRedeemed): void {
-  log.info("--------- triggered handleVaultMarginRedeemed ------------", []);
-}
+export function handleVaultMarginRedeemed(event: VaultMarginRedeemed): void {}

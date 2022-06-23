@@ -264,3 +264,216 @@ export class Pool extends Entity {
     }
   }
 }
+
+export class UserData extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save UserData entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type UserData must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("UserData", id.toString(), this);
+    }
+  }
+
+  static load(id: string): UserData | null {
+    return changetype<UserData | null>(store.get("UserData", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get depositData(): Array<string> {
+    let value = this.get("depositData");
+    return value!.toStringArray();
+  }
+
+  set depositData(value: Array<string>) {
+    this.set("depositData", Value.fromStringArray(value));
+  }
+
+  get unbondings(): Array<string> {
+    let value = this.get("unbondings");
+    return value!.toStringArray();
+  }
+
+  set unbondings(value: Array<string>) {
+    this.set("unbondings", Value.fromStringArray(value));
+  }
+}
+
+export class UserDepositData extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save UserDepositData entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type UserDepositData must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("UserDepositData", id.toString(), this);
+    }
+  }
+
+  static load(id: string): UserDepositData | null {
+    return changetype<UserDepositData | null>(store.get("UserDepositData", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get underlyingAsset(): Bytes {
+    let value = this.get("underlyingAsset");
+    return value!.toBytes();
+  }
+
+  set underlyingAsset(value: Bytes) {
+    this.set("underlyingAsset", Value.fromBytes(value));
+  }
+
+  get juniorTrancheBalance(): BigInt {
+    let value = this.get("juniorTrancheBalance");
+    return value!.toBigInt();
+  }
+
+  set juniorTrancheBalance(value: BigInt) {
+    this.set("juniorTrancheBalance", Value.fromBigInt(value));
+  }
+
+  get seniorTrancheBalance(): BigInt {
+    let value = this.get("seniorTrancheBalance");
+    return value!.toBigInt();
+  }
+
+  set seniorTrancheBalance(value: BigInt) {
+    this.set("seniorTrancheBalance", Value.fromBigInt(value));
+  }
+
+  get withdrawableJuniorBalance(): BigInt {
+    let value = this.get("withdrawableJuniorBalance");
+    return value!.toBigInt();
+  }
+
+  set withdrawableJuniorBalance(value: BigInt) {
+    this.set("withdrawableJuniorBalance", Value.fromBigInt(value));
+  }
+
+  get withdrawableSeniorBalance(): BigInt {
+    let value = this.get("withdrawableSeniorBalance");
+    return value!.toBigInt();
+  }
+
+  set withdrawableSeniorBalance(value: BigInt) {
+    this.set("withdrawableSeniorBalance", Value.fromBigInt(value));
+  }
+
+  get decimals(): string {
+    let value = this.get("decimals");
+    return value!.toString();
+  }
+
+  set decimals(value: string) {
+    this.set("decimals", Value.fromString(value));
+  }
+
+  get user(): string {
+    let value = this.get("user");
+    return value!.toString();
+  }
+
+  set user(value: string) {
+    this.set("user", Value.fromString(value));
+  }
+}
+
+export class Unbonding extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Unbonding entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Unbonding must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Unbonding", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Unbonding | null {
+    return changetype<Unbonding | null>(store.get("Unbonding", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get time(): BigInt {
+    let value = this.get("time");
+    return value!.toBigInt();
+  }
+
+  set time(value: BigInt) {
+    this.set("time", Value.fromBigInt(value));
+  }
+
+  get amount(): BigInt {
+    let value = this.get("amount");
+    return value!.toBigInt();
+  }
+
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
+  }
+
+  get type(): i32 {
+    let value = this.get("type");
+    return value!.toI32();
+  }
+
+  set type(value: i32) {
+    this.set("type", Value.fromI32(value));
+  }
+
+  get user(): string {
+    let value = this.get("user");
+    return value!.toString();
+  }
+
+  set user(value: string) {
+    this.set("user", Value.fromString(value));
+  }
+}

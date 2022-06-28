@@ -84,6 +84,8 @@ export function updateUserData(
     userDepositDataEntity = new UserDepositData(userPoolId);
     userDepositDataEntity.juniorDepositWithdrawalDiff = Zero;
     userDepositDataEntity.seniorDepositWithdrawalDiff = Zero;
+    userDepositDataEntity.juniorTranchePnl = Zero;
+    userDepositDataEntity.seniorTranchePnl = Zero;
   }
   userDepositDataEntity.underlyingAsset = assetAddress;
   userDepositDataEntity.juniorTrancheBalance =
@@ -130,24 +132,36 @@ export function updateUserData(
 
   return userEntity;
 }
-
+// sum(withdrawalsFromJunior) + juniorTrancheBalance - sum(depositsInJunior)
 export function updateTranchePnl(
   userAddress: Address,
   assetAddress: Address,
   amount: BigInt,
   tranche: number
 ): void {
+  log.info("[updateTranchePnl]", []);
   let userPoolId = [userAddress.toHex(), assetAddress.toHex()].join("_");
   const userDepositData = UserDepositData.load(userPoolId);
 
   if (userDepositData) {
+    log.info("[updateTranchePnl] userDepositData {} {} {}", [
+      tranche.toString(),
+      amount.toString(),
+      userDepositData.seniorTranchePnl.toString(),
+    ]);
     if (tranche === 1) {
       userDepositData.seniorDepositWithdrawalDiff = userDepositData.seniorDepositWithdrawalDiff.plus(
         amount
       );
+      userDepositData.seniorTranchePnl = userDepositData.seniorTrancheBalance.plus(
+        userDepositData.seniorDepositWithdrawalDiff
+      );
     } else {
       userDepositData.juniorDepositWithdrawalDiff = userDepositData.juniorDepositWithdrawalDiff.plus(
         amount
+      );
+      userDepositData.juniorTranchePnl = userDepositData.juniorTrancheBalance.plus(
+        userDepositData.juniorDepositWithdrawalDiff
       );
     }
     userDepositData.save();

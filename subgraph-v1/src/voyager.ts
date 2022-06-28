@@ -1,5 +1,5 @@
 import { log } from "@graphprotocol/graph-ts";
-import { Pool } from "../generated/schema";
+import { Drawdown, Pool, Vault } from "../generated/schema";
 import {
   Deposit,
   Paused,
@@ -11,13 +11,25 @@ import {
   VaultMarginCredited,
   VaultMarginRedeemed,
   Voyager,
+  Voyager__pendingSeniorWithdrawalsResult,
   Withdraw,
 } from "../generated/Voyager/Voyager";
-import { updatePoolAndConfigurationData, updateUserData } from "./utils/pool";
+import {
+  updatePoolAndConfigurationData,
+  updateTranchePnl,
+  updateUserData,
+} from "./utils/pool";
 
 export function handleDeposit(event: Deposit): void {
+  log.info("triggered [handleDeposit]", []);
   updatePoolAndConfigurationData(event.params.asset, event.address);
   updateUserData(event.params.user, event.params.asset, event.address);
+  updateTranchePnl(
+    event.params.user,
+    event.params.asset,
+    event.params.amount,
+    event.params.tranche
+  );
 }
 
 export function handleReserveActivated(event: ReserveActivated): void {
@@ -37,13 +49,54 @@ export function handleReserveInitialized(event: ReserveInitialized): void {
 export function handleWithdraw(event: Withdraw): void {
   updatePoolAndConfigurationData(event.params.asset, event.address);
   updateUserData(event.params.user, event.params.asset, event.address);
+  updateTranchePnl(
+    event.params.user,
+    event.params.asset,
+    event.params.amount.neg(),
+    event.params.tranche
+  );
 }
 
 export function handlePaused(event: Paused): void {}
 
 export function handleUnpaused(event: Unpaused): void {}
 
-export function handleVaultCreated(event: VaultCreated): void {}
+export function handleVaultCreated(event: VaultCreated): void {
+  /*
+  const vaultAddress = event.params._vault.toHex();
+  let vaultEntity = Vault.load(vaultAddress);
+  if (!vaultEntity) {
+    vaultEntity = new Vault(vaultAddress);
+  }
+  const voyager = Voyager.bind(event.address);
+  const vaultData = voyager.getVaultData(
+    event.params._owner,
+    event.params._vault,
+    // TODO: here should be sponsor address
+    event.params._owner
+  );
+  vaultEntity.borrowRate = vaultData.borrowRate;
+  vaultEntity.totalDebt = vaultData.totalDebt;
+  vaultEntity.totalMargin = vaultData.totalMargin;
+  vaultEntity.withdrawableSecurityDeposit =
+    vaultData.withdrawableSecurityDeposit;
+  vaultEntity.creditLimit = vaultData.creditLimit;
+  vaultEntity.spendableBalance = vaultData.spendableBalance;
+  vaultEntity.gav = vaultData.gav;
+  vaultEntity.ltv = vaultData.ltv;
+  vaultEntity.healthFactor = vaultData.healthFactor;
+  vaultEntity.save();
+  */
+  // Update drawdowns
+  // var unbonding: Drawdown;
+  // for (let i = vaultData.drawDownList[0]; i < vaultData.drawDownList[1]; i++) {
+  //   const drawdown = voyager.getDrawDownDetail(
+  //     event.params._owner,
+  //     event.params._vault,
+  //     i.toBigInt()
+  //   );
+  // }
+}
 
 export function handleVaultInitialized(event: VaultInitialized): void {}
 

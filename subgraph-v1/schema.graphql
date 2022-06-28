@@ -36,7 +36,9 @@ type UserDepositData @entity {
   id: ID!
   underlyingAsset: Bytes!
   juniorTrancheBalance: BigInt!
+  juniorTranchePnl: BigInt!
   seniorTrancheBalance: BigInt!
+  seniorTranchePnl: BigInt!
   withdrawableJuniorBalance: BigInt!
   withdrawableSeniorBalance: BigInt!
   decimals: BigInt!
@@ -54,4 +56,42 @@ type Unbonding @entity {
   amount: BigInt!
   type: Tranche!
   user: UserData!
+}
+
+type Vault @entity {
+  id: ID!
+  borrowRate: BigInt!
+  totalDebt: BigInt!
+  drawdowns: [Drawdown!]! @derivedFrom(field: "vault")
+  totalMargin: BigInt!
+  withdrawableSecurityDeposit: BigInt!
+  creditLimit: BigInt!
+  spendableBalance: BigInt!
+  gav: BigInt!
+  ltv: BigInt!
+  healthFactor: BigInt!
+}
+
+type Payment @entity {
+  id: ID!
+  principal: BigInt!
+  interest: BigInt!
+  pmt: BigInt! # = principal + interest
+  drawdown: Drawdown!
+}
+
+type Drawdown @entity {
+  id: ID!
+  vault: Vault!
+  payment: Payment!
+  principal: BigInt!
+  term: BigInt!
+  epoch: BigInt!
+  nper: BigInt!
+  apr: BigInt!
+  borrowAt: BigInt!
+  nextPaymentDue: BigInt!
+  totalPrincipalPaid: BigInt!
+  totalInterestPaid: BigInt!
+  paidTimes: BigInt!
 }

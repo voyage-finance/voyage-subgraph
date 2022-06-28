@@ -144,11 +144,6 @@ export function updateTranchePnl(
   const userDepositData = UserDepositData.load(userPoolId);
 
   if (userDepositData) {
-    log.info("[updateTranchePnl] userDepositData {} {} {}", [
-      tranche.toString(),
-      amount.toString(),
-      userDepositData.seniorTranchePnl.toString(),
-    ]);
     if (tranche === 1) {
       userDepositData.seniorDepositWithdrawalDiff = userDepositData.seniorDepositWithdrawalDiff.plus(
         amount

@@ -6,9 +6,9 @@ dataSources:
     name: Voyager
     network: fuji
     source:
-      address: "0xb1d5004013c5932b71DE270c1Dc632793febB593"
+      address: "0x22E532F4dC597DbBe3989e41f456184B4c6c312b"
       abi: Voyager
-      startBlock: 10893068
+      startBlock: 11040115
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -23,6 +23,7 @@ dataSources:
         - Unpaused
         - VaultCreated
         - VaultInitialized
+        - VaultAssetInitialized
         - VaultMarginCredited
         - VaultMarginRedeemed
       abis:
@@ -43,8 +44,8 @@ dataSources:
           handler: handleUnpaused
         - event: VaultCreated(address,address,uint256)
           handler: handleVaultCreated
-        - event: VaultInitialized(address,address)
-          handler: handleVaultInitialized
+        - event: VaultAssetInitialized(indexed address,indexed address,address)
+          handler: handleVaultAssetInitialized
         - event: VaultMarginCredited(indexed address,indexed address,address,uint256)
           handler: handleVaultMarginCredited
         - event: VaultMarginRedeemed(indexed address,indexed address,address,uint256)

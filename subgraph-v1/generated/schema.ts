@@ -373,6 +373,15 @@ export class UserDepositData extends Entity {
     this.set("juniorDepositWithdrawalDiff", Value.fromBigInt(value));
   }
 
+  get juniorTranchePnl(): BigInt {
+    let value = this.get("juniorTranchePnl");
+    return value!.toBigInt();
+  }
+
+  set juniorTranchePnl(value: BigInt) {
+    this.set("juniorTranchePnl", Value.fromBigInt(value));
+  }
+
   get seniorTrancheBalance(): BigInt {
     let value = this.get("seniorTrancheBalance");
     return value!.toBigInt();
@@ -389,6 +398,15 @@ export class UserDepositData extends Entity {
 
   set seniorDepositWithdrawalDiff(value: BigInt) {
     this.set("seniorDepositWithdrawalDiff", Value.fromBigInt(value));
+  }
+
+  get seniorTranchePnl(): BigInt {
+    let value = this.get("seniorTranchePnl");
+    return value!.toBigInt();
+  }
+
+  set seniorTranchePnl(value: BigInt) {
+    this.set("seniorTranchePnl", Value.fromBigInt(value));
   }
 
   get withdrawableJuniorBalance(): BigInt {

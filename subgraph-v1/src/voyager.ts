@@ -6,8 +6,8 @@ import {
   ReserveActivated,
   ReserveInitialized,
   Unpaused,
+  VaultAssetInitialized,
   VaultCreated,
-  VaultInitialized,
   VaultMarginCredited,
   VaultMarginRedeemed,
   Voyager,
@@ -98,7 +98,50 @@ export function handleVaultCreated(event: VaultCreated): void {
   // }
 }
 
-export function handleVaultInitialized(event: VaultInitialized): void {}
+export function handleVaultAssetInitialized(
+  event: VaultAssetInitialized
+): void {
+  log.info("-- handleVaultAssetInitialized vault {} reserve {}", [
+    event.params._vault.toHexString(),
+    event.params._asset.toHexString(),
+  ]);
+  // const vaultAddress = event.params._vault.toHex();
+  // let vaultEntity = Vault.load(vaultAddress);
+  // if (!vaultEntity) {
+  //   vaultEntity = new Vault(vaultAddress);
+  // }
+  const voyager = Voyager.bind(event.address);
+  const vaultData = voyager.getVaultData(
+    event.params._vault,
+    event.params._asset
+  );
+
+  log.info("-- handleVaultAssetInitialized: borrowRate {} totalDebt {}", [
+    vaultData.borrowRate.toString(),
+    vaultData.totalDebt.toString(),
+  ]);
+  /*
+  vaultEntity.borrowRate = vaultData.borrowRate;
+  vaultEntity.totalDebt = vaultData.totalDebt;
+  vaultEntity.totalMargin = vaultData.totalMargin;
+  vaultEntity.withdrawableSecurityDeposit =
+    vaultData.withdrawableSecurityDeposit;
+  vaultEntity.creditLimit = vaultData.creditLimit;
+  vaultEntity.spendableBalance = vaultData.spendableBalance;
+  vaultEntity.gav = vaultData.gav;
+  vaultEntity.ltv = vaultData.ltv;
+  vaultEntity.healthFactor = vaultData.healthFactor;
+  vaultEntity.save();
+  // Update drawdowns
+  // var unbonding: Drawdown;
+  // for (let i = vaultData.drawDownList[0]; i < vaultData.drawDownList[1]; i++) {
+  //   const drawdown = voyager.getDrawDownDetail(
+  //     event.params._owner,
+  //     event.params._vault,
+  //     i.toBigInt()
+  //   );
+  // }*/
+}
 
 export function handleVaultMarginCredited(event: VaultMarginCredited): void {}
 

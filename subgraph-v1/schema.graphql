@@ -36,9 +36,9 @@ type UserDepositData @entity {
   id: ID!
   underlyingAsset: Bytes!
   juniorTrancheBalance: BigInt!
-  juniorTranchePnl: BigInt!
+  juniorDepositWithdrawalDiff: BigInt!
   seniorTrancheBalance: BigInt!
-  seniorTranchePnl: BigInt!
+  seniorDepositWithdrawalDiff: BigInt!
   withdrawableJuniorBalance: BigInt!
   withdrawableSeniorBalance: BigInt!
   decimals: BigInt!

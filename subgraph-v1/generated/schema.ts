@@ -364,6 +364,15 @@ export class UserDepositData extends Entity {
     this.set("juniorTrancheBalance", Value.fromBigInt(value));
   }
 
+  get juniorTranchePnl(): BigInt {
+    let value = this.get("juniorTranchePnl");
+    return value!.toBigInt();
+  }
+
+  set juniorTranchePnl(value: BigInt) {
+    this.set("juniorTranchePnl", Value.fromBigInt(value));
+  }
+
   get seniorTrancheBalance(): BigInt {
     let value = this.get("seniorTrancheBalance");
     return value!.toBigInt();
@@ -371,6 +380,15 @@ export class UserDepositData extends Entity {
 
   set seniorTrancheBalance(value: BigInt) {
     this.set("seniorTrancheBalance", Value.fromBigInt(value));
+  }
+
+  get seniorTranchePnl(): BigInt {
+    let value = this.get("seniorTranchePnl");
+    return value!.toBigInt();
+  }
+
+  set seniorTranchePnl(value: BigInt) {
+    this.set("seniorTranchePnl", Value.fromBigInt(value));
   }
 
   get withdrawableJuniorBalance(): BigInt {
@@ -475,5 +493,335 @@ export class Unbonding extends Entity {
 
   set user(value: string) {
     this.set("user", Value.fromString(value));
+  }
+}
+
+export class Vault extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Vault entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Vault must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Vault", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Vault | null {
+    return changetype<Vault | null>(store.get("Vault", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get borrowRate(): BigInt {
+    let value = this.get("borrowRate");
+    return value!.toBigInt();
+  }
+
+  set borrowRate(value: BigInt) {
+    this.set("borrowRate", Value.fromBigInt(value));
+  }
+
+  get totalDebt(): BigInt {
+    let value = this.get("totalDebt");
+    return value!.toBigInt();
+  }
+
+  set totalDebt(value: BigInt) {
+    this.set("totalDebt", Value.fromBigInt(value));
+  }
+
+  get drawdowns(): Array<string> {
+    let value = this.get("drawdowns");
+    return value!.toStringArray();
+  }
+
+  set drawdowns(value: Array<string>) {
+    this.set("drawdowns", Value.fromStringArray(value));
+  }
+
+  get totalMargin(): BigInt {
+    let value = this.get("totalMargin");
+    return value!.toBigInt();
+  }
+
+  set totalMargin(value: BigInt) {
+    this.set("totalMargin", Value.fromBigInt(value));
+  }
+
+  get withdrawableSecurityDeposit(): BigInt {
+    let value = this.get("withdrawableSecurityDeposit");
+    return value!.toBigInt();
+  }
+
+  set withdrawableSecurityDeposit(value: BigInt) {
+    this.set("withdrawableSecurityDeposit", Value.fromBigInt(value));
+  }
+
+  get creditLimit(): BigInt {
+    let value = this.get("creditLimit");
+    return value!.toBigInt();
+  }
+
+  set creditLimit(value: BigInt) {
+    this.set("creditLimit", Value.fromBigInt(value));
+  }
+
+  get spendableBalance(): BigInt {
+    let value = this.get("spendableBalance");
+    return value!.toBigInt();
+  }
+
+  set spendableBalance(value: BigInt) {
+    this.set("spendableBalance", Value.fromBigInt(value));
+  }
+
+  get gav(): BigInt {
+    let value = this.get("gav");
+    return value!.toBigInt();
+  }
+
+  set gav(value: BigInt) {
+    this.set("gav", Value.fromBigInt(value));
+  }
+
+  get ltv(): BigInt {
+    let value = this.get("ltv");
+    return value!.toBigInt();
+  }
+
+  set ltv(value: BigInt) {
+    this.set("ltv", Value.fromBigInt(value));
+  }
+
+  get healthFactor(): BigInt {
+    let value = this.get("healthFactor");
+    return value!.toBigInt();
+  }
+
+  set healthFactor(value: BigInt) {
+    this.set("healthFactor", Value.fromBigInt(value));
+  }
+}
+
+export class Payment extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Payment entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Payment must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Payment", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Payment | null {
+    return changetype<Payment | null>(store.get("Payment", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get principal(): BigInt {
+    let value = this.get("principal");
+    return value!.toBigInt();
+  }
+
+  set principal(value: BigInt) {
+    this.set("principal", Value.fromBigInt(value));
+  }
+
+  get interest(): BigInt {
+    let value = this.get("interest");
+    return value!.toBigInt();
+  }
+
+  set interest(value: BigInt) {
+    this.set("interest", Value.fromBigInt(value));
+  }
+
+  get pmt(): BigInt {
+    let value = this.get("pmt");
+    return value!.toBigInt();
+  }
+
+  set pmt(value: BigInt) {
+    this.set("pmt", Value.fromBigInt(value));
+  }
+
+  get drawdown(): string {
+    let value = this.get("drawdown");
+    return value!.toString();
+  }
+
+  set drawdown(value: string) {
+    this.set("drawdown", Value.fromString(value));
+  }
+}
+
+export class Drawdown extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Drawdown entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Drawdown must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Drawdown", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Drawdown | null {
+    return changetype<Drawdown | null>(store.get("Drawdown", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get vault(): string {
+    let value = this.get("vault");
+    return value!.toString();
+  }
+
+  set vault(value: string) {
+    this.set("vault", Value.fromString(value));
+  }
+
+  get payment(): string {
+    let value = this.get("payment");
+    return value!.toString();
+  }
+
+  set payment(value: string) {
+    this.set("payment", Value.fromString(value));
+  }
+
+  get principal(): BigInt {
+    let value = this.get("principal");
+    return value!.toBigInt();
+  }
+
+  set principal(value: BigInt) {
+    this.set("principal", Value.fromBigInt(value));
+  }
+
+  get term(): BigInt {
+    let value = this.get("term");
+    return value!.toBigInt();
+  }
+
+  set term(value: BigInt) {
+    this.set("term", Value.fromBigInt(value));
+  }
+
+  get epoch(): BigInt {
+    let value = this.get("epoch");
+    return value!.toBigInt();
+  }
+
+  set epoch(value: BigInt) {
+    this.set("epoch", Value.fromBigInt(value));
+  }
+
+  get nper(): BigInt {
+    let value = this.get("nper");
+    return value!.toBigInt();
+  }
+
+  set nper(value: BigInt) {
+    this.set("nper", Value.fromBigInt(value));
+  }
+
+  get apr(): BigInt {
+    let value = this.get("apr");
+    return value!.toBigInt();
+  }
+
+  set apr(value: BigInt) {
+    this.set("apr", Value.fromBigInt(value));
+  }
+
+  get borrowAt(): BigInt {
+    let value = this.get("borrowAt");
+    return value!.toBigInt();
+  }
+
+  set borrowAt(value: BigInt) {
+    this.set("borrowAt", Value.fromBigInt(value));
+  }
+
+  get nextPaymentDue(): BigInt {
+    let value = this.get("nextPaymentDue");
+    return value!.toBigInt();
+  }
+
+  set nextPaymentDue(value: BigInt) {
+    this.set("nextPaymentDue", Value.fromBigInt(value));
+  }
+
+  get totalPrincipalPaid(): BigInt {
+    let value = this.get("totalPrincipalPaid");
+    return value!.toBigInt();
+  }
+
+  set totalPrincipalPaid(value: BigInt) {
+    this.set("totalPrincipalPaid", Value.fromBigInt(value));
+  }
+
+  get totalInterestPaid(): BigInt {
+    let value = this.get("totalInterestPaid");
+    return value!.toBigInt();
+  }
+
+  set totalInterestPaid(value: BigInt) {
+    this.set("totalInterestPaid", Value.fromBigInt(value));
+  }
+
+  get paidTimes(): BigInt {
+    let value = this.get("paidTimes");
+    return value!.toBigInt();
+  }
+
+  set paidTimes(value: BigInt) {
+    this.set("paidTimes", Value.fromBigInt(value));
   }
 }

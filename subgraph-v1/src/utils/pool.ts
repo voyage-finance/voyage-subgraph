@@ -1,4 +1,4 @@
-import { Address, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 import {
   Pool,
   PoolConfiguration,
@@ -7,6 +7,8 @@ import {
   UserDepositData,
 } from "../../generated/schema";
 import { Deposit, Voyager } from "../../generated/Voyager/Voyager";
+
+const Zero = new BigInt(0);
 
 export function updatePoolAndConfigurationData(
   assetAddress: Address,
@@ -82,9 +84,9 @@ export function updateUserData(
     userDepositDataEntity = new UserDepositData(userPoolId);
   }
   userDepositDataEntity.underlyingAsset = assetAddress;
-  userDepositDataEntity.juniorTrancheBalance =
+  userDepositDataEntity.juniorTrancheBalance = userDepositDataEntity.juniorTranchePnl =
     userPoolData.juniorTrancheBalance;
-  userDepositDataEntity.seniorTrancheBalance =
+  userDepositDataEntity.seniorTrancheBalance = userDepositDataEntity.seniorTranchePnl =
     userPoolData.seniorTrancheBalance;
   userDepositDataEntity.withdrawableJuniorBalance =
     userPoolData.withdrawableJuniorTrancheBalance;
@@ -125,4 +127,33 @@ export function updateUserData(
   userEntity.save();
 
   return userEntity;
+}
+// sum(withdrawalsFromJunior) + juniorTrancheBalance - sum(depositsInJunior)
+export function updateTranchePnl(
+  userAddress: Address,
+  assetAddress: Address,
+  amount: BigInt,
+  tranche: number
+): void {
+  log.info("[updateTranchePnl]", []);
+  let userPoolId = [userAddress.toHex(), assetAddress.toHex()].join("_");
+  const userDepositData = UserDepositData.load(userPoolId);
+
+  if (userDepositData) {
+    log.info("[updateTranchePnl] userDepositData {} {} {}", [
+      tranche.toString(),
+      amount.toString(),
+      userDepositData.seniorTranchePnl.toString(),
+    ]);
+    if (tranche === 1) {
+      userDepositData.seniorTranchePnl = userDepositData.seniorTranchePnl.plus(
+        amount
+      );
+    } else {
+      userDepositData.juniorTranchePnl = userDepositData.juniorTranchePnl.plus(
+        amount
+      );
+    }
+    userDepositData.save();
+  }
 }

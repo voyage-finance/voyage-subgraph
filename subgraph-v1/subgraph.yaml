@@ -6,7 +6,7 @@ dataSources:
     name: Voyager
     network: fuji
     source:
-      address: "0x22E532F4dC597DbBe3989e41f456184B4c6c312b"
+      address: "0xF62e0575e562B84610587828Cd51278D38C39e6F"
       abi: Voyager
       startBlock: 11040115
     mapping:
@@ -26,6 +26,7 @@ dataSources:
         - VaultAssetInitialized
         - VaultMarginCredited
         - VaultMarginRedeemed
+        - Borrow
       abis:
         - name: Voyager
           file: ./abis/Voyager.json
@@ -50,4 +51,8 @@ dataSources:
           handler: handleVaultMarginCredited
         - event: VaultMarginRedeemed(indexed address,indexed address,address,uint256)
           handler: handleVaultMarginRedeemed
+        - event: Borrow(indexed address,indexed address,uint256,uint256,uint256)
+          handler: handleBorrow
+        - event: Repay(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleRepay
       file: ./src/voyager.ts

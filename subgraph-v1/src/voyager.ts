@@ -1,8 +1,10 @@
-import { log } from "@graphprotocol/graph-ts";
+import { BigInt, log } from "@graphprotocol/graph-ts";
 import { Drawdown, Pool, Vault } from "../generated/schema";
 import {
+  Borrow,
   Deposit,
   Paused,
+  Repay,
   ReserveActivated,
   ReserveInitialized,
   Unpaused,
@@ -19,6 +21,7 @@ import {
   updateTranchePnl,
   updateUserData,
 } from "./utils/pool";
+import { updateVaultData } from "./utils/vault";
 
 export function handleDeposit(event: Deposit): void {
   log.info("triggered [handleDeposit]", []);
@@ -61,88 +64,31 @@ export function handlePaused(event: Paused): void {}
 
 export function handleUnpaused(event: Unpaused): void {}
 
-export function handleVaultCreated(event: VaultCreated): void {
-  /*
-  const vaultAddress = event.params._vault.toHex();
-  let vaultEntity = Vault.load(vaultAddress);
-  if (!vaultEntity) {
-    vaultEntity = new Vault(vaultAddress);
-  }
-  const voyager = Voyager.bind(event.address);
-  const vaultData = voyager.getVaultData(
-    event.params._owner,
-    event.params._vault,
-    // TODO: here should be sponsor address
-    event.params._owner
-  );
-  vaultEntity.borrowRate = vaultData.borrowRate;
-  vaultEntity.totalDebt = vaultData.totalDebt;
-  vaultEntity.totalMargin = vaultData.totalMargin;
-  vaultEntity.withdrawableSecurityDeposit =
-    vaultData.withdrawableSecurityDeposit;
-  vaultEntity.creditLimit = vaultData.creditLimit;
-  vaultEntity.spendableBalance = vaultData.spendableBalance;
-  vaultEntity.gav = vaultData.gav;
-  vaultEntity.ltv = vaultData.ltv;
-  vaultEntity.healthFactor = vaultData.healthFactor;
-  vaultEntity.save();
-  */
-  // Update drawdowns
-  // var unbonding: Drawdown;
-  // for (let i = vaultData.drawDownList[0]; i < vaultData.drawDownList[1]; i++) {
-  //   const drawdown = voyager.getDrawDownDetail(
-  //     event.params._owner,
-  //     event.params._vault,
-  //     i.toBigInt()
-  //   );
-  // }
-}
+export function handleVaultCreated(event: VaultCreated): void {}
 
 export function handleVaultAssetInitialized(
   event: VaultAssetInitialized
 ): void {
-  log.info("-- handleVaultAssetInitialized vault {} reserve {}", [
-    event.params._vault.toHexString(),
-    event.params._asset.toHexString(),
-  ]);
-  // const vaultAddress = event.params._vault.toHex();
-  // let vaultEntity = Vault.load(vaultAddress);
-  // if (!vaultEntity) {
-  //   vaultEntity = new Vault(vaultAddress);
-  // }
-  const voyager = Voyager.bind(event.address);
-  const vaultData = voyager.getVaultData(
-    event.params._vault,
-    event.params._asset
-  );
-
-  log.info("-- handleVaultAssetInitialized: borrowRate {} totalDebt {}", [
-    vaultData.borrowRate.toString(),
-    vaultData.totalDebt.toString(),
-  ]);
-  /*
-  vaultEntity.borrowRate = vaultData.borrowRate;
-  vaultEntity.totalDebt = vaultData.totalDebt;
-  vaultEntity.totalMargin = vaultData.totalMargin;
-  vaultEntity.withdrawableSecurityDeposit =
-    vaultData.withdrawableSecurityDeposit;
-  vaultEntity.creditLimit = vaultData.creditLimit;
-  vaultEntity.spendableBalance = vaultData.spendableBalance;
-  vaultEntity.gav = vaultData.gav;
-  vaultEntity.ltv = vaultData.ltv;
-  vaultEntity.healthFactor = vaultData.healthFactor;
-  vaultEntity.save();
-  // Update drawdowns
-  // var unbonding: Drawdown;
-  // for (let i = vaultData.drawDownList[0]; i < vaultData.drawDownList[1]; i++) {
-  //   const drawdown = voyager.getDrawDownDetail(
-  //     event.params._owner,
-  //     event.params._vault,
-  //     i.toBigInt()
-  //   );
-  // }*/
+  log.info("-- handleVaultAssetInitialized ---", []);
+  updateVaultData(event.params._vault, event.params._asset, event.address);
 }
 
-export function handleVaultMarginCredited(event: VaultMarginCredited): void {}
+export function handleVaultMarginCredited(event: VaultMarginCredited): void {
+  log.info("]MarginCredited ---", []);
+  updateVaultData(event.params._vault, event.params._asset, event.address);
+}
 
-export function handleVaultMarginRedeemed(event: VaultMarginRedeemed): void {}
+export function handleVaultMarginRedeemed(event: VaultMarginRedeemed): void {
+  log.info("-- handleVaultMarginRedeemed ---", []);
+  updateVaultData(event.params._vault, event.params._asset, event.address);
+}
+
+export function handleBorrow(event: Borrow): void {
+  log.info("-- handleBorrow ---", []);
+  updateVaultData(event.params._vault, event.params._asset, event.address);
+}
+
+export function handleRepay(event: Repay): void {
+  log.info("-- handleRepay ---", []);
+  updateVaultData(event.params._vault, event.params._asset, event.address);
+}

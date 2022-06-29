@@ -584,7 +584,7 @@
   {
     "inputs": [
       {
-        "internalType": "contract ERC20",
+        "internalType": "contract IERC20",
         "name": "token",
         "type": "address"
       },
@@ -723,16 +723,6 @@
       },
       {
         "internalType": "address",
-        "name": "_juniorDepositTokenAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_seniorDepositTokenAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "_interestRateStrategyAddress",
         "type": "address"
       },
@@ -784,7 +774,7 @@
   {
     "inputs": [
       {
-        "internalType": "contract ERC20",
+        "internalType": "contract IERC20",
         "name": "token",
         "type": "address"
       },
@@ -1365,6 +1355,25 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "_target",
+        "type": "address"
+      }
+    ],
+    "name": "getAdapter",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "_vault",
         "type": "address"
       },
@@ -1578,6 +1587,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "marginEscrowBeacon",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -1729,17 +1751,51 @@
     "name": "validate",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "address[]",
         "name": "",
-        "type": "address"
+        "type": "address[]"
       },
       {
-        "internalType": "bytes",
+        "internalType": "bytes[]",
         "name": "",
-        "type": "bytes"
+        "type": "bytes[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      },
+      {
+        "internalType": "bytes[]",
+        "name": "",
+        "type": "bytes[]"
       }
     ],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      }
+    ],
+    "name": "getDepositTokens",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "senior",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "junior",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {

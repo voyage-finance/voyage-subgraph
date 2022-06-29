@@ -590,10 +590,54 @@ export class Voyager__getVaultConfigResultValue0Struct extends ethereum.Tuple {
 }
 
 export class Voyager__validateResult {
-  value0: Address;
-  value1: Bytes;
+  value0: Array<Address>;
+  value1: Array<Bytes>;
+  value2: Array<Address>;
+  value3: Array<Bytes>;
 
-  constructor(value0: Address, value1: Bytes) {
+  constructor(
+    value0: Array<Address>,
+    value1: Array<Bytes>,
+    value2: Array<Address>,
+    value3: Array<Bytes>
+  ) {
+    this.value0 = value0;
+    this.value1 = value1;
+    this.value2 = value2;
+    this.value3 = value3;
+  }
+
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromAddressArray(this.value0));
+    map.set("value1", ethereum.Value.fromBytesArray(this.value1));
+    map.set("value2", ethereum.Value.fromAddressArray(this.value2));
+    map.set("value3", ethereum.Value.fromBytesArray(this.value3));
+    return map;
+  }
+
+  getValue0(): Array<Address> {
+    return this.value0;
+  }
+
+  getValue1(): Array<Bytes> {
+    return this.value1;
+  }
+
+  getValue2(): Array<Address> {
+    return this.value2;
+  }
+
+  getValue3(): Array<Bytes> {
+    return this.value3;
+  }
+}
+
+export class Voyager__getDepositTokensResult {
+  value0: Address;
+  value1: Address;
+
+  constructor(value0: Address, value1: Address) {
     this.value0 = value0;
     this.value1 = value1;
   }
@@ -601,15 +645,15 @@ export class Voyager__validateResult {
   toMap(): TypedMap<string, ethereum.Value> {
     let map = new TypedMap<string, ethereum.Value>();
     map.set("value0", ethereum.Value.fromAddress(this.value0));
-    map.set("value1", ethereum.Value.fromBytes(this.value1));
+    map.set("value1", ethereum.Value.fromAddress(this.value1));
     return map;
   }
 
-  getValue0(): Address {
+  getSenior(): Address {
     return this.value0;
   }
 
-  getValue1(): Bytes {
+  getJunior(): Address {
     return this.value1;
   }
 }
@@ -1415,6 +1459,25 @@ export class Voyager extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
+  getAdapter(_target: Address): Address {
+    let result = super.call("getAdapter", "getAdapter(address):(address)", [
+      ethereum.Value.fromAddress(_target)
+    ]);
+
+    return result[0].toAddress();
+  }
+
+  try_getAdapter(_target: Address): ethereum.CallResult<Address> {
+    let result = super.tryCall("getAdapter", "getAdapter(address):(address)", [
+      ethereum.Value.fromAddress(_target)
+    ]);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
   getAvailableCredit(_vault: Address, _reserve: Address): BigInt {
     let result = super.call(
       "getAvailableCredit",
@@ -1649,6 +1712,29 @@ export class Voyager extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
+  marginEscrowBeacon(): Address {
+    let result = super.call(
+      "marginEscrowBeacon",
+      "marginEscrowBeacon():(address)",
+      []
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_marginEscrowBeacon(): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "marginEscrowBeacon",
+      "marginEscrowBeacon():(address)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
   validate(
     _target: Address,
     _selector: Bytes,
@@ -1656,7 +1742,7 @@ export class Voyager extends ethereum.SmartContract {
   ): Voyager__validateResult {
     let result = super.call(
       "validate",
-      "validate(address,bytes4,bytes):(address,bytes)",
+      "validate(address,bytes4,bytes):(address[],bytes[],address[],bytes[])",
       [
         ethereum.Value.fromAddress(_target),
         ethereum.Value.fromFixedBytes(_selector),
@@ -1665,8 +1751,10 @@ export class Voyager extends ethereum.SmartContract {
     );
 
     return new Voyager__validateResult(
-      result[0].toAddress(),
-      result[1].toBytes()
+      result[0].toAddressArray(),
+      result[1].toBytesArray(),
+      result[2].toAddressArray(),
+      result[3].toBytesArray()
     );
   }
 
@@ -1677,7 +1765,7 @@ export class Voyager extends ethereum.SmartContract {
   ): ethereum.CallResult<Voyager__validateResult> {
     let result = super.tryCall(
       "validate",
-      "validate(address,bytes4,bytes):(address,bytes)",
+      "validate(address,bytes4,bytes):(address[],bytes[],address[],bytes[])",
       [
         ethereum.Value.fromAddress(_target),
         ethereum.Value.fromFixedBytes(_selector),
@@ -1689,7 +1777,45 @@ export class Voyager extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new Voyager__validateResult(value[0].toAddress(), value[1].toBytes())
+      new Voyager__validateResult(
+        value[0].toAddressArray(),
+        value[1].toBytesArray(),
+        value[2].toAddressArray(),
+        value[3].toBytesArray()
+      )
+    );
+  }
+
+  getDepositTokens(_asset: Address): Voyager__getDepositTokensResult {
+    let result = super.call(
+      "getDepositTokens",
+      "getDepositTokens(address):(address,address)",
+      [ethereum.Value.fromAddress(_asset)]
+    );
+
+    return new Voyager__getDepositTokensResult(
+      result[0].toAddress(),
+      result[1].toAddress()
+    );
+  }
+
+  try_getDepositTokens(
+    _asset: Address
+  ): ethereum.CallResult<Voyager__getDepositTokensResult> {
+    let result = super.tryCall(
+      "getDepositTokens",
+      "getDepositTokens(address):(address,address)",
+      [ethereum.Value.fromAddress(_asset)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      new Voyager__getDepositTokensResult(
+        value[0].toAddress(),
+        value[1].toAddress()
+      )
     );
   }
 
@@ -2578,28 +2704,20 @@ export class InitReserveCall__Inputs {
     return this._call.inputValues[0].value.toAddress();
   }
 
-  get _juniorDepositTokenAddress(): Address {
+  get _interestRateStrategyAddress(): Address {
     return this._call.inputValues[1].value.toAddress();
   }
 
-  get _seniorDepositTokenAddress(): Address {
+  get _loanStrategyAddress(): Address {
     return this._call.inputValues[2].value.toAddress();
   }
 
-  get _interestRateStrategyAddress(): Address {
-    return this._call.inputValues[3].value.toAddress();
-  }
-
-  get _loanStrategyAddress(): Address {
-    return this._call.inputValues[4].value.toAddress();
-  }
-
   get _optimalIncomeRatio(): BigInt {
-    return this._call.inputValues[5].value.toBigInt();
+    return this._call.inputValues[3].value.toBigInt();
   }
 
   get _priceOracle(): Address {
-    return this._call.inputValues[6].value.toAddress();
+    return this._call.inputValues[4].value.toAddress();
   }
 }
 
@@ -3274,11 +3392,19 @@ export class ValidateCall__Outputs {
     this._call = call;
   }
 
-  get value0(): Address {
-    return this._call.outputValues[0].value.toAddress();
+  get value0(): Array<Address> {
+    return this._call.outputValues[0].value.toAddressArray();
   }
 
-  get value1(): Bytes {
-    return this._call.outputValues[1].value.toBytes();
+  get value1(): Array<Bytes> {
+    return this._call.outputValues[1].value.toBytesArray();
+  }
+
+  get value2(): Array<Address> {
+    return this._call.outputValues[2].value.toAddressArray();
+  }
+
+  get value3(): Array<Bytes> {
+    return this._call.outputValues[3].value.toBytesArray();
   }
 }

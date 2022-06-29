@@ -74,18 +74,12 @@ type Vault @entity {
   healthFactor: BigInt!
 }
 
-type Payment @entity {
-  id: ID!
-  principal: BigInt!
-  interest: BigInt!
-  pmt: BigInt! # = principal + interest
-  drawdown: Drawdown!
-}
-
 type Drawdown @entity {
   id: ID!
   vault: Vault!
-  payment: Payment!
+  pmt_principal: BigInt!
+  pmt_interest: BigInt!
+  pmt_payment: BigInt!
   principal: BigInt!
   term: BigInt!
   epoch: BigInt!

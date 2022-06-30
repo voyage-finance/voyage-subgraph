@@ -1,6 +1,32 @@
 import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 import { Drawdown, Vault } from "../../generated/schema";
 import { Voyager } from "../../generated/Voyager/Voyager";
+import { Zero } from "../consts";
+
+export function createVault(
+  _vaultAddress: Address,
+  _userAddress: Address
+): Vault {
+  const vaultAddress = _vaultAddress.toHex();
+  let vaultEntity = Vault.load(vaultAddress);
+  if (!vaultEntity) {
+    vaultEntity = new Vault(vaultAddress);
+  }
+
+  vaultEntity.user = _userAddress.toHex();
+  vaultEntity.borrowRate = Zero;
+  vaultEntity.totalDebt = Zero;
+  vaultEntity.totalMargin = Zero;
+  vaultEntity.withdrawableSecurityDeposit = Zero;
+  vaultEntity.creditLimit = Zero;
+  vaultEntity.spendableBalance = Zero;
+  vaultEntity.gav = Zero;
+  vaultEntity.ltv = Zero;
+  vaultEntity.healthFactor = Zero;
+
+  vaultEntity.save();
+  return vaultEntity;
+}
 
 export function updateVaultData(
   _vaultAddress: Address,

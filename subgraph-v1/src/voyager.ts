@@ -21,10 +21,9 @@ import {
   updateTranchePnl,
   updateUserData,
 } from "./utils/pool";
-import { updateVaultData } from "./utils/vault";
+import { createVault, updateVaultData } from "./utils/vault";
 
 export function handleDeposit(event: Deposit): void {
-  log.info("triggered [handleDeposit]", []);
   updatePoolAndConfigurationData(event.params.asset, event.address);
   updateUserData(event.params.user, event.params.asset, event.address);
   updateTranchePnl(
@@ -64,31 +63,29 @@ export function handlePaused(event: Paused): void {}
 
 export function handleUnpaused(event: Unpaused): void {}
 
-export function handleVaultCreated(event: VaultCreated): void {}
+export function handleVaultCreated(event: VaultCreated): void {
+  log.info("-- handleVaultCreated ---", []);
+  createVault(event.params._vault, event.params._owner);
+}
 
 export function handleVaultAssetInitialized(
   event: VaultAssetInitialized
 ): void {
-  log.info("-- handleVaultAssetInitialized ---", []);
   updateVaultData(event.params._vault, event.params._asset, event.address);
 }
 
 export function handleVaultMarginCredited(event: VaultMarginCredited): void {
-  log.info("]MarginCredited ---", []);
   updateVaultData(event.params._vault, event.params._asset, event.address);
 }
 
 export function handleVaultMarginRedeemed(event: VaultMarginRedeemed): void {
-  log.info("-- handleVaultMarginRedeemed ---", []);
   updateVaultData(event.params._vault, event.params._asset, event.address);
 }
 
 export function handleBorrow(event: Borrow): void {
-  log.info("-- handleBorrow ---", []);
   updateVaultData(event.params._vault, event.params._asset, event.address);
 }
 
 export function handleRepay(event: Repay): void {
-  log.info("-- handleRepay ---", []);
   updateVaultData(event.params._vault, event.params._asset, event.address);
 }

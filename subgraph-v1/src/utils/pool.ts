@@ -7,8 +7,7 @@ import {
   UserDepositData,
 } from "../../generated/schema";
 import { Deposit, Voyager } from "../../generated/Voyager/Voyager";
-
-const Zero = new BigInt(0);
+import { Zero } from "../consts";
 
 export function updatePoolAndConfigurationData(
   assetAddress: Address,

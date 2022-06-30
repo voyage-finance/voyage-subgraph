@@ -313,6 +313,15 @@ export class UserData extends Entity {
   set unbondings(value: Array<string>) {
     this.set("unbondings", Value.fromStringArray(value));
   }
+
+  get vaults(): Array<string> {
+    let value = this.get("vaults");
+    return value!.toStringArray();
+  }
+
+  set vaults(value: Array<string>) {
+    this.set("vaults", Value.fromStringArray(value));
+  }
 }
 
 export class UserDepositData extends Entity {
@@ -633,6 +642,15 @@ export class Vault extends Entity {
 
   set healthFactor(value: BigInt) {
     this.set("healthFactor", Value.fromBigInt(value));
+  }
+
+  get user(): string {
+    let value = this.get("user");
+    return value!.toString();
+  }
+
+  set user(value: string) {
+    this.set("user", Value.fromString(value));
   }
 }
 

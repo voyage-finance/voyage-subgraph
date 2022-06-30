@@ -30,6 +30,7 @@ type UserData @entity {
   id: ID!
   depositData: [UserDepositData!]! @derivedFrom(field: "user")
   unbondings: [Unbonding!]! @derivedFrom(field: "user")
+  vaults: [Vault!]! @derivedFrom(field: "user")
 }
 
 type UserDepositData @entity {
@@ -72,6 +73,7 @@ type Vault @entity {
   gav: BigInt!
   ltv: BigInt!
   healthFactor: BigInt!
+  user: UserData!
 }
 
 type Drawdown @entity {

@@ -67,6 +67,7 @@ type Vault @entity {
   totalDebt: BigInt!
   drawdowns: [Drawdown!]! @derivedFrom(field: "vault")
   totalMargin: BigInt!
+  marginRequirement: BigInt!
   withdrawableSecurityDeposit: BigInt!
   creditLimit: BigInt!
   spendableBalance: BigInt!

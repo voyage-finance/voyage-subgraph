@@ -59,10 +59,11 @@ export function updateVaultData(
     i < vaultData.drawDownList.tail.toI32();
     i++
   ) {
+    const id = BigInt.fromI32(i);
     const drawdown = voyager.getDrawDownDetail(
       _vaultAddress,
       _assetAddress,
-      new BigInt(i)
+      id
     );
     const drawdownId = [vaultAddress, _assetAddress.toHex(), i.toString()].join(
       "_"

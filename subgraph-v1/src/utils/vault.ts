@@ -23,6 +23,7 @@ export function createVault(
   vaultEntity.gav = Zero;
   vaultEntity.ltv = Zero;
   vaultEntity.healthFactor = Zero;
+  vaultEntity.marginRequirement = Zero;
 
   vaultEntity.save();
   return vaultEntity;
@@ -40,10 +41,12 @@ export function updateVaultData(
   }
   const voyager = Voyager.bind(_eventAddress);
   const vaultData = voyager.getVaultData(_vaultAddress, _assetAddress);
+  const vaultConfigData = voyager.getVaultConfig(_assetAddress);
 
   vaultEntity.borrowRate = vaultData.borrowRate;
   vaultEntity.totalDebt = vaultData.totalDebt;
   vaultEntity.totalMargin = vaultData.totalMargin;
+  vaultEntity.marginRequirement = vaultConfigData.marginRequirement;
   vaultEntity.withdrawableSecurityDeposit =
     vaultData.withdrawableSecurityDeposit;
   vaultEntity.creditLimit = vaultData.creditLimit;

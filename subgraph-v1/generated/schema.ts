@@ -590,6 +590,15 @@ export class Vault extends Entity {
     this.set("totalMargin", Value.fromBigInt(value));
   }
 
+  get marginRequirement(): BigInt {
+    let value = this.get("marginRequirement");
+    return value!.toBigInt();
+  }
+
+  set marginRequirement(value: BigInt) {
+    this.set("marginRequirement", Value.fromBigInt(value));
+  }
+
   get withdrawableSecurityDeposit(): BigInt {
     let value = this.get("withdrawableSecurityDeposit");
     return value!.toBigInt();

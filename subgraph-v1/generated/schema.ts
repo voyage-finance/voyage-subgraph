@@ -554,6 +554,23 @@ export class Vault extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get pool(): string | null {
+    let value = this.get("pool");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set pool(value: string | null) {
+    if (!value) {
+      this.unset("pool");
+    } else {
+      this.set("pool", Value.fromString(<string>value));
+    }
+  }
+
   get borrowRate(): BigInt {
     let value = this.get("borrowRate");
     return value!.toBigInt();

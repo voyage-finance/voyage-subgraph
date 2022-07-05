@@ -45,6 +45,7 @@ export function updateVaultData(
 
   vaultEntity.borrowRate = vaultData.borrowRate;
   vaultEntity.totalDebt = vaultData.totalDebt;
+  vaultEntity.pool = _assetAddress.toHex();
   vaultEntity.totalMargin = vaultData.totalMargin;
   vaultEntity.marginRequirement = vaultConfigData.marginRequirement;
   vaultEntity.withdrawableSecurityDeposit =

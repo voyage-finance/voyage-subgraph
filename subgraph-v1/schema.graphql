@@ -63,6 +63,7 @@ type Unbonding @entity {
 
 type Vault @entity {
   id: ID!
+  pool: Pool
   borrowRate: BigInt!
   totalDebt: BigInt!
   drawdowns: [Drawdown!]! @derivedFrom(field: "vault")

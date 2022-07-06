@@ -3,12 +3,12 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
-    name: Voyager
+    name: Voyage
     network: fuji
     source:
-      address: "0xF62e0575e562B84610587828Cd51278D38C39e6F"
-      abi: Voyager
-      startBlock: 11040115
+      address: "0x03283567F0BCeB25829e7A4DfE0a00D7A1E8E9A6"
+      abi: Voyage
+      startBlock: 11321004
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -28,8 +28,8 @@ dataSources:
         - VaultMarginRedeemed
         - Borrow
       abis:
-        - name: Voyager
-          file: ./abis/Voyager.json
+        - name: Voyage
+          file: ./abis/Voyage.json
       eventHandlers:
         - event: Deposit(indexed address,indexed address,indexed uint8,uint256)
           handler: handleDeposit
@@ -55,4 +55,4 @@ dataSources:
           handler: handleBorrow
         - event: Repay(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleRepay
-      file: ./src/voyager.ts
+      file: ./src/voyage.ts

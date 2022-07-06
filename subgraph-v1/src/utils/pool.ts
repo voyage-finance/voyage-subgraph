@@ -6,7 +6,7 @@ import {
   UserData,
   UserDepositData,
 } from "../../generated/schema";
-import { Deposit, Voyager } from "../../generated/Voyager/Voyager";
+import { Deposit, Voyage } from "../../generated/Voyage/Voyage";
 import { Zero } from "../consts";
 
 export function updatePoolAndConfigurationData(
@@ -18,8 +18,8 @@ export function updatePoolAndConfigurationData(
   if (!pool) {
     pool = new Pool(poolId);
   }
-  const voyager = Voyager.bind(eventAddress);
-  const poolState = voyager.getPoolData(assetAddress);
+  const voyage = Voyage.bind(eventAddress);
+  const poolState = voyage.getPoolData(assetAddress);
 
   pool.isActive = poolState.isActive;
   pool.underlyingAsset = assetAddress;
@@ -46,9 +46,9 @@ export function updatePoolConfiguration(
   assetAddress: Address,
   eventAddress: Address
 ): PoolConfiguration {
-  const voyager = Voyager.bind(eventAddress);
+  const voyage = Voyage.bind(eventAddress);
 
-  const poolConfigState = voyager.getPoolConfiguration(assetAddress);
+  const poolConfigState = voyage.getPoolConfiguration(assetAddress);
   const poolConfigurationEntity = new PoolConfiguration(assetAddress.toHex());
 
   poolConfigurationEntity.pool = assetAddress.toHex();
@@ -70,13 +70,13 @@ export function updateUserData(
   assetAddress: Address,
   eventAddress: Address
 ): UserData {
-  const voyager = Voyager.bind(eventAddress);
+  const voyage = Voyage.bind(eventAddress);
   let userEntity = UserData.load(userAddress.toHex());
   if (!userEntity) {
     userEntity = new UserData(userAddress.toHex());
   }
   // save depositData
-  const userPoolData = voyager.getUserPoolData(assetAddress, userAddress);
+  const userPoolData = voyage.getUserPoolData(assetAddress, userAddress);
   let userPoolId = [userAddress.toHex(), assetAddress.toHex()].join("_");
   let userDepositDataEntity = UserDepositData.load(userPoolId);
   if (!userDepositDataEntity) {
@@ -99,14 +99,8 @@ export function updateUserData(
   userDepositDataEntity.user = userAddress.toHex();
 
   //update unbondings
-  const jrPendings = voyager.pendingJuniorWithdrawals(
-    userAddress,
-    assetAddress
-  );
-  const srPendings = voyager.pendingSeniorWithdrawals(
-    userAddress,
-    assetAddress
-  );
+  const jrPendings = voyage.pendingJuniorWithdrawals(userAddress, assetAddress);
+  const srPendings = voyage.pendingSeniorWithdrawals(userAddress, assetAddress);
   const allTimes = jrPendings.value0.concat(srPendings.value0);
   const allAmounts = jrPendings.value1.concat(srPendings.value1);
 

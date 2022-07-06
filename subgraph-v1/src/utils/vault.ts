@@ -1,6 +1,6 @@
 import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 import { Drawdown, Vault } from "../../generated/schema";
-import { Voyager } from "../../generated/Voyager/Voyager";
+import { Voyage } from "../../generated/Voyage/Voyage";
 import { Zero } from "../consts";
 
 export function createVault(
@@ -39,9 +39,9 @@ export function updateVaultData(
   if (!vaultEntity) {
     vaultEntity = new Vault(vaultAddress);
   }
-  const voyager = Voyager.bind(_eventAddress);
-  const vaultData = voyager.getVaultData(_vaultAddress, _assetAddress);
-  const vaultConfigData = voyager.getVaultConfig(_assetAddress);
+  const voyage = Voyage.bind(_eventAddress);
+  const vaultData = voyage.getVaultData(_vaultAddress, _assetAddress);
+  const vaultConfigData = voyage.getVaultConfig(_assetAddress);
 
   vaultEntity.borrowRate = vaultData.borrowRate;
   vaultEntity.totalDebt = vaultData.totalDebt;
@@ -71,11 +71,7 @@ export function updateVaultData(
       vaultEntity.borrowRate.toHex(),
     ]);
 
-    const drawdown = voyager.getDrawDownDetail(
-      _vaultAddress,
-      _assetAddress,
-      id
-    );
+    const drawdown = voyage.getDrawDownDetail(_vaultAddress, _assetAddress, id);
     const drawdownId = [vaultAddress, _assetAddress.toHex(), i.toString()].join(
       "_"
     );

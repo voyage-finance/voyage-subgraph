@@ -12,10 +12,8 @@ import {
   VaultCreated,
   VaultMarginCredited,
   VaultMarginRedeemed,
-  Voyager,
-  Voyager__pendingSeniorWithdrawalsResult,
   Withdraw,
-} from "../generated/Voyager/Voyager";
+} from "../generated/Voyage/Voyage";
 import {
   updatePoolAndConfigurationData,
   updateTranchePnl,

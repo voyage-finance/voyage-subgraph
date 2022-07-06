@@ -448,7 +448,7 @@ export class VaultMarginRedeemed__Params {
   }
 }
 
-export class Voyager__facetsResultFacets_Struct extends ethereum.Tuple {
+export class Voyage__facetsResultFacets_Struct extends ethereum.Tuple {
   get facetAddress(): Address {
     return this[0].toAddress();
   }
@@ -458,7 +458,7 @@ export class Voyager__facetsResultFacets_Struct extends ethereum.Tuple {
   }
 }
 
-export class Voyager__getReserveFlagsResult {
+export class Voyage__getReserveFlagsResult {
   value0: boolean;
   value1: boolean;
   value2: boolean;
@@ -490,7 +490,7 @@ export class Voyager__getReserveFlagsResult {
   }
 }
 
-export class Voyager__getReserveStatusResult {
+export class Voyage__getReserveStatusResult {
   value0: boolean;
   value1: boolean;
 
@@ -515,7 +515,7 @@ export class Voyager__getReserveStatusResult {
   }
 }
 
-export class Voyager__getTotalPaidAndRedeemedResult {
+export class Voyage__getTotalPaidAndRedeemedResult {
   value0: BigInt;
   value1: BigInt;
 
@@ -540,7 +540,7 @@ export class Voyager__getTotalPaidAndRedeemedResult {
   }
 }
 
-export class Voyager__getVaultDebtResult {
+export class Voyage__getVaultDebtResult {
   value0: BigInt;
   value1: BigInt;
 
@@ -565,7 +565,7 @@ export class Voyager__getVaultDebtResult {
   }
 }
 
-export class Voyager__previewBorrowParamsResultValue0Struct extends ethereum.Tuple {
+export class Voyage__previewBorrowParamsResultValue0Struct extends ethereum.Tuple {
   get asset(): Address {
     return this[0].toAddress();
   }
@@ -595,7 +595,7 @@ export class Voyager__previewBorrowParamsResultValue0Struct extends ethereum.Tup
   }
 }
 
-export class Voyager__getNFTInfoResultValue0Struct extends ethereum.Tuple {
+export class Voyage__getNFTInfoResultValue0Struct extends ethereum.Tuple {
   get price(): BigInt {
     return this[0].toBigInt();
   }
@@ -605,21 +605,32 @@ export class Voyager__getNFTInfoResultValue0Struct extends ethereum.Tuple {
   }
 }
 
-export class Voyager__getVaultConfigResultValue0Struct extends ethereum.Tuple {
-  get minMargin(): BigInt {
-    return this[0].toBigInt();
+export class Voyage__getVaultEscrowAddrResult {
+  value0: Address;
+  value1: Address;
+
+  constructor(value0: Address, value1: Address) {
+    this.value0 = value0;
+    this.value1 = value1;
   }
 
-  get maxMargin(): BigInt {
-    return this[1].toBigInt();
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromAddress(this.value0));
+    map.set("value1", ethereum.Value.fromAddress(this.value1));
+    return map;
   }
 
-  get marginRequirement(): BigInt {
-    return this[2].toBigInt();
+  getValue0(): Address {
+    return this.value0;
+  }
+
+  getValue1(): Address {
+    return this.value1;
   }
 }
 
-export class Voyager__validateResult {
+export class Voyage__validateResult {
   value0: Array<Address>;
   value1: Array<Bytes>;
   value2: Array<Address>;
@@ -663,7 +674,32 @@ export class Voyager__validateResult {
   }
 }
 
-export class Voyager__getDepositTokensResult {
+export class Voyage__currentVersionResult {
+  value0: BigInt;
+  value1: Bytes;
+
+  constructor(value0: BigInt, value1: Bytes) {
+    this.value0 = value0;
+    this.value1 = value1;
+  }
+
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
+    map.set("value1", ethereum.Value.fromFixedBytes(this.value1));
+    return map;
+  }
+
+  getValue0(): BigInt {
+    return this.value0;
+  }
+
+  getValue1(): Bytes {
+    return this.value1;
+  }
+}
+
+export class Voyage__getDepositTokensResult {
   value0: Address;
   value1: Address;
 
@@ -688,7 +724,7 @@ export class Voyager__getDepositTokensResult {
   }
 }
 
-export class Voyager__getDrawDownDetailResultValue0Struct extends ethereum.Tuple {
+export class Voyage__getDrawDownDetailResultValue0Struct extends ethereum.Tuple {
   get principal(): BigInt {
     return this[0].toBigInt();
   }
@@ -709,8 +745,8 @@ export class Voyager__getDrawDownDetailResultValue0Struct extends ethereum.Tuple
     return this[4].toAddress();
   }
 
-  get pmt(): Voyager__getDrawDownDetailResultValue0PmtStruct {
-    return changetype<Voyager__getDrawDownDetailResultValue0PmtStruct>(
+  get pmt(): Voyage__getDrawDownDetailResultValue0PmtStruct {
+    return changetype<Voyage__getDrawDownDetailResultValue0PmtStruct>(
       this[5].toTuple()
     );
   }
@@ -740,7 +776,7 @@ export class Voyager__getDrawDownDetailResultValue0Struct extends ethereum.Tuple
   }
 }
 
-export class Voyager__getDrawDownDetailResultValue0PmtStruct extends ethereum.Tuple {
+export class Voyage__getDrawDownDetailResultValue0PmtStruct extends ethereum.Tuple {
   get principal(): BigInt {
     return this[0].toBigInt();
   }
@@ -754,7 +790,7 @@ export class Voyager__getDrawDownDetailResultValue0PmtStruct extends ethereum.Tu
   }
 }
 
-export class Voyager__getPoolConfigurationResultValue0Struct extends ethereum.Tuple {
+export class Voyage__getPoolConfigurationResultValue0Struct extends ethereum.Tuple {
   get marginRequirement(): BigInt {
     return this[0].toBigInt();
   }
@@ -784,7 +820,7 @@ export class Voyager__getPoolConfigurationResultValue0Struct extends ethereum.Tu
   }
 }
 
-export class Voyager__getPoolDataResultValue0Struct extends ethereum.Tuple {
+export class Voyage__getPoolDataResultValue0Struct extends ethereum.Tuple {
   get totalLiquidity(): BigInt {
     return this[0].toBigInt();
   }
@@ -830,7 +866,7 @@ export class Voyager__getPoolDataResultValue0Struct extends ethereum.Tuple {
   }
 }
 
-export class Voyager__getPoolTokensResultTokensStruct extends ethereum.Tuple {
+export class Voyage__getPoolTokensResultTokensStruct extends ethereum.Tuple {
   get symbol(): string {
     return this[0].toString();
   }
@@ -840,7 +876,7 @@ export class Voyager__getPoolTokensResultTokensStruct extends ethereum.Tuple {
   }
 }
 
-export class Voyager__getUserPoolDataResultValue0Struct extends ethereum.Tuple {
+export class Voyage__getUserPoolDataResultValue0Struct extends ethereum.Tuple {
   get juniorTrancheBalance(): BigInt {
     return this[0].toBigInt();
   }
@@ -862,7 +898,21 @@ export class Voyager__getUserPoolDataResultValue0Struct extends ethereum.Tuple {
   }
 }
 
-export class Voyager__getVaultDataResultValue0Struct extends ethereum.Tuple {
+export class Voyage__getVaultConfigResultValue0Struct extends ethereum.Tuple {
+  get minMargin(): BigInt {
+    return this[0].toBigInt();
+  }
+
+  get maxMargin(): BigInt {
+    return this[1].toBigInt();
+  }
+
+  get marginRequirement(): BigInt {
+    return this[2].toBigInt();
+  }
+}
+
+export class Voyage__getVaultDataResultValue0Struct extends ethereum.Tuple {
   get borrowRate(): BigInt {
     return this[0].toBigInt();
   }
@@ -871,8 +921,8 @@ export class Voyager__getVaultDataResultValue0Struct extends ethereum.Tuple {
     return this[1].toBigInt();
   }
 
-  get drawDownList(): Voyager__getVaultDataResultValue0DrawDownListStruct {
-    return changetype<Voyager__getVaultDataResultValue0DrawDownListStruct>(
+  get drawDownList(): Voyage__getVaultDataResultValue0DrawDownListStruct {
+    return changetype<Voyage__getVaultDataResultValue0DrawDownListStruct>(
       this[2].toTuple()
     );
   }
@@ -906,7 +956,7 @@ export class Voyager__getVaultDataResultValue0Struct extends ethereum.Tuple {
   }
 }
 
-export class Voyager__getVaultDataResultValue0DrawDownListStruct extends ethereum.Tuple {
+export class Voyage__getVaultDataResultValue0DrawDownListStruct extends ethereum.Tuple {
   get head(): BigInt {
     return this[0].toBigInt();
   }
@@ -916,7 +966,7 @@ export class Voyager__getVaultDataResultValue0DrawDownListStruct extends ethereu
   }
 }
 
-export class Voyager__pendingJuniorWithdrawalsResult {
+export class Voyage__pendingJuniorWithdrawalsResult {
   value0: Array<BigInt>;
   value1: Array<BigInt>;
 
@@ -941,7 +991,7 @@ export class Voyager__pendingJuniorWithdrawalsResult {
   }
 }
 
-export class Voyager__pendingSeniorWithdrawalsResult {
+export class Voyage__pendingSeniorWithdrawalsResult {
   value0: Array<BigInt>;
   value1: Array<BigInt>;
 
@@ -966,9 +1016,9 @@ export class Voyager__pendingSeniorWithdrawalsResult {
   }
 }
 
-export class Voyager extends ethereum.SmartContract {
-  static bind(address: Address): Voyager {
-    return new Voyager("Voyager", address);
+export class Voyage extends ethereum.SmartContract {
+  static bind(address: Address): Voyage {
+    return new Voyage("Voyage", address);
   }
 
   facetAddress(_functionSelector: Bytes): Address {
@@ -1040,20 +1090,20 @@ export class Voyager extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBytesArray());
   }
 
-  facets(): Array<Voyager__facetsResultFacets_Struct> {
+  facets(): Array<Voyage__facetsResultFacets_Struct> {
     let result = super.call("facets", "facets():((address,bytes4[])[])", []);
 
-    return result[0].toTupleArray<Voyager__facetsResultFacets_Struct>();
+    return result[0].toTupleArray<Voyage__facetsResultFacets_Struct>();
   }
 
-  try_facets(): ethereum.CallResult<Array<Voyager__facetsResultFacets_Struct>> {
+  try_facets(): ethereum.CallResult<Array<Voyage__facetsResultFacets_Struct>> {
     let result = super.tryCall("facets", "facets():((address,bytes4[])[])", []);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      value[0].toTupleArray<Voyager__facetsResultFacets_Struct>()
+      value[0].toTupleArray<Voyage__facetsResultFacets_Struct>()
     );
   }
 
@@ -1197,14 +1247,14 @@ export class Voyager extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  getReserveFlags(_reserve: Address): Voyager__getReserveFlagsResult {
+  getReserveFlags(_reserve: Address): Voyage__getReserveFlagsResult {
     let result = super.call(
       "getReserveFlags",
       "getReserveFlags(address):(bool,bool,bool)",
       [ethereum.Value.fromAddress(_reserve)]
     );
 
-    return new Voyager__getReserveFlagsResult(
+    return new Voyage__getReserveFlagsResult(
       result[0].toBoolean(),
       result[1].toBoolean(),
       result[2].toBoolean()
@@ -1213,7 +1263,7 @@ export class Voyager extends ethereum.SmartContract {
 
   try_getReserveFlags(
     _reserve: Address
-  ): ethereum.CallResult<Voyager__getReserveFlagsResult> {
+  ): ethereum.CallResult<Voyage__getReserveFlagsResult> {
     let result = super.tryCall(
       "getReserveFlags",
       "getReserveFlags(address):(bool,bool,bool)",
@@ -1224,7 +1274,7 @@ export class Voyager extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new Voyager__getReserveFlagsResult(
+      new Voyage__getReserveFlagsResult(
         value[0].toBoolean(),
         value[1].toBoolean(),
         value[2].toBoolean()
@@ -1232,14 +1282,14 @@ export class Voyager extends ethereum.SmartContract {
     );
   }
 
-  getReserveStatus(_reserve: Address): Voyager__getReserveStatusResult {
+  getReserveStatus(_reserve: Address): Voyage__getReserveStatusResult {
     let result = super.call(
       "getReserveStatus",
       "getReserveStatus(address):(bool,bool)",
       [ethereum.Value.fromAddress(_reserve)]
     );
 
-    return new Voyager__getReserveStatusResult(
+    return new Voyage__getReserveStatusResult(
       result[0].toBoolean(),
       result[1].toBoolean()
     );
@@ -1247,7 +1297,7 @@ export class Voyager extends ethereum.SmartContract {
 
   try_getReserveStatus(
     _reserve: Address
-  ): ethereum.CallResult<Voyager__getReserveStatusResult> {
+  ): ethereum.CallResult<Voyage__getReserveStatusResult> {
     let result = super.tryCall(
       "getReserveStatus",
       "getReserveStatus(address):(bool,bool)",
@@ -1258,7 +1308,7 @@ export class Voyager extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new Voyager__getReserveStatusResult(
+      new Voyage__getReserveStatusResult(
         value[0].toBoolean(),
         value[1].toBoolean()
       )
@@ -1358,14 +1408,14 @@ export class Voyager extends ethereum.SmartContract {
   getTotalPaidAndRedeemed(
     _reserve: Address,
     _vault: Address
-  ): Voyager__getTotalPaidAndRedeemedResult {
+  ): Voyage__getTotalPaidAndRedeemedResult {
     let result = super.call(
       "getTotalPaidAndRedeemed",
       "getTotalPaidAndRedeemed(address,address):(uint256,uint256)",
       [ethereum.Value.fromAddress(_reserve), ethereum.Value.fromAddress(_vault)]
     );
 
-    return new Voyager__getTotalPaidAndRedeemedResult(
+    return new Voyage__getTotalPaidAndRedeemedResult(
       result[0].toBigInt(),
       result[1].toBigInt()
     );
@@ -1374,7 +1424,7 @@ export class Voyager extends ethereum.SmartContract {
   try_getTotalPaidAndRedeemed(
     _reserve: Address,
     _vault: Address
-  ): ethereum.CallResult<Voyager__getTotalPaidAndRedeemedResult> {
+  ): ethereum.CallResult<Voyage__getTotalPaidAndRedeemedResult> {
     let result = super.tryCall(
       "getTotalPaidAndRedeemed",
       "getTotalPaidAndRedeemed(address,address):(uint256,uint256)",
@@ -1385,24 +1435,21 @@ export class Voyager extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new Voyager__getTotalPaidAndRedeemedResult(
+      new Voyage__getTotalPaidAndRedeemedResult(
         value[0].toBigInt(),
         value[1].toBigInt()
       )
     );
   }
 
-  getVaultDebt(
-    _reserve: Address,
-    _vault: Address
-  ): Voyager__getVaultDebtResult {
+  getVaultDebt(_reserve: Address, _vault: Address): Voyage__getVaultDebtResult {
     let result = super.call(
       "getVaultDebt",
       "getVaultDebt(address,address):(uint256,uint256)",
       [ethereum.Value.fromAddress(_reserve), ethereum.Value.fromAddress(_vault)]
     );
 
-    return new Voyager__getVaultDebtResult(
+    return new Voyage__getVaultDebtResult(
       result[0].toBigInt(),
       result[1].toBigInt()
     );
@@ -1411,7 +1458,7 @@ export class Voyager extends ethereum.SmartContract {
   try_getVaultDebt(
     _reserve: Address,
     _vault: Address
-  ): ethereum.CallResult<Voyager__getVaultDebtResult> {
+  ): ethereum.CallResult<Voyage__getVaultDebtResult> {
     let result = super.tryCall(
       "getVaultDebt",
       "getVaultDebt(address,address):(uint256,uint256)",
@@ -1422,7 +1469,7 @@ export class Voyager extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new Voyager__getVaultDebtResult(value[0].toBigInt(), value[1].toBigInt())
+      new Voyage__getVaultDebtResult(value[0].toBigInt(), value[1].toBigInt())
     );
   }
 
@@ -1452,7 +1499,7 @@ export class Voyager extends ethereum.SmartContract {
   previewBorrowParams(
     _asset: Address,
     _amount: BigInt
-  ): Voyager__previewBorrowParamsResultValue0Struct {
+  ): Voyage__previewBorrowParamsResultValue0Struct {
     let result = super.call(
       "previewBorrowParams",
       "previewBorrowParams(address,uint256):((address,address,uint256,uint256,uint256,uint256,uint256))",
@@ -1462,7 +1509,7 @@ export class Voyager extends ethereum.SmartContract {
       ]
     );
 
-    return changetype<Voyager__previewBorrowParamsResultValue0Struct>(
+    return changetype<Voyage__previewBorrowParamsResultValue0Struct>(
       result[0].toTuple()
     );
   }
@@ -1470,7 +1517,7 @@ export class Voyager extends ethereum.SmartContract {
   try_previewBorrowParams(
     _asset: Address,
     _amount: BigInt
-  ): ethereum.CallResult<Voyager__previewBorrowParamsResultValue0Struct> {
+  ): ethereum.CallResult<Voyage__previewBorrowParamsResultValue0Struct> {
     let result = super.tryCall(
       "previewBorrowParams",
       "previewBorrowParams(address,uint256):((address,address,uint256,uint256,uint256,uint256,uint256))",
@@ -1484,7 +1531,7 @@ export class Voyager extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<Voyager__previewBorrowParamsResultValue0Struct>(
+      changetype<Voyage__previewBorrowParamsResultValue0Struct>(
         value[0].toTuple()
       )
     );
@@ -1513,19 +1560,21 @@ export class Voyager extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  createVault(owner: Address): Address {
-    let result = super.call("createVault", "createVault(address):(address)", [
-      ethereum.Value.fromAddress(owner)
-    ]);
+  creditEscrowBeacon(): Address {
+    let result = super.call(
+      "creditEscrowBeacon",
+      "creditEscrowBeacon():(address)",
+      []
+    );
 
     return result[0].toAddress();
   }
 
-  try_createVault(owner: Address): ethereum.CallResult<Address> {
+  try_creditEscrowBeacon(): ethereum.CallResult<Address> {
     let result = super.tryCall(
-      "createVault",
-      "createVault(address):(address)",
-      [ethereum.Value.fromAddress(owner)]
+      "creditEscrowBeacon",
+      "creditEscrowBeacon():(address)",
+      []
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -1657,7 +1706,7 @@ export class Voyager extends ethereum.SmartContract {
   getNFTInfo(
     _erc721Addr: Address,
     _tokenId: BigInt
-  ): Voyager__getNFTInfoResultValue0Struct {
+  ): Voyage__getNFTInfoResultValue0Struct {
     let result = super.call(
       "getNFTInfo",
       "getNFTInfo(address,uint256):((uint256,uint256))",
@@ -1667,7 +1716,7 @@ export class Voyager extends ethereum.SmartContract {
       ]
     );
 
-    return changetype<Voyager__getNFTInfoResultValue0Struct>(
+    return changetype<Voyage__getNFTInfoResultValue0Struct>(
       result[0].toTuple()
     );
   }
@@ -1675,7 +1724,7 @@ export class Voyager extends ethereum.SmartContract {
   try_getNFTInfo(
     _erc721Addr: Address,
     _tokenId: BigInt
-  ): ethereum.CallResult<Voyager__getNFTInfoResultValue0Struct> {
+  ): ethereum.CallResult<Voyage__getNFTInfoResultValue0Struct> {
     let result = super.tryCall(
       "getNFTInfo",
       "getNFTInfo(address,uint256):((uint256,uint256))",
@@ -1689,7 +1738,7 @@ export class Voyager extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<Voyager__getNFTInfoResultValue0Struct>(value[0].toTuple())
+      changetype<Voyage__getNFTInfoResultValue0Struct>(value[0].toTuple())
     );
   }
 
@@ -1714,32 +1763,40 @@ export class Voyager extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
-  getVaultConfig(_reserve: Address): Voyager__getVaultConfigResultValue0Struct {
+  getVaultEscrowAddr(
+    _user: Address,
+    _asset: Address
+  ): Voyage__getVaultEscrowAddrResult {
     let result = super.call(
-      "getVaultConfig",
-      "getVaultConfig(address):((uint256,uint256,uint256))",
-      [ethereum.Value.fromAddress(_reserve)]
+      "getVaultEscrowAddr",
+      "getVaultEscrowAddr(address,address):(address,address)",
+      [ethereum.Value.fromAddress(_user), ethereum.Value.fromAddress(_asset)]
     );
 
-    return changetype<Voyager__getVaultConfigResultValue0Struct>(
-      result[0].toTuple()
+    return new Voyage__getVaultEscrowAddrResult(
+      result[0].toAddress(),
+      result[1].toAddress()
     );
   }
 
-  try_getVaultConfig(
-    _reserve: Address
-  ): ethereum.CallResult<Voyager__getVaultConfigResultValue0Struct> {
+  try_getVaultEscrowAddr(
+    _user: Address,
+    _asset: Address
+  ): ethereum.CallResult<Voyage__getVaultEscrowAddrResult> {
     let result = super.tryCall(
-      "getVaultConfig",
-      "getVaultConfig(address):((uint256,uint256,uint256))",
-      [ethereum.Value.fromAddress(_reserve)]
+      "getVaultEscrowAddr",
+      "getVaultEscrowAddr(address,address):(address,address)",
+      [ethereum.Value.fromAddress(_user), ethereum.Value.fromAddress(_asset)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<Voyager__getVaultConfigResultValue0Struct>(value[0].toTuple())
+      new Voyage__getVaultEscrowAddrResult(
+        value[0].toAddress(),
+        value[1].toAddress()
+      )
     );
   }
 
@@ -1831,11 +1888,30 @@ export class Voyager extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
+  subVaultBeacon(): Address {
+    let result = super.call("subVaultBeacon", "subVaultBeacon():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_subVaultBeacon(): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "subVaultBeacon",
+      "subVaultBeacon():(address)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
   validate(
     _target: Address,
     _selector: Bytes,
     _payload: Bytes
-  ): Voyager__validateResult {
+  ): Voyage__validateResult {
     let result = super.call(
       "validate",
       "validate(address,bytes4,bytes):(address[],bytes[],address[],bytes[])",
@@ -1846,7 +1922,7 @@ export class Voyager extends ethereum.SmartContract {
       ]
     );
 
-    return new Voyager__validateResult(
+    return new Voyage__validateResult(
       result[0].toAddressArray(),
       result[1].toBytesArray(),
       result[2].toAddressArray(),
@@ -1858,7 +1934,7 @@ export class Voyager extends ethereum.SmartContract {
     _target: Address,
     _selector: Bytes,
     _payload: Bytes
-  ): ethereum.CallResult<Voyager__validateResult> {
+  ): ethereum.CallResult<Voyage__validateResult> {
     let result = super.tryCall(
       "validate",
       "validate(address,bytes4,bytes):(address[],bytes[],address[],bytes[])",
@@ -1873,7 +1949,7 @@ export class Voyager extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new Voyager__validateResult(
+      new Voyage__validateResult(
         value[0].toAddressArray(),
         value[1].toBytesArray(),
         value[2].toAddressArray(),
@@ -1882,14 +1958,61 @@ export class Voyager extends ethereum.SmartContract {
     );
   }
 
-  getDepositTokens(_asset: Address): Voyager__getDepositTokensResult {
+  currentVersion(): Voyage__currentVersionResult {
+    let result = super.call(
+      "currentVersion",
+      "currentVersion():(uint256,bytes32)",
+      []
+    );
+
+    return new Voyage__currentVersionResult(
+      result[0].toBigInt(),
+      result[1].toBytes()
+    );
+  }
+
+  try_currentVersion(): ethereum.CallResult<Voyage__currentVersionResult> {
+    let result = super.tryCall(
+      "currentVersion",
+      "currentVersion():(uint256,bytes32)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      new Voyage__currentVersionResult(value[0].toBigInt(), value[1].toBytes())
+    );
+  }
+
+  isUpToDate(_version: BigInt): boolean {
+    let result = super.call("isUpToDate", "isUpToDate(uint256):(bool)", [
+      ethereum.Value.fromUnsignedBigInt(_version)
+    ]);
+
+    return result[0].toBoolean();
+  }
+
+  try_isUpToDate(_version: BigInt): ethereum.CallResult<boolean> {
+    let result = super.tryCall("isUpToDate", "isUpToDate(uint256):(bool)", [
+      ethereum.Value.fromUnsignedBigInt(_version)
+    ]);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
+  getDepositTokens(_asset: Address): Voyage__getDepositTokensResult {
     let result = super.call(
       "getDepositTokens",
       "getDepositTokens(address):(address,address)",
       [ethereum.Value.fromAddress(_asset)]
     );
 
-    return new Voyager__getDepositTokensResult(
+    return new Voyage__getDepositTokensResult(
       result[0].toAddress(),
       result[1].toAddress()
     );
@@ -1897,7 +2020,7 @@ export class Voyager extends ethereum.SmartContract {
 
   try_getDepositTokens(
     _asset: Address
-  ): ethereum.CallResult<Voyager__getDepositTokensResult> {
+  ): ethereum.CallResult<Voyage__getDepositTokensResult> {
     let result = super.tryCall(
       "getDepositTokens",
       "getDepositTokens(address):(address,address)",
@@ -1908,7 +2031,7 @@ export class Voyager extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new Voyager__getDepositTokensResult(
+      new Voyage__getDepositTokensResult(
         value[0].toAddress(),
         value[1].toAddress()
       )
@@ -1919,7 +2042,7 @@ export class Voyager extends ethereum.SmartContract {
     _vault: Address,
     _reserve: Address,
     _drawDownId: BigInt
-  ): Voyager__getDrawDownDetailResultValue0Struct {
+  ): Voyage__getDrawDownDetailResultValue0Struct {
     let result = super.call(
       "getDrawDownDetail",
       "getDrawDownDetail(address,address,uint256):((uint256,uint256,uint256,uint256,address,(uint256,uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256))",
@@ -1930,7 +2053,7 @@ export class Voyager extends ethereum.SmartContract {
       ]
     );
 
-    return changetype<Voyager__getDrawDownDetailResultValue0Struct>(
+    return changetype<Voyage__getDrawDownDetailResultValue0Struct>(
       result[0].toTuple()
     );
   }
@@ -1939,7 +2062,7 @@ export class Voyager extends ethereum.SmartContract {
     _vault: Address,
     _reserve: Address,
     _drawDownId: BigInt
-  ): ethereum.CallResult<Voyager__getDrawDownDetailResultValue0Struct> {
+  ): ethereum.CallResult<Voyage__getDrawDownDetailResultValue0Struct> {
     let result = super.tryCall(
       "getDrawDownDetail",
       "getDrawDownDetail(address,address,uint256):((uint256,uint256,uint256,uint256,address,(uint256,uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256))",
@@ -1954,7 +2077,7 @@ export class Voyager extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<Voyager__getDrawDownDetailResultValue0Struct>(
+      changetype<Voyage__getDrawDownDetailResultValue0Struct>(
         value[0].toTuple()
       )
     );
@@ -1962,21 +2085,21 @@ export class Voyager extends ethereum.SmartContract {
 
   getPoolConfiguration(
     _reserve: Address
-  ): Voyager__getPoolConfigurationResultValue0Struct {
+  ): Voyage__getPoolConfigurationResultValue0Struct {
     let result = super.call(
       "getPoolConfiguration",
       "getPoolConfiguration(address):((uint256,uint256,uint256,uint256,uint256,uint256,bool))",
       [ethereum.Value.fromAddress(_reserve)]
     );
 
-    return changetype<Voyager__getPoolConfigurationResultValue0Struct>(
+    return changetype<Voyage__getPoolConfigurationResultValue0Struct>(
       result[0].toTuple()
     );
   }
 
   try_getPoolConfiguration(
     _reserve: Address
-  ): ethereum.CallResult<Voyager__getPoolConfigurationResultValue0Struct> {
+  ): ethereum.CallResult<Voyage__getPoolConfigurationResultValue0Struct> {
     let result = super.tryCall(
       "getPoolConfiguration",
       "getPoolConfiguration(address):((uint256,uint256,uint256,uint256,uint256,uint256,bool))",
@@ -1987,29 +2110,27 @@ export class Voyager extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<Voyager__getPoolConfigurationResultValue0Struct>(
+      changetype<Voyage__getPoolConfigurationResultValue0Struct>(
         value[0].toTuple()
       )
     );
   }
 
-  getPoolData(
-    underlyingAsset: Address
-  ): Voyager__getPoolDataResultValue0Struct {
+  getPoolData(underlyingAsset: Address): Voyage__getPoolDataResultValue0Struct {
     let result = super.call(
       "getPoolData",
       "getPoolData(address):((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,string,bool))",
       [ethereum.Value.fromAddress(underlyingAsset)]
     );
 
-    return changetype<Voyager__getPoolDataResultValue0Struct>(
+    return changetype<Voyage__getPoolDataResultValue0Struct>(
       result[0].toTuple()
     );
   }
 
   try_getPoolData(
     underlyingAsset: Address
-  ): ethereum.CallResult<Voyager__getPoolDataResultValue0Struct> {
+  ): ethereum.CallResult<Voyage__getPoolDataResultValue0Struct> {
     let result = super.tryCall(
       "getPoolData",
       "getPoolData(address):((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,string,bool))",
@@ -2020,22 +2141,22 @@ export class Voyager extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<Voyager__getPoolDataResultValue0Struct>(value[0].toTuple())
+      changetype<Voyage__getPoolDataResultValue0Struct>(value[0].toTuple())
     );
   }
 
-  getPoolTokens(): Array<Voyager__getPoolTokensResultTokensStruct> {
+  getPoolTokens(): Array<Voyage__getPoolTokensResultTokensStruct> {
     let result = super.call(
       "getPoolTokens",
       "getPoolTokens():((string,address)[])",
       []
     );
 
-    return result[0].toTupleArray<Voyager__getPoolTokensResultTokensStruct>();
+    return result[0].toTupleArray<Voyage__getPoolTokensResultTokensStruct>();
   }
 
   try_getPoolTokens(): ethereum.CallResult<
-    Array<Voyager__getPoolTokensResultTokensStruct>
+    Array<Voyage__getPoolTokensResultTokensStruct>
   > {
     let result = super.tryCall(
       "getPoolTokens",
@@ -2047,21 +2168,21 @@ export class Voyager extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      value[0].toTupleArray<Voyager__getPoolTokensResultTokensStruct>()
+      value[0].toTupleArray<Voyage__getPoolTokensResultTokensStruct>()
     );
   }
 
   getUserPoolData(
     _reserve: Address,
     _user: Address
-  ): Voyager__getUserPoolDataResultValue0Struct {
+  ): Voyage__getUserPoolDataResultValue0Struct {
     let result = super.call(
       "getUserPoolData",
       "getUserPoolData(address,address):((uint256,uint256,uint256,uint256,uint256))",
       [ethereum.Value.fromAddress(_reserve), ethereum.Value.fromAddress(_user)]
     );
 
-    return changetype<Voyager__getUserPoolDataResultValue0Struct>(
+    return changetype<Voyage__getUserPoolDataResultValue0Struct>(
       result[0].toTuple()
     );
   }
@@ -2069,7 +2190,7 @@ export class Voyager extends ethereum.SmartContract {
   try_getUserPoolData(
     _reserve: Address,
     _user: Address
-  ): ethereum.CallResult<Voyager__getUserPoolDataResultValue0Struct> {
+  ): ethereum.CallResult<Voyage__getUserPoolDataResultValue0Struct> {
     let result = super.tryCall(
       "getUserPoolData",
       "getUserPoolData(address,address):((uint256,uint256,uint256,uint256,uint256))",
@@ -2080,7 +2201,7 @@ export class Voyager extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<Voyager__getUserPoolDataResultValue0Struct>(value[0].toTuple())
+      changetype<Voyage__getUserPoolDataResultValue0Struct>(value[0].toTuple())
     );
   }
 
@@ -2103,17 +2224,46 @@ export class Voyager extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
+  getVaultConfig(_reserve: Address): Voyage__getVaultConfigResultValue0Struct {
+    let result = super.call(
+      "getVaultConfig",
+      "getVaultConfig(address):((uint256,uint256,uint256))",
+      [ethereum.Value.fromAddress(_reserve)]
+    );
+
+    return changetype<Voyage__getVaultConfigResultValue0Struct>(
+      result[0].toTuple()
+    );
+  }
+
+  try_getVaultConfig(
+    _reserve: Address
+  ): ethereum.CallResult<Voyage__getVaultConfigResultValue0Struct> {
+    let result = super.tryCall(
+      "getVaultConfig",
+      "getVaultConfig(address):((uint256,uint256,uint256))",
+      [ethereum.Value.fromAddress(_reserve)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      changetype<Voyage__getVaultConfigResultValue0Struct>(value[0].toTuple())
+    );
+  }
+
   getVaultData(
     _vault: Address,
     _reserve: Address
-  ): Voyager__getVaultDataResultValue0Struct {
+  ): Voyage__getVaultDataResultValue0Struct {
     let result = super.call(
       "getVaultData",
       "getVaultData(address,address):((uint256,uint256,(uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256,uint256))",
       [ethereum.Value.fromAddress(_vault), ethereum.Value.fromAddress(_reserve)]
     );
 
-    return changetype<Voyager__getVaultDataResultValue0Struct>(
+    return changetype<Voyage__getVaultDataResultValue0Struct>(
       result[0].toTuple()
     );
   }
@@ -2121,7 +2271,7 @@ export class Voyager extends ethereum.SmartContract {
   try_getVaultData(
     _vault: Address,
     _reserve: Address
-  ): ethereum.CallResult<Voyager__getVaultDataResultValue0Struct> {
+  ): ethereum.CallResult<Voyage__getVaultDataResultValue0Struct> {
     let result = super.tryCall(
       "getVaultData",
       "getVaultData(address,address):((uint256,uint256,(uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256,uint256))",
@@ -2132,21 +2282,21 @@ export class Voyager extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<Voyager__getVaultDataResultValue0Struct>(value[0].toTuple())
+      changetype<Voyage__getVaultDataResultValue0Struct>(value[0].toTuple())
     );
   }
 
   pendingJuniorWithdrawals(
     _user: Address,
     _reserve: Address
-  ): Voyager__pendingJuniorWithdrawalsResult {
+  ): Voyage__pendingJuniorWithdrawalsResult {
     let result = super.call(
       "pendingJuniorWithdrawals",
       "pendingJuniorWithdrawals(address,address):(uint256[],uint256[])",
       [ethereum.Value.fromAddress(_user), ethereum.Value.fromAddress(_reserve)]
     );
 
-    return new Voyager__pendingJuniorWithdrawalsResult(
+    return new Voyage__pendingJuniorWithdrawalsResult(
       result[0].toBigIntArray(),
       result[1].toBigIntArray()
     );
@@ -2155,7 +2305,7 @@ export class Voyager extends ethereum.SmartContract {
   try_pendingJuniorWithdrawals(
     _user: Address,
     _reserve: Address
-  ): ethereum.CallResult<Voyager__pendingJuniorWithdrawalsResult> {
+  ): ethereum.CallResult<Voyage__pendingJuniorWithdrawalsResult> {
     let result = super.tryCall(
       "pendingJuniorWithdrawals",
       "pendingJuniorWithdrawals(address,address):(uint256[],uint256[])",
@@ -2166,7 +2316,7 @@ export class Voyager extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new Voyager__pendingJuniorWithdrawalsResult(
+      new Voyage__pendingJuniorWithdrawalsResult(
         value[0].toBigIntArray(),
         value[1].toBigIntArray()
       )
@@ -2176,14 +2326,14 @@ export class Voyager extends ethereum.SmartContract {
   pendingSeniorWithdrawals(
     _user: Address,
     _reserve: Address
-  ): Voyager__pendingSeniorWithdrawalsResult {
+  ): Voyage__pendingSeniorWithdrawalsResult {
     let result = super.call(
       "pendingSeniorWithdrawals",
       "pendingSeniorWithdrawals(address,address):(uint256[],uint256[])",
       [ethereum.Value.fromAddress(_user), ethereum.Value.fromAddress(_reserve)]
     );
 
-    return new Voyager__pendingSeniorWithdrawalsResult(
+    return new Voyage__pendingSeniorWithdrawalsResult(
       result[0].toBigIntArray(),
       result[1].toBigIntArray()
     );
@@ -2192,7 +2342,7 @@ export class Voyager extends ethereum.SmartContract {
   try_pendingSeniorWithdrawals(
     _user: Address,
     _reserve: Address
-  ): ethereum.CallResult<Voyager__pendingSeniorWithdrawalsResult> {
+  ): ethereum.CallResult<Voyage__pendingSeniorWithdrawalsResult> {
     let result = super.tryCall(
       "pendingSeniorWithdrawals",
       "pendingSeniorWithdrawals(address,address):(uint256[],uint256[])",
@@ -2203,7 +2353,7 @@ export class Voyager extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new Voyager__pendingSeniorWithdrawalsResult(
+      new Voyage__pendingSeniorWithdrawalsResult(
         value[0].toBigIntArray(),
         value[1].toBigIntArray()
       )
@@ -3085,6 +3235,10 @@ export class CreateVaultCall__Inputs {
   get owner(): Address {
     return this._call.inputValues[0].value.toAddress();
   }
+
+  get salt(): Bytes {
+    return this._call.inputValues[1].value.toBytes();
+  }
 }
 
 export class CreateVaultCall__Outputs {
@@ -3092,10 +3246,6 @@ export class CreateVaultCall__Outputs {
 
   constructor(call: CreateVaultCall) {
     this._call = call;
-  }
-
-  get value0(): Address {
-    return this._call.outputValues[0].value.toAddress();
   }
 }
 
@@ -3421,86 +3571,52 @@ export class UpdateNFTPriceCall__Outputs {
   }
 }
 
-export class UpdateVaultImplContractCall extends ethereum.Call {
-  get inputs(): UpdateVaultImplContractCall__Inputs {
-    return new UpdateVaultImplContractCall__Inputs(this);
+export class RegisterUpgradeCall extends ethereum.Call {
+  get inputs(): RegisterUpgradeCall__Inputs {
+    return new RegisterUpgradeCall__Inputs(this);
   }
 
-  get outputs(): UpdateVaultImplContractCall__Outputs {
-    return new UpdateVaultImplContractCall__Outputs(this);
+  get outputs(): RegisterUpgradeCall__Outputs {
+    return new RegisterUpgradeCall__Outputs(this);
   }
 }
 
-export class UpdateVaultImplContractCall__Inputs {
-  _call: UpdateVaultImplContractCall;
+export class RegisterUpgradeCall__Inputs {
+  _call: RegisterUpgradeCall;
 
-  constructor(call: UpdateVaultImplContractCall) {
+  constructor(call: RegisterUpgradeCall) {
     this._call = call;
   }
 
-  get _impl(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-}
-
-export class UpdateVaultImplContractCall__Outputs {
-  _call: UpdateVaultImplContractCall;
-
-  constructor(call: UpdateVaultImplContractCall) {
-    this._call = call;
-  }
-}
-
-export class ValidateCall extends ethereum.Call {
-  get inputs(): ValidateCall__Inputs {
-    return new ValidateCall__Inputs(this);
-  }
-
-  get outputs(): ValidateCall__Outputs {
-    return new ValidateCall__Outputs(this);
-  }
-}
-
-export class ValidateCall__Inputs {
-  _call: ValidateCall;
-
-  constructor(call: ValidateCall) {
-    this._call = call;
-  }
-
-  get _target(): Address {
+  get init(): Address {
     return this._call.inputValues[0].value.toAddress();
   }
 
-  get _selector(): Bytes {
+  get initArgs(): Bytes {
     return this._call.inputValues[1].value.toBytes();
   }
 
-  get _payload(): Bytes {
-    return this._call.inputValues[2].value.toBytes();
+  get facets(): Array<RegisterUpgradeCallFacetsStruct> {
+    return this._call.inputValues[2].value.toTupleArray<
+      RegisterUpgradeCallFacetsStruct
+    >();
   }
 }
 
-export class ValidateCall__Outputs {
-  _call: ValidateCall;
+export class RegisterUpgradeCall__Outputs {
+  _call: RegisterUpgradeCall;
 
-  constructor(call: ValidateCall) {
+  constructor(call: RegisterUpgradeCall) {
     this._call = call;
   }
+}
 
-  get value0(): Array<Address> {
-    return this._call.outputValues[0].value.toAddressArray();
+export class RegisterUpgradeCallFacetsStruct extends ethereum.Tuple {
+  get facetAddress(): Address {
+    return this[0].toAddress();
   }
 
-  get value1(): Array<Bytes> {
-    return this._call.outputValues[1].value.toBytesArray();
-  }
-
-  get value2(): Array<Address> {
-    return this._call.outputValues[2].value.toAddressArray();
-  }
-
-  get value3(): Array<Bytes> {
-    return this._call.outputValues[3].value.toBytesArray();
+  get functionSelectors(): Array<Bytes> {
+    return this[1].toBytesArray();
   }
 }

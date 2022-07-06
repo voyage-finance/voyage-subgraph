@@ -64,6 +64,13 @@ export function updateVaultData(
     i++
   ) {
     const id = BigInt.fromI32(i);
+    log.info("_vaultAddress = {} _assetAddress = {} id = {}", [
+      _vaultAddress.toHex(),
+      _assetAddress.toHex(),
+      id.toString(),
+      vaultEntity.borrowRate.toHex(),
+    ]);
+
     const drawdown = voyager.getDrawDownDetail(
       _vaultAddress,
       _assetAddress,

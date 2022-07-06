@@ -565,6 +565,36 @@ export class Voyager__getVaultDebtResult {
   }
 }
 
+export class Voyager__previewBorrowParamsResultValue0Struct extends ethereum.Tuple {
+  get asset(): Address {
+    return this[0].toAddress();
+  }
+
+  get user(): Address {
+    return this[1].toAddress();
+  }
+
+  get amount(): BigInt {
+    return this[2].toBigInt();
+  }
+
+  get term(): BigInt {
+    return this[3].toBigInt();
+  }
+
+  get epoch(): BigInt {
+    return this[4].toBigInt();
+  }
+
+  get liquidityRate(): BigInt {
+    return this[5].toBigInt();
+  }
+
+  get borrowRate(): BigInt {
+    return this[6].toBigInt();
+  }
+}
+
 export class Voyager__getNFTInfoResultValue0Struct extends ethereum.Tuple {
   get price(): BigInt {
     return this[0].toBigInt();
@@ -675,34 +705,38 @@ export class Voyager__getDrawDownDetailResultValue0Struct extends ethereum.Tuple
     return this[3].toBigInt();
   }
 
+  get reserve(): Address {
+    return this[4].toAddress();
+  }
+
   get pmt(): Voyager__getDrawDownDetailResultValue0PmtStruct {
     return changetype<Voyager__getDrawDownDetailResultValue0PmtStruct>(
-      this[4].toTuple()
+      this[5].toTuple()
     );
   }
 
   get apr(): BigInt {
-    return this[5].toBigInt();
-  }
-
-  get borrowAt(): BigInt {
     return this[6].toBigInt();
   }
 
-  get nextPaymentDue(): BigInt {
+  get borrowAt(): BigInt {
     return this[7].toBigInt();
   }
 
-  get totalPrincipalPaid(): BigInt {
+  get nextPaymentDue(): BigInt {
     return this[8].toBigInt();
   }
 
-  get totalInterestPaid(): BigInt {
+  get totalPrincipalPaid(): BigInt {
     return this[9].toBigInt();
   }
 
-  get paidTimes(): BigInt {
+  get totalInterestPaid(): BigInt {
     return this[10].toBigInt();
+  }
+
+  get paidTimes(): BigInt {
+    return this[11].toBigInt();
   }
 }
 
@@ -1415,6 +1449,47 @@ export class Voyager extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
+  previewBorrowParams(
+    _asset: Address,
+    _amount: BigInt
+  ): Voyager__previewBorrowParamsResultValue0Struct {
+    let result = super.call(
+      "previewBorrowParams",
+      "previewBorrowParams(address,uint256):((address,address,uint256,uint256,uint256,uint256,uint256))",
+      [
+        ethereum.Value.fromAddress(_asset),
+        ethereum.Value.fromUnsignedBigInt(_amount)
+      ]
+    );
+
+    return changetype<Voyager__previewBorrowParamsResultValue0Struct>(
+      result[0].toTuple()
+    );
+  }
+
+  try_previewBorrowParams(
+    _asset: Address,
+    _amount: BigInt
+  ): ethereum.CallResult<Voyager__previewBorrowParamsResultValue0Struct> {
+    let result = super.tryCall(
+      "previewBorrowParams",
+      "previewBorrowParams(address,uint256):((address,address,uint256,uint256,uint256,uint256,uint256))",
+      [
+        ethereum.Value.fromAddress(_asset),
+        ethereum.Value.fromUnsignedBigInt(_amount)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      changetype<Voyager__previewBorrowParamsResultValue0Struct>(
+        value[0].toTuple()
+      )
+    );
+  }
+
   principalBalance(underlyingAsset: Address): BigInt {
     let result = super.call(
       "principalBalance",
@@ -1616,6 +1691,27 @@ export class Voyager extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(
       changetype<Voyager__getNFTInfoResultValue0Struct>(value[0].toTuple())
     );
+  }
+
+  getVaultAddr(_user: Address): Address {
+    let result = super.call("getVaultAddr", "getVaultAddr(address):(address)", [
+      ethereum.Value.fromAddress(_user)
+    ]);
+
+    return result[0].toAddress();
+  }
+
+  try_getVaultAddr(_user: Address): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "getVaultAddr",
+      "getVaultAddr(address):(address)",
+      [ethereum.Value.fromAddress(_user)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
   getVaultConfig(_reserve: Address): Voyager__getVaultConfigResultValue0Struct {
@@ -1826,7 +1922,7 @@ export class Voyager extends ethereum.SmartContract {
   ): Voyager__getDrawDownDetailResultValue0Struct {
     let result = super.call(
       "getDrawDownDetail",
-      "getDrawDownDetail(address,address,uint256):((uint256,uint256,uint256,uint256,(uint256,uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256))",
+      "getDrawDownDetail(address,address,uint256):((uint256,uint256,uint256,uint256,address,(uint256,uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256))",
       [
         ethereum.Value.fromAddress(_vault),
         ethereum.Value.fromAddress(_reserve),
@@ -1846,7 +1942,7 @@ export class Voyager extends ethereum.SmartContract {
   ): ethereum.CallResult<Voyager__getDrawDownDetailResultValue0Struct> {
     let result = super.tryCall(
       "getDrawDownDetail",
-      "getDrawDownDetail(address,address,uint256):((uint256,uint256,uint256,uint256,(uint256,uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256))",
+      "getDrawDownDetail(address,address,uint256):((uint256,uint256,uint256,uint256,address,(uint256,uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256))",
       [
         ethereum.Value.fromAddress(_vault),
         ethereum.Value.fromAddress(_reserve),

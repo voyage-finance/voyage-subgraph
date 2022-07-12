@@ -1,5 +1,6 @@
 import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 import {
+  Drawdown,
   Pool,
   PoolConfiguration,
   Unbonding,
@@ -125,6 +126,7 @@ export function updateUserData(
 
   return userEntity;
 }
+
 // sum(withdrawalsFromJunior) + juniorTrancheBalance - sum(depositsInJunior)
 export function updateTranchePnl(
   userAddress: Address,
@@ -154,4 +156,27 @@ export function updateTranchePnl(
     }
     userDepositData.save();
   }
+}
+
+export function populateDrawdownEntity(
+  voyage: Voyage,
+  dd: Drawdown,
+  vault: Address,
+  asset: Address,
+  id: BigInt
+) {
+  const drawdownData = voyage.getDrawDownDetail(vault, asset, id);
+  dd.vault = vault.toHex();
+  dd.principal = drawdownData.principal;
+  dd.pmt_principal = drawdownData.pmt.principal;
+  dd.pmt_interest = drawdownData.pmt.interest;
+  dd.pmt_payment = drawdownData.pmt.pmt;
+  dd.term = drawdownData.term;
+  dd.epoch = drawdownData.epoch;
+  dd.nper = drawdownData.nper;
+  dd.apr = drawdownData.apr;
+  dd.borrowAt = drawdownData.borrowAt;
+  dd.nextPaymentDue = drawdownData.nextPaymentDue;
+  dd.totalInterestPaid = drawdownData.totalInterestPaid;
+  dd.paidTimes = drawdownData.paidTimes;
 }

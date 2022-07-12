@@ -1,5 +1,5 @@
 import { Address, BigInt, log } from "@graphprotocol/graph-ts";
-import { Drawdown, Vault } from "../../generated/schema";
+import { Drawdown, Repayment, Vault } from "../../generated/schema";
 import { Voyage } from "../../generated/Voyage/Voyage";
 import { Zero } from "../consts";
 
@@ -43,7 +43,7 @@ export function updateVaultData(
   const vaultData = voyage.getVaultData(_vaultAddress, _assetAddress);
   const vaultConfigData = voyage.getVaultConfig(_assetAddress);
 
-  vaultEntity.borrowRate = vaultData.borrowRate;
+  vaultEntity.borrowRate = vaultData.seniorLiquidityRate;
   vaultEntity.totalDebt = vaultData.totalDebt;
   vaultEntity.pool = _assetAddress.toHex();
   vaultEntity.totalMargin = vaultData.totalMargin;
@@ -63,15 +63,11 @@ export function updateVaultData(
     i < vaultData.drawDownList.tail.toI32();
     i++
   ) {
-    const id = BigInt.fromI32(i);
-    log.info("_vaultAddress = {} _assetAddress = {} id = {}", [
-      _vaultAddress.toHex(),
-      _assetAddress.toHex(),
-      id.toString(),
-      vaultEntity.borrowRate.toHex(),
-    ]);
-
-    const drawdown = voyage.getDrawDownDetail(_vaultAddress, _assetAddress, id);
+    const drawdown = voyage.getDrawDownDetail(
+      _vaultAddress,
+      _assetAddress,
+      BigInt.fromI32(i)
+    );
     const drawdownId = [vaultAddress, _assetAddress.toHex(), i.toString()].join(
       "_"
     );
@@ -93,6 +89,29 @@ export function updateVaultData(
     drawdownEntity.totalPrincipalPaid = drawdown.totalPrincipalPaid;
     drawdownEntity.totalInterestPaid = drawdown.totalInterestPaid;
     drawdownEntity.paidTimes = drawdown.paidTimes;
+
+    var repaymentEntity: Repayment;
+    const repayments = voyage.getRepayment(
+      _vaultAddress,
+      _assetAddress,
+      BigInt.fromI32(i)
+    );
+    for (let j = 0; j < repayments.length; j++) {
+      const repaymentId = [drawdownId, j.toString()].join("_");
+      const _repaymentEntity = Repayment.load(repaymentId);
+      repaymentEntity = _repaymentEntity
+        ? _repaymentEntity
+        : new Repayment(repaymentId);
+      repaymentEntity.drawdown = drawdownEntity.id;
+      const repayment = repayments.at(j);
+      repaymentEntity.principal = repayment.principal;
+      repaymentEntity.interest = repayment.interest;
+      repaymentEntity.total = repayment.total;
+      repaymentEntity.paidAt = repayment.paidAt;
+      repaymentEntity.isLiquidated = repayment.isLiquidated;
+      repaymentEntity.save();
+    }
+
     drawdownEntity.save();
   }
   vaultEntity.save();

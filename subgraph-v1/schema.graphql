@@ -94,4 +94,33 @@ type Drawdown @entity {
   totalPrincipalPaid: BigInt!
   totalInterestPaid: BigInt!
   paidTimes: BigInt!
+  repayments: [Repayment!]! @derivedFrom(field: "drawdown")
+  liquidations: [Liquidation!]! @derivedFrom(field: "drawdown")
+}
+
+type Repayment @entity {
+  id: ID! # concat(vault address, underlying asset, drawdown id, repayment index)
+  drawdown: Drawdown!
+  principal: BigInt!
+  interest: BigInt!
+  total: BigInt!
+  paidAt: BigInt!
+  isLiquidated: Boolean!
+  liquidation: Liquidation!
+}
+
+type Liquidation @entity {
+  id: ID! # same as Repayment.id
+  liquidator: String! # address of user
+  vault: Vault!
+  reserve: Pool!
+  drawdownId: BigInt! # id in sc's
+  repaymentId: BigInt! # id in sc's
+  drawdown: Drawdown!
+  repayment: Repayment!
+  totalDebt: BigInt!
+  amountSlashed: BigInt!
+  totalToLiquidate: BigInt!
+  numNFTsToLiquidate: BigInt!
+  amountToWriteDown: BigInt!
 }

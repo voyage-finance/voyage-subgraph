@@ -1,8 +1,9 @@
-import { BigInt, log } from "@graphprotocol/graph-ts";
-import { Drawdown, Pool, Vault } from "../generated/schema";
+import { log } from "@graphprotocol/graph-ts";
+import { Liquidation, Pool, Vault } from "../generated/schema";
 import {
   Borrow,
   Deposit,
+  Liquidate,
   Paused,
   Repay,
   ReserveActivated,
@@ -86,4 +87,39 @@ export function handleBorrow(event: Borrow): void {
 
 export function handleRepay(event: Repay): void {
   updateVaultData(event.params._vault, event.params._asset, event.address);
+}
+
+export function handleLiquidate(event: Liquidate): void {
+  const vaultAddress = event.params._vault.toHex();
+  const assetAddress = event.params._asset.toHex();
+  const userAddress = event.params._liquidator.toHex();
+
+  const drawdownId = [
+    vaultAddress,
+    assetAddress,
+    event.params._drowDownId.toString(),
+  ].join("_");
+  const repaymentId = [drawdownId, event.params._repaymentId.toString()].join(
+    "_"
+  );
+
+  let liquidationEntity = Liquidation.load(repaymentId);
+  if (!liquidationEntity) {
+    liquidationEntity = new Liquidation(repaymentId);
+  }
+
+  liquidationEntity.liquidator = userAddress;
+  liquidationEntity.vault = vaultAddress;
+  liquidationEntity.reserve = assetAddress;
+  liquidationEntity.drawdownId = event.params._drowDownId;
+  liquidationEntity.repaymentId = event.params._repaymentId;
+  liquidationEntity.drawdown = drawdownId;
+  liquidationEntity.repayment = repaymentId;
+  liquidationEntity.totalDebt = event.params._debt;
+  liquidationEntity.amountSlashed = event.params._margin;
+  liquidationEntity.totalToLiquidate = event.params._collateral;
+  liquidationEntity.numNFTsToLiquidate = event.params._numCollateral;
+  liquidationEntity.amountToWriteDown = event.params._writedown;
+
+  liquidationEntity.save();
 }

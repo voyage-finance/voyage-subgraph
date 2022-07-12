@@ -836,4 +836,257 @@ export class Drawdown extends Entity {
   set paidTimes(value: BigInt) {
     this.set("paidTimes", Value.fromBigInt(value));
   }
+
+  get repayments(): Array<string> {
+    let value = this.get("repayments");
+    return value!.toStringArray();
+  }
+
+  set repayments(value: Array<string>) {
+    this.set("repayments", Value.fromStringArray(value));
+  }
+
+  get liquidations(): Array<string> {
+    let value = this.get("liquidations");
+    return value!.toStringArray();
+  }
+
+  set liquidations(value: Array<string>) {
+    this.set("liquidations", Value.fromStringArray(value));
+  }
+}
+
+export class Repayment extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Repayment entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Repayment must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Repayment", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Repayment | null {
+    return changetype<Repayment | null>(store.get("Repayment", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get drawdown(): string {
+    let value = this.get("drawdown");
+    return value!.toString();
+  }
+
+  set drawdown(value: string) {
+    this.set("drawdown", Value.fromString(value));
+  }
+
+  get principal(): BigInt {
+    let value = this.get("principal");
+    return value!.toBigInt();
+  }
+
+  set principal(value: BigInt) {
+    this.set("principal", Value.fromBigInt(value));
+  }
+
+  get interest(): BigInt {
+    let value = this.get("interest");
+    return value!.toBigInt();
+  }
+
+  set interest(value: BigInt) {
+    this.set("interest", Value.fromBigInt(value));
+  }
+
+  get total(): BigInt {
+    let value = this.get("total");
+    return value!.toBigInt();
+  }
+
+  set total(value: BigInt) {
+    this.set("total", Value.fromBigInt(value));
+  }
+
+  get paidAt(): BigInt {
+    let value = this.get("paidAt");
+    return value!.toBigInt();
+  }
+
+  set paidAt(value: BigInt) {
+    this.set("paidAt", Value.fromBigInt(value));
+  }
+
+  get isLiquidated(): boolean {
+    let value = this.get("isLiquidated");
+    return value!.toBoolean();
+  }
+
+  set isLiquidated(value: boolean) {
+    this.set("isLiquidated", Value.fromBoolean(value));
+  }
+
+  get liquidation(): string {
+    let value = this.get("liquidation");
+    return value!.toString();
+  }
+
+  set liquidation(value: string) {
+    this.set("liquidation", Value.fromString(value));
+  }
+}
+
+export class Liquidation extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Liquidation entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Liquidation must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Liquidation", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Liquidation | null {
+    return changetype<Liquidation | null>(store.get("Liquidation", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get liquidator(): string {
+    let value = this.get("liquidator");
+    return value!.toString();
+  }
+
+  set liquidator(value: string) {
+    this.set("liquidator", Value.fromString(value));
+  }
+
+  get vault(): string {
+    let value = this.get("vault");
+    return value!.toString();
+  }
+
+  set vault(value: string) {
+    this.set("vault", Value.fromString(value));
+  }
+
+  get reserve(): string {
+    let value = this.get("reserve");
+    return value!.toString();
+  }
+
+  set reserve(value: string) {
+    this.set("reserve", Value.fromString(value));
+  }
+
+  get drawdownId(): BigInt {
+    let value = this.get("drawdownId");
+    return value!.toBigInt();
+  }
+
+  set drawdownId(value: BigInt) {
+    this.set("drawdownId", Value.fromBigInt(value));
+  }
+
+  get repaymentId(): BigInt {
+    let value = this.get("repaymentId");
+    return value!.toBigInt();
+  }
+
+  set repaymentId(value: BigInt) {
+    this.set("repaymentId", Value.fromBigInt(value));
+  }
+
+  get drawdown(): string {
+    let value = this.get("drawdown");
+    return value!.toString();
+  }
+
+  set drawdown(value: string) {
+    this.set("drawdown", Value.fromString(value));
+  }
+
+  get repayment(): string {
+    let value = this.get("repayment");
+    return value!.toString();
+  }
+
+  set repayment(value: string) {
+    this.set("repayment", Value.fromString(value));
+  }
+
+  get totalDebt(): BigInt {
+    let value = this.get("totalDebt");
+    return value!.toBigInt();
+  }
+
+  set totalDebt(value: BigInt) {
+    this.set("totalDebt", Value.fromBigInt(value));
+  }
+
+  get amountSlashed(): BigInt {
+    let value = this.get("amountSlashed");
+    return value!.toBigInt();
+  }
+
+  set amountSlashed(value: BigInt) {
+    this.set("amountSlashed", Value.fromBigInt(value));
+  }
+
+  get totalToLiquidate(): BigInt {
+    let value = this.get("totalToLiquidate");
+    return value!.toBigInt();
+  }
+
+  set totalToLiquidate(value: BigInt) {
+    this.set("totalToLiquidate", Value.fromBigInt(value));
+  }
+
+  get numNFTsToLiquidate(): BigInt {
+    let value = this.get("numNFTsToLiquidate");
+    return value!.toBigInt();
+  }
+
+  set numNFTsToLiquidate(value: BigInt) {
+    this.set("numNFTsToLiquidate", Value.fromBigInt(value));
+  }
+
+  get amountToWriteDown(): BigInt {
+    let value = this.get("amountToWriteDown");
+    return value!.toBigInt();
+  }
+
+  set amountToWriteDown(value: BigInt) {
+    this.set("amountToWriteDown", Value.fromBigInt(value));
+  }
 }

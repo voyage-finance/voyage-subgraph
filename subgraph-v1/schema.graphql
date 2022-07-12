@@ -30,7 +30,7 @@ type UserData @entity {
   id: ID!
   depositData: [UserDepositData!]! @derivedFrom(field: "user")
   unbondings: [Unbonding!]! @derivedFrom(field: "user")
-  vaults: [Vault!]! @derivedFrom(field: "user")
+  vault: Vault!
 }
 
 type UserDepositData @entity {
@@ -63,10 +63,19 @@ type Unbonding @entity {
 
 type Vault @entity {
   id: ID!
-  pool: Pool
+  user: UserData!
+  creditLines: [CreditLine!]! @derivedFrom(field: "vault")
+  drawdowns: [Drawdown!]! @derivedFrom(field: "vault")
+}
+
+type CreditLine @entity {
+  id: ID! # concat(vault address, underlying asset)
+  vault: Vault!
+  pool: Pool!
+  marginEscrow: Bytes!
+  creditEscrow: Bytes!
   borrowRate: BigInt!
   totalDebt: BigInt!
-  drawdowns: [Drawdown!]! @derivedFrom(field: "vault")
   totalMargin: BigInt!
   marginRequirement: BigInt!
   withdrawableSecurityDeposit: BigInt!
@@ -75,12 +84,12 @@ type Vault @entity {
   gav: BigInt!
   ltv: BigInt!
   healthFactor: BigInt!
-  user: UserData!
 }
 
 type Drawdown @entity {
-  id: ID!
+  id: ID! # concat(vault address, underlying asset, drawdown id)
   vault: Vault!
+  pool: Pool!
   pmt_principal: BigInt!
   pmt_interest: BigInt!
   pmt_payment: BigInt!
@@ -94,4 +103,34 @@ type Drawdown @entity {
   totalPrincipalPaid: BigInt!
   totalInterestPaid: BigInt!
   paidTimes: BigInt!
+  repayments: [Repayment!]! @derivedFrom(field: "drawdown")
+  liquidations: [Liquidation!]! @derivedFrom(field: "drawdown")
+}
+
+type Repayment @entity {
+  id: ID! # concat(vault address, underlying asset, drawdown id, repayment index)
+  drawdown: Drawdown!
+  principal: BigInt!
+  interest: BigInt!
+  total: BigInt!
+  paidAt: BigInt!
+  repaid: Boolean!
+  isLiquidated: Boolean!
+  liquidation: Liquidation!
+}
+
+type Liquidation @entity {
+  id: ID! # same as Repayment.id
+  liquidator: String! # address of user
+  vault: Vault!
+  reserve: Pool!
+  drawdownId: BigInt! # id in sc's
+  repaymentId: BigInt! # id in sc's
+  drawdown: Drawdown!
+  repayment: Repayment!
+  totalDebt: BigInt!
+  amountSlashed: BigInt!
+  totalToLiquidate: BigInt!
+  numNFTsToLiquidate: BigInt!
+  amountToWriteDown: BigInt!
 }

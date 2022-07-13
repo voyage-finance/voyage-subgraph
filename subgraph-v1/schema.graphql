@@ -30,7 +30,7 @@ type UserData @entity {
   id: ID!
   depositData: [UserDepositData!]! @derivedFrom(field: "user")
   unbondings: [Unbonding!]! @derivedFrom(field: "user")
-  vault: Vault!
+  vault: Vault # a user may only be a depositor. vault is optional.
 }
 
 type UserDepositData @entity {
@@ -65,7 +65,7 @@ type Vault @entity {
   id: ID!
   user: UserData!
   creditLines: [CreditLine!]! @derivedFrom(field: "vault")
-  drawdowns: [Drawdown!]! @derivedFrom(field: "vault")
+  loans: [Loan!]! @derivedFrom(field: "vault")
 }
 
 type CreditLine @entity {
@@ -74,7 +74,7 @@ type CreditLine @entity {
   pool: Pool!
   marginEscrow: Bytes!
   creditEscrow: Bytes!
-  borrowRate: BigInt!
+  borrowRate: BigInt! # weighted average, updated on every borrow and final repayment
   totalDebt: BigInt!
   totalMargin: BigInt!
   marginRequirement: BigInt!
@@ -86,7 +86,7 @@ type CreditLine @entity {
   healthFactor: BigInt!
 }
 
-type Drawdown @entity {
+type Loan @entity {
   id: ID! # concat(vault address, underlying asset, drawdown id)
   vault: Vault!
   pool: Pool!
@@ -103,13 +103,13 @@ type Drawdown @entity {
   totalPrincipalPaid: BigInt!
   totalInterestPaid: BigInt!
   paidTimes: BigInt!
-  repayments: [Repayment!]! @derivedFrom(field: "drawdown")
-  liquidations: [Liquidation!]! @derivedFrom(field: "drawdown")
+  repayments: [Repayment!]! @derivedFrom(field: "loan")
+  liquidations: [Liquidation!]! @derivedFrom(field: "loan")
 }
 
 type Repayment @entity {
   id: ID! # concat(vault address, underlying asset, drawdown id, repayment index)
-  drawdown: Drawdown!
+  loan: Loan!
   principal: BigInt!
   interest: BigInt!
   total: BigInt!
@@ -124,9 +124,9 @@ type Liquidation @entity {
   liquidator: String! # address of user
   vault: Vault!
   reserve: Pool!
-  drawdownId: BigInt! # id in sc's
+  loanId: BigInt! # id in sc's
   repaymentId: BigInt! # id in sc's
-  drawdown: Drawdown!
+  loan: Loan!
   repayment: Repayment!
   totalDebt: BigInt!
   amountSlashed: BigInt!

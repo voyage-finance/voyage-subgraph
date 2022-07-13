@@ -1,7 +1,9 @@
 import { Address, BigInt, log } from "@graphprotocol/graph-ts";
-import { CreditLine, Drawdown, Repayment, Vault } from "../../generated/schema";
-import { VaultAssetInitialized, Voyage } from "../../generated/Voyage/Voyage";
-import { Zero } from "../consts";
+import { CreditLine, Loan, Repayment, Vault } from "../../generated/schema";
+import {
+  VaultCreditLineInitialized,
+  Voyage,
+} from "../../generated/Voyage/Voyage";
 
 export function createVault(
   _vaultAddress: Address,
@@ -189,27 +191,4 @@ function getVaultState(
   const vaultConfig = voyage.getVaultConfig(assetAddress);
   const vaultState = voyage.getVaultData(vaultAddress, assetAddress);
   return { vaultConfig, vaultState };
-}
-
-export function generateDrawdownId(
-  vaultAddress: Address,
-  assetAddress: Address,
-  drawdownId: BigInt
-): string {
-  return [
-    vaultAddress.toHex(),
-    assetAddress.toHex(),
-    drawdownId.toString(),
-  ].join("_");
-}
-
-function getCreditLineId(vaultAddress: Address, assetAddress: Address): string {
-  return [vaultAddress.toHex(), assetAddress.toHex()].join("_");
-}
-
-export function generateRepaymentId(
-  drawdownId: string,
-  repaymentId: BigInt
-): string {
-  return [drawdownId, repaymentId.toString()].join("_");
 }

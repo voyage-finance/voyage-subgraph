@@ -149,6 +149,89 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "_vault",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_reserve",
+        "type": "address"
+      }
+    ],
+    "name": "getCreditLineData",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "totalDebt",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "head",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "tail",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct LoanList",
+            "name": "loanList",
+            "type": "tuple"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalMargin",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "withdrawableSecurityDeposit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "creditLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "spendableBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "gav",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "ltv",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "healthFactor",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct CreditLineData",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "_asset",
         "type": "address"
       }
@@ -183,17 +266,22 @@
       },
       {
         "internalType": "uint256",
-        "name": "_drawDownId",
+        "name": "_loanId",
         "type": "uint256"
       }
     ],
-    "name": "getDrawDownDetail",
+    "name": "getLoanDetail",
     "outputs": [
       {
         "components": [
           {
             "internalType": "uint256",
             "name": "principal",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "interest",
             "type": "uint256"
           },
           {
@@ -269,7 +357,7 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct LibLoan.DebtDetail",
+        "internalType": "struct LibLoan.LoanDetail",
         "name": "",
         "type": "tuple"
       }
@@ -448,7 +536,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_drawDownId",
+        "name": "_loanId",
         "type": "uint256"
       }
     ],
@@ -589,89 +677,6 @@
           }
         ],
         "internalType": "struct VaultConfig",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_vault",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_reserve",
-        "type": "address"
-      }
-    ],
-    "name": "getVaultData",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "totalDebt",
-            "type": "uint256"
-          },
-          {
-            "components": [
-              {
-                "internalType": "uint256",
-                "name": "head",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "tail",
-                "type": "uint256"
-              }
-            ],
-            "internalType": "struct DrawDownList",
-            "name": "drawDownList",
-            "type": "tuple"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalMargin",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "withdrawableSecurityDeposit",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "creditLimit",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "spendableBalance",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "gav",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "ltv",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "healthFactor",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct VaultData",
         "name": "",
         "type": "tuple"
       }
@@ -1342,7 +1347,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_drawdownId",
+        "name": "_loanId",
         "type": "uint256"
       },
       {
@@ -1355,6 +1360,12 @@
         "indexed": false,
         "internalType": "uint256",
         "name": "_interest",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_apr",
         "type": "uint256"
       }
     ],
@@ -1477,7 +1488,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_drawdownId",
+        "name": "_loanId",
         "type": "uint256"
       },
       {
@@ -1639,7 +1650,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_drawDownId",
+        "name": "_loanId",
         "type": "uint256"
       }
     ],
@@ -1737,7 +1748,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_drawDown",
+        "name": "_loan",
         "type": "uint256"
       },
       {
@@ -1976,6 +1987,31 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_vault",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_numVaults",
+        "type": "uint256"
+      }
+    ],
+    "name": "VaultCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "_vault",
@@ -2000,32 +2036,7 @@
         "type": "address"
       }
     ],
-    "name": "VaultAssetInitialized",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_vault",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_owner",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_numVaults",
-        "type": "uint256"
-      }
-    ],
-    "name": "VaultCreated",
+    "name": "VaultCreditLineInitialized",
     "type": "event"
   },
   {
@@ -2380,7 +2391,7 @@
         "type": "address"
       }
     ],
-    "name": "initAsset",
+    "name": "initCreditLine",
     "outputs": [
       {
         "internalType": "address",

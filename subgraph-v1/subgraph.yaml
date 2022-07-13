@@ -31,6 +31,8 @@ dataSources:
       abis:
         - name: Voyage
           file: ./abis/Voyage.json
+        - name: IERC20Detailed
+          file: ./abis/helpers/IERC20Detailed.json
       eventHandlers:
         - event: Deposit(indexed address,indexed address,indexed uint8,uint256)
           handler: handleDeposit
@@ -46,13 +48,13 @@ dataSources:
           handler: handleUnpaused
         - event: VaultCreated(address,address,uint256)
           handler: handleVaultCreated
-        - event: VaultAssetInitialized(indexed address,indexed address,address,address)
+        - event: VaultCreditLineInitialized(indexed address,indexed address,address,address)
           handler: handleVaultAssetInitialized
         - event: VaultMarginCredited(indexed address,indexed address,address,uint256)
           handler: handleVaultMarginCredited
         - event: VaultMarginRedeemed(indexed address,indexed address,address,uint256)
           handler: handleVaultMarginRedeemed
-        - event: Borrow(indexed address,indexed address,uint256,uint256,uint256)
+        - event: Borrow(indexed address,indexed address,uint256,uint256,uint256,uint256)
           handler: handleBorrow
         - event: Repayment(indexed address,indexed address,indexed address,uint256,uint256,uint256,bool)
           handler: handleRepay

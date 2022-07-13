@@ -314,13 +314,21 @@ export class UserData extends Entity {
     this.set("unbondings", Value.fromStringArray(value));
   }
 
-  get vault(): string {
+  get vault(): string | null {
     let value = this.get("vault");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set vault(value: string) {
-    this.set("vault", Value.fromString(value));
+  set vault(value: string | null) {
+    if (!value) {
+      this.unset("vault");
+    } else {
+      this.set("vault", Value.fromString(<string>value));
+    }
   }
 }
 
@@ -572,13 +580,13 @@ export class Vault extends Entity {
     this.set("creditLines", Value.fromStringArray(value));
   }
 
-  get drawdowns(): Array<string> {
-    let value = this.get("drawdowns");
+  get loans(): Array<string> {
+    let value = this.get("loans");
     return value!.toStringArray();
   }
 
-  set drawdowns(value: Array<string>) {
-    this.set("drawdowns", Value.fromStringArray(value));
+  set loans(value: Array<string>) {
+    this.set("loans", Value.fromStringArray(value));
   }
 }
 
@@ -740,7 +748,7 @@ export class CreditLine extends Entity {
   }
 }
 
-export class Drawdown extends Entity {
+export class Loan extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -748,18 +756,18 @@ export class Drawdown extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save Drawdown entity without an ID");
+    assert(id != null, "Cannot save Loan entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type Drawdown must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type Loan must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("Drawdown", id.toString(), this);
+      store.set("Loan", id.toString(), this);
     }
   }
 
-  static load(id: string): Drawdown | null {
-    return changetype<Drawdown | null>(store.get("Drawdown", id));
+  static load(id: string): Loan | null {
+    return changetype<Loan | null>(store.get("Loan", id));
   }
 
   get id(): string {
@@ -956,13 +964,13 @@ export class Repayment extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get drawdown(): string {
-    let value = this.get("drawdown");
+  get loan(): string {
+    let value = this.get("loan");
     return value!.toString();
   }
 
-  set drawdown(value: string) {
-    this.set("drawdown", Value.fromString(value));
+  set loan(value: string) {
+    this.set("loan", Value.fromString(value));
   }
 
   get principal(): BigInt {
@@ -1087,13 +1095,13 @@ export class Liquidation extends Entity {
     this.set("reserve", Value.fromString(value));
   }
 
-  get drawdownId(): BigInt {
-    let value = this.get("drawdownId");
+  get loanId(): BigInt {
+    let value = this.get("loanId");
     return value!.toBigInt();
   }
 
-  set drawdownId(value: BigInt) {
-    this.set("drawdownId", Value.fromBigInt(value));
+  set loanId(value: BigInt) {
+    this.set("loanId", Value.fromBigInt(value));
   }
 
   get repaymentId(): BigInt {
@@ -1105,13 +1113,13 @@ export class Liquidation extends Entity {
     this.set("repaymentId", Value.fromBigInt(value));
   }
 
-  get drawdown(): string {
-    let value = this.get("drawdown");
+  get loan(): string {
+    let value = this.get("loan");
     return value!.toString();
   }
 
-  set drawdown(value: string) {
-    this.set("drawdown", Value.fromString(value));
+  set loan(value: string) {
+    this.set("loan", Value.fromString(value));
   }
 
   get repayment(): string {

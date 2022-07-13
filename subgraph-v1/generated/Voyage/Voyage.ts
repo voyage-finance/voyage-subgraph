@@ -177,7 +177,7 @@ export class Borrow__Params {
     return this._event.parameters[1].value.toAddress();
   }
 
-  get _drawdownId(): BigInt {
+  get _loanId(): BigInt {
     return this._event.parameters[2].value.toBigInt();
   }
 
@@ -187,6 +187,10 @@ export class Borrow__Params {
 
   get _interest(): BigInt {
     return this._event.parameters[4].value.toBigInt();
+  }
+
+  get _apr(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
   }
 }
 
@@ -295,7 +299,7 @@ export class Repayment__Params {
     return this._event.parameters[2].value.toAddress();
   }
 
-  get _drawdownId(): BigInt {
+  get _loanId(): BigInt {
     return this._event.parameters[3].value.toBigInt();
   }
 
@@ -348,36 +352,6 @@ export class Unpaused__Params {
   }
 }
 
-export class VaultAssetInitialized extends ethereum.Event {
-  get params(): VaultAssetInitialized__Params {
-    return new VaultAssetInitialized__Params(this);
-  }
-}
-
-export class VaultAssetInitialized__Params {
-  _event: VaultAssetInitialized;
-
-  constructor(event: VaultAssetInitialized) {
-    this._event = event;
-  }
-
-  get _vault(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
-  get _asset(): Address {
-    return this._event.parameters[1].value.toAddress();
-  }
-
-  get _me(): Address {
-    return this._event.parameters[2].value.toAddress();
-  }
-
-  get _ce(): Address {
-    return this._event.parameters[3].value.toAddress();
-  }
-}
-
 export class VaultCreated extends ethereum.Event {
   get params(): VaultCreated__Params {
     return new VaultCreated__Params(this);
@@ -401,6 +375,36 @@ export class VaultCreated__Params {
 
   get _numVaults(): BigInt {
     return this._event.parameters[2].value.toBigInt();
+  }
+}
+
+export class VaultCreditLineInitialized extends ethereum.Event {
+  get params(): VaultCreditLineInitialized__Params {
+    return new VaultCreditLineInitialized__Params(this);
+  }
+}
+
+export class VaultCreditLineInitialized__Params {
+  _event: VaultCreditLineInitialized;
+
+  constructor(event: VaultCreditLineInitialized) {
+    this._event = event;
+  }
+
+  get _vault(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get _asset(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get _me(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get _ce(): Address {
+    return this._event.parameters[3].value.toAddress();
   }
 }
 
@@ -464,6 +468,56 @@ export class VaultMarginRedeemed__Params {
   }
 }
 
+export class Voyage__getCreditLineDataResultValue0Struct extends ethereum.Tuple {
+  get totalDebt(): BigInt {
+    return this[0].toBigInt();
+  }
+
+  get loanList(): Voyage__getCreditLineDataResultValue0LoanListStruct {
+    return changetype<Voyage__getCreditLineDataResultValue0LoanListStruct>(
+      this[1].toTuple()
+    );
+  }
+
+  get totalMargin(): BigInt {
+    return this[2].toBigInt();
+  }
+
+  get withdrawableSecurityDeposit(): BigInt {
+    return this[3].toBigInt();
+  }
+
+  get creditLimit(): BigInt {
+    return this[4].toBigInt();
+  }
+
+  get spendableBalance(): BigInt {
+    return this[5].toBigInt();
+  }
+
+  get gav(): BigInt {
+    return this[6].toBigInt();
+  }
+
+  get ltv(): BigInt {
+    return this[7].toBigInt();
+  }
+
+  get healthFactor(): BigInt {
+    return this[8].toBigInt();
+  }
+}
+
+export class Voyage__getCreditLineDataResultValue0LoanListStruct extends ethereum.Tuple {
+  get head(): BigInt {
+    return this[0].toBigInt();
+  }
+
+  get tail(): BigInt {
+    return this[1].toBigInt();
+  }
+}
+
 export class Voyage__getDepositTokensResult {
   value0: Address;
   value1: Address;
@@ -489,59 +543,63 @@ export class Voyage__getDepositTokensResult {
   }
 }
 
-export class Voyage__getDrawDownDetailResultValue0Struct extends ethereum.Tuple {
+export class Voyage__getLoanDetailResultValue0Struct extends ethereum.Tuple {
   get principal(): BigInt {
     return this[0].toBigInt();
   }
 
-  get term(): BigInt {
+  get interest(): BigInt {
     return this[1].toBigInt();
   }
 
-  get epoch(): BigInt {
+  get term(): BigInt {
     return this[2].toBigInt();
   }
 
-  get nper(): BigInt {
+  get epoch(): BigInt {
     return this[3].toBigInt();
   }
 
-  get reserve(): Address {
-    return this[4].toAddress();
+  get nper(): BigInt {
+    return this[4].toBigInt();
   }
 
-  get pmt(): Voyage__getDrawDownDetailResultValue0PmtStruct {
-    return changetype<Voyage__getDrawDownDetailResultValue0PmtStruct>(
-      this[5].toTuple()
+  get reserve(): Address {
+    return this[5].toAddress();
+  }
+
+  get pmt(): Voyage__getLoanDetailResultValue0PmtStruct {
+    return changetype<Voyage__getLoanDetailResultValue0PmtStruct>(
+      this[6].toTuple()
     );
   }
 
   get apr(): BigInt {
-    return this[6].toBigInt();
-  }
-
-  get borrowAt(): BigInt {
     return this[7].toBigInt();
   }
 
-  get nextPaymentDue(): BigInt {
+  get borrowAt(): BigInt {
     return this[8].toBigInt();
   }
 
-  get totalPrincipalPaid(): BigInt {
+  get nextPaymentDue(): BigInt {
     return this[9].toBigInt();
   }
 
-  get totalInterestPaid(): BigInt {
+  get totalPrincipalPaid(): BigInt {
     return this[10].toBigInt();
   }
 
-  get paidTimes(): BigInt {
+  get totalInterestPaid(): BigInt {
     return this[11].toBigInt();
+  }
+
+  get paidTimes(): BigInt {
+    return this[12].toBigInt();
   }
 }
 
-export class Voyage__getDrawDownDetailResultValue0PmtStruct extends ethereum.Tuple {
+export class Voyage__getLoanDetailResultValue0PmtStruct extends ethereum.Tuple {
   get principal(): BigInt {
     return this[0].toBigInt();
   }
@@ -696,56 +754,6 @@ export class Voyage__getVaultConfigResultValue0Struct extends ethereum.Tuple {
 
   get marginRequirement(): BigInt {
     return this[2].toBigInt();
-  }
-}
-
-export class Voyage__getVaultDataResultValue0Struct extends ethereum.Tuple {
-  get totalDebt(): BigInt {
-    return this[0].toBigInt();
-  }
-
-  get drawDownList(): Voyage__getVaultDataResultValue0DrawDownListStruct {
-    return changetype<Voyage__getVaultDataResultValue0DrawDownListStruct>(
-      this[1].toTuple()
-    );
-  }
-
-  get totalMargin(): BigInt {
-    return this[2].toBigInt();
-  }
-
-  get withdrawableSecurityDeposit(): BigInt {
-    return this[3].toBigInt();
-  }
-
-  get creditLimit(): BigInt {
-    return this[4].toBigInt();
-  }
-
-  get spendableBalance(): BigInt {
-    return this[5].toBigInt();
-  }
-
-  get gav(): BigInt {
-    return this[6].toBigInt();
-  }
-
-  get ltv(): BigInt {
-    return this[7].toBigInt();
-  }
-
-  get healthFactor(): BigInt {
-    return this[8].toBigInt();
-  }
-}
-
-export class Voyage__getVaultDataResultValue0DrawDownListStruct extends ethereum.Tuple {
-  get head(): BigInt {
-    return this[0].toBigInt();
-  }
-
-  get tail(): BigInt {
-    return this[1].toBigInt();
   }
 }
 
@@ -1010,7 +1018,7 @@ export class Voyage__getVaultEscrowAddrResult {
   }
 }
 
-export class Voyage__initAssetResult {
+export class Voyage__initCreditLineResult {
   value0: Address;
   value1: Address;
 
@@ -1038,6 +1046,41 @@ export class Voyage__initAssetResult {
 export class Voyage extends ethereum.SmartContract {
   static bind(address: Address): Voyage {
     return new Voyage("Voyage", address);
+  }
+
+  getCreditLineData(
+    _vault: Address,
+    _reserve: Address
+  ): Voyage__getCreditLineDataResultValue0Struct {
+    let result = super.call(
+      "getCreditLineData",
+      "getCreditLineData(address,address):((uint256,(uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256,uint256))",
+      [ethereum.Value.fromAddress(_vault), ethereum.Value.fromAddress(_reserve)]
+    );
+
+    return changetype<Voyage__getCreditLineDataResultValue0Struct>(
+      result[0].toTuple()
+    );
+  }
+
+  try_getCreditLineData(
+    _vault: Address,
+    _reserve: Address
+  ): ethereum.CallResult<Voyage__getCreditLineDataResultValue0Struct> {
+    let result = super.tryCall(
+      "getCreditLineData",
+      "getCreditLineData(address,address):((uint256,(uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256,uint256))",
+      [ethereum.Value.fromAddress(_vault), ethereum.Value.fromAddress(_reserve)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      changetype<Voyage__getCreditLineDataResultValue0Struct>(
+        value[0].toTuple()
+      )
+    );
   }
 
   getDepositTokens(_asset: Address): Voyage__getDepositTokensResult {
@@ -1073,38 +1116,38 @@ export class Voyage extends ethereum.SmartContract {
     );
   }
 
-  getDrawDownDetail(
+  getLoanDetail(
     _vault: Address,
     _reserve: Address,
-    _drawDownId: BigInt
-  ): Voyage__getDrawDownDetailResultValue0Struct {
+    _loanId: BigInt
+  ): Voyage__getLoanDetailResultValue0Struct {
     let result = super.call(
-      "getDrawDownDetail",
-      "getDrawDownDetail(address,address,uint256):((uint256,uint256,uint256,uint256,address,(uint256,uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256))",
+      "getLoanDetail",
+      "getLoanDetail(address,address,uint256):((uint256,uint256,uint256,uint256,uint256,address,(uint256,uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256))",
       [
         ethereum.Value.fromAddress(_vault),
         ethereum.Value.fromAddress(_reserve),
-        ethereum.Value.fromUnsignedBigInt(_drawDownId)
+        ethereum.Value.fromUnsignedBigInt(_loanId)
       ]
     );
 
-    return changetype<Voyage__getDrawDownDetailResultValue0Struct>(
+    return changetype<Voyage__getLoanDetailResultValue0Struct>(
       result[0].toTuple()
     );
   }
 
-  try_getDrawDownDetail(
+  try_getLoanDetail(
     _vault: Address,
     _reserve: Address,
-    _drawDownId: BigInt
-  ): ethereum.CallResult<Voyage__getDrawDownDetailResultValue0Struct> {
+    _loanId: BigInt
+  ): ethereum.CallResult<Voyage__getLoanDetailResultValue0Struct> {
     let result = super.tryCall(
-      "getDrawDownDetail",
-      "getDrawDownDetail(address,address,uint256):((uint256,uint256,uint256,uint256,address,(uint256,uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256))",
+      "getLoanDetail",
+      "getLoanDetail(address,address,uint256):((uint256,uint256,uint256,uint256,uint256,address,(uint256,uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256))",
       [
         ethereum.Value.fromAddress(_vault),
         ethereum.Value.fromAddress(_reserve),
-        ethereum.Value.fromUnsignedBigInt(_drawDownId)
+        ethereum.Value.fromUnsignedBigInt(_loanId)
       ]
     );
     if (result.reverted) {
@@ -1112,9 +1155,7 @@ export class Voyage extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<Voyage__getDrawDownDetailResultValue0Struct>(
-        value[0].toTuple()
-      )
+      changetype<Voyage__getLoanDetailResultValue0Struct>(value[0].toTuple())
     );
   }
 
@@ -1210,7 +1251,7 @@ export class Voyage extends ethereum.SmartContract {
   getRepayment(
     _valut: Address,
     _reserve: Address,
-    _drawDownId: BigInt
+    _loanId: BigInt
   ): Array<Voyage__getRepaymentResultValue0Struct> {
     let result = super.call(
       "getRepayment",
@@ -1218,7 +1259,7 @@ export class Voyage extends ethereum.SmartContract {
       [
         ethereum.Value.fromAddress(_valut),
         ethereum.Value.fromAddress(_reserve),
-        ethereum.Value.fromUnsignedBigInt(_drawDownId)
+        ethereum.Value.fromUnsignedBigInt(_loanId)
       ]
     );
 
@@ -1228,7 +1269,7 @@ export class Voyage extends ethereum.SmartContract {
   try_getRepayment(
     _valut: Address,
     _reserve: Address,
-    _drawDownId: BigInt
+    _loanId: BigInt
   ): ethereum.CallResult<Array<Voyage__getRepaymentResultValue0Struct>> {
     let result = super.tryCall(
       "getRepayment",
@@ -1236,7 +1277,7 @@ export class Voyage extends ethereum.SmartContract {
       [
         ethereum.Value.fromAddress(_valut),
         ethereum.Value.fromAddress(_reserve),
-        ethereum.Value.fromUnsignedBigInt(_drawDownId)
+        ethereum.Value.fromUnsignedBigInt(_loanId)
       ]
     );
     if (result.reverted) {
@@ -1326,39 +1367,6 @@ export class Voyage extends ethereum.SmartContract {
     let value = result.value;
     return ethereum.CallResult.fromValue(
       changetype<Voyage__getVaultConfigResultValue0Struct>(value[0].toTuple())
-    );
-  }
-
-  getVaultData(
-    _vault: Address,
-    _reserve: Address
-  ): Voyage__getVaultDataResultValue0Struct {
-    let result = super.call(
-      "getVaultData",
-      "getVaultData(address,address):((uint256,(uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256,uint256))",
-      [ethereum.Value.fromAddress(_vault), ethereum.Value.fromAddress(_reserve)]
-    );
-
-    return changetype<Voyage__getVaultDataResultValue0Struct>(
-      result[0].toTuple()
-    );
-  }
-
-  try_getVaultData(
-    _vault: Address,
-    _reserve: Address
-  ): ethereum.CallResult<Voyage__getVaultDataResultValue0Struct> {
-    let result = super.tryCall(
-      "getVaultData",
-      "getVaultData(address,address):((uint256,(uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256,uint256))",
-      [ethereum.Value.fromAddress(_vault), ethereum.Value.fromAddress(_reserve)]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(
-      changetype<Voyage__getVaultDataResultValue0Struct>(value[0].toTuple())
     );
   }
 
@@ -2210,26 +2218,29 @@ export class Voyage extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  initAsset(_vault: Address, _asset: Address): Voyage__initAssetResult {
+  initCreditLine(
+    _vault: Address,
+    _asset: Address
+  ): Voyage__initCreditLineResult {
     let result = super.call(
-      "initAsset",
-      "initAsset(address,address):(address,address)",
+      "initCreditLine",
+      "initCreditLine(address,address):(address,address)",
       [ethereum.Value.fromAddress(_vault), ethereum.Value.fromAddress(_asset)]
     );
 
-    return new Voyage__initAssetResult(
+    return new Voyage__initCreditLineResult(
       result[0].toAddress(),
       result[1].toAddress()
     );
   }
 
-  try_initAsset(
+  try_initCreditLine(
     _vault: Address,
     _asset: Address
-  ): ethereum.CallResult<Voyage__initAssetResult> {
+  ): ethereum.CallResult<Voyage__initCreditLineResult> {
     let result = super.tryCall(
-      "initAsset",
-      "initAsset(address,address):(address,address)",
+      "initCreditLine",
+      "initCreditLine(address,address):(address,address)",
       [ethereum.Value.fromAddress(_vault), ethereum.Value.fromAddress(_asset)]
     );
     if (result.reverted) {
@@ -2237,7 +2248,10 @@ export class Voyage extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new Voyage__initAssetResult(value[0].toAddress(), value[1].toAddress())
+      new Voyage__initCreditLineResult(
+        value[0].toAddress(),
+        value[1].toAddress()
+      )
     );
   }
 
@@ -2867,7 +2881,7 @@ export class LiquidateCall__Inputs {
     return this._call.inputValues[1].value.toAddress();
   }
 
-  get _drawDownId(): BigInt {
+  get _loanId(): BigInt {
     return this._call.inputValues[2].value.toBigInt();
   }
 }
@@ -2901,7 +2915,7 @@ export class RepayCall__Inputs {
     return this._call.inputValues[0].value.toAddress();
   }
 
-  get _drawDown(): BigInt {
+  get _loan(): BigInt {
     return this._call.inputValues[1].value.toBigInt();
   }
 
@@ -3308,20 +3322,20 @@ export class DepositMarginCall__Outputs {
   }
 }
 
-export class InitAssetCall extends ethereum.Call {
-  get inputs(): InitAssetCall__Inputs {
-    return new InitAssetCall__Inputs(this);
+export class InitCreditLineCall extends ethereum.Call {
+  get inputs(): InitCreditLineCall__Inputs {
+    return new InitCreditLineCall__Inputs(this);
   }
 
-  get outputs(): InitAssetCall__Outputs {
-    return new InitAssetCall__Outputs(this);
+  get outputs(): InitCreditLineCall__Outputs {
+    return new InitCreditLineCall__Outputs(this);
   }
 }
 
-export class InitAssetCall__Inputs {
-  _call: InitAssetCall;
+export class InitCreditLineCall__Inputs {
+  _call: InitCreditLineCall;
 
-  constructor(call: InitAssetCall) {
+  constructor(call: InitCreditLineCall) {
     this._call = call;
   }
 
@@ -3334,10 +3348,10 @@ export class InitAssetCall__Inputs {
   }
 }
 
-export class InitAssetCall__Outputs {
-  _call: InitAssetCall;
+export class InitCreditLineCall__Outputs {
+  _call: InitCreditLineCall;
 
-  constructor(call: InitAssetCall) {
+  constructor(call: InitCreditLineCall) {
     this._call = call;
   }
 

@@ -1,14 +1,14 @@
 import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 import { CreditLine, Loan, Repayment, Vault } from "../../generated/schema";
 import {
+  VaultCreated,
   VaultCreditLineInitialized,
   Voyage,
 } from "../../generated/Voyage/Voyage";
+import { getCreditLineEntityId } from "../utils/id";
+import { zeroBI } from "../utils/math";
 
-export function createVault(
-  _vaultAddress: Address,
-  _userAddress: Address
-): Vault {
+function createVault(_vaultAddress: Address, _userAddress: Address): Vault {
   const vaultAddress = _vaultAddress.toHex();
   let vaultEntity = Vault.load(vaultAddress);
   if (!vaultEntity) {
@@ -21,7 +21,12 @@ export function createVault(
   return vaultEntity;
 }
 
-export function handleCreditLineInitialised(evt: VaultAssetInitialized) {
+export function handleVaultCreated(event: VaultCreated): void {
+  log.info("-- handleVaultCreated ---", []);
+  createVault(event.params._vault, event.params._owner);
+}
+
+export function handleCreditLineInitialised(evt: VaultCreditLineInitialized) {
   const { _vault, _asset } = evt.params;
   const { vaultConfig, vaultState } = getVaultState(
     _vault,
@@ -29,14 +34,17 @@ export function handleCreditLineInitialised(evt: VaultAssetInitialized) {
     evt.address
   );
 
-  const creditLineId = getCreditLineId(evt.params._vault, evt.params._asset);
+  const creditLineId = getCreditLineEntityId(
+    evt.params._vault,
+    evt.params._asset
+  );
   const creditLine = new CreditLine(creditLineId);
 
   creditLine.marginEscrow = evt.params._me;
   creditLine.creditEscrow = evt.params._ce;
-  creditLine.borrowRate = Zero;
-  creditLine.totalDebt = Zero;
-  creditLine.totalMargin = Zero;
+  creditLine.borrowRate = zeroBI();
+  creditLine.totalDebt = zeroBI();
+  creditLine.totalMargin = zeroBI();
   creditLine.marginRequirement = vaultConfig.marginRequirement;
   creditLine.withdrawableSecurityDeposit =
     vaultState.withdrawableSecurityDeposit;
@@ -71,7 +79,7 @@ export function handleMarginEvent(
     vaultEntity = new Vault(vaultAddress);
   }
 
-  const creditLineId = getCreditLineId(_vaultAddress, _assetAddress);
+  const creditLineId = getCreditLineEntityId(_vaultAddress, _assetAddress);
   const creditLine = CreditLine.load(creditLineId);
   if (!creditLine) {
     // Should not happen, since a credit line should exist in order for a margin deposit to happen.
@@ -83,8 +91,8 @@ export function handleMarginEvent(
   }
 
   const voyage = Voyage.bind(_eventAddress);
-  const vaultData = voyage.getVaultData(_vaultAddress, _assetAddress);
-  const vaultConfigData = voyage.getVaultConfig(_assetAddress);
+  const vaultData = voyage.getCreditLineData(_vaultAddress, _assetAddress);
+  const vaultConfigData = voyage.getVaultConfig(_assetAddress, _vaultAddress);
 
   // TODO: compute the weighted average interest rate of draw downs
   // creditLine.borrowRate = vaultData.borrowRate;
@@ -123,13 +131,13 @@ export function handleLoanEvent(
     _eventAddress
   );
   // Update drawdowns
-  var drawdownEntity: Drawdown;
+  var drawdownEntity: Loan;
   for (
-    let i = vaultState.drawDownList.head.toI32();
-    i < vaultState.drawDownList.tail.toI32();
+    let i = vaultState.loanList.head.toI32();
+    i < vaultState.loanList.tail.toI32();
     i++
   ) {
-    const drawdown = voyage.getDrawDownDetail(
+    const drawdown = voyage.getLoanDetail(
       _vaultAddress,
       _assetAddress,
       BigInt.fromI32(i)
@@ -137,10 +145,8 @@ export function handleLoanEvent(
     const drawdownId = [vaultAddress, _assetAddress.toHex(), i.toString()].join(
       "_"
     );
-    const _drawdownEntity = Drawdown.load(drawdownId);
-    drawdownEntity = _drawdownEntity
-      ? _drawdownEntity
-      : new Drawdown(drawdownId);
+    const _drawdownEntity = Loan.load(drawdownId);
+    drawdownEntity = _drawdownEntity ? _drawdownEntity : new Loan(drawdownId);
     drawdownEntity.vault = vaultAddress;
     drawdownEntity.principal = drawdown.principal;
     drawdownEntity.pmt_principal = drawdown.pmt.principal;
@@ -168,7 +174,7 @@ export function handleLoanEvent(
       repaymentEntity = _repaymentEntity
         ? _repaymentEntity
         : new Repayment(repaymentId);
-      repaymentEntity.drawdown = drawdownEntity.id;
+      repaymentEntity.loan = drawdownEntity.id;
       const repayment = repayments.at(j);
       repaymentEntity.principal = repayment.principal;
       repaymentEntity.interest = repayment.interest;
@@ -188,7 +194,7 @@ function getVaultState(
   voyageAddress: Address
 ) {
   const voyage = Voyage.bind(voyageAddress);
-  const vaultConfig = voyage.getVaultConfig(assetAddress);
-  const vaultState = voyage.getVaultData(vaultAddress, assetAddress);
+  const vaultConfig = voyage.getVaultConfig(assetAddress, vaultAddress);
+  const vaultState = voyage.getCreditLineData(vaultAddress, assetAddress);
   return { vaultConfig, vaultState };
 }

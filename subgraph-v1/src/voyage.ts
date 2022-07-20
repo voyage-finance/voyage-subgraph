@@ -2,17 +2,15 @@ import { log } from "@graphprotocol/graph-ts";
 import {
   Paused,
   Unpaused,
-  VaultAssetInitialized,
+  VaultCreditLineInitialized,
   VaultCreated,
   VaultMarginCredited,
   VaultMarginRedeemed,
 } from "../generated/Voyage/Voyage";
 import {
-  createVault,
   handleCreditLineInitialised,
   handleMarginEvent,
-} from "./utils/vault";
-
+} from "./mapping/index";
 export function handlePaused(event: Paused): void {}
 
 export function handleUnpaused(event: Unpaused): void {}

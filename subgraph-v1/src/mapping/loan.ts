@@ -1,7 +1,14 @@
-import { Borrow, Repayment, Voyage } from "../../generated/Voyage/Voyage";
-import { getLoanEntityId } from "../utils/id";
+import {
+  Borrow,
+  Liquidate,
+  Voyage,
+  Repayment as RepaymentEvent,
+} from "../../generated/Voyage/Voyage";
+import { getLoanEntityId, getRepaymentEntityId } from "../utils/id";
 import { getOrInitLoan } from "../helpers/initializers";
 import { updateLoanEntity } from "../helpers/updaters";
+import { Liquidation, Loan, Repayment } from "../../generated/schema";
+import { log } from "@graphprotocol/graph-ts";
 
 export function handleBorrow(event: Borrow): void {
   const loan = getOrInitLoan(
@@ -21,28 +28,40 @@ export function handleBorrow(event: Borrow): void {
   loan.save();
 }
 
-export function handleRepay(event: Repayment): void {
+export function handleRepay(event: RepaymentEvent): void {
   const voyage = Voyage.bind(event.address);
   const drawdownId = getLoanEntityId(
     event.params._vault,
     event.params._asset,
     event.params._loanId
   );
-  const drawdown = Drawdown.load(drawdownId);
+  const loan = Loan.load(drawdownId);
+  if (!loan) {
+    // Should not happen, since a loan should exist in order for a repay to happen.
+    log.error(
+      "tried to handle repay event for a non-existent loan. vault: {} asset: {} loan: {}",
+      [
+        event.params._vault.toHex(),
+        event.params._asset.toHex(),
+        event.params._loanId.toString(),
+      ]
+    );
+    return;
+  }
   updateLoanEntity(
-    loan,
+    loan!,
     event.params._vault,
     event.params._asset,
     event.params._loanId,
     event
   );
-  drawdown!.save();
+  loan!.save();
 
-  const id = generateRepaymentId(drawdown!.id, event.params._repaymentId);
+  const id = getRepaymentEntityId(loan!.id, event.params._repaymentId);
   const repayment = new Repayment(id);
-  repayment.drawdown = drawdown!.id;
-  repayment.principal = drawdown!.pmt_principal;
-  repayment.interest = drawdown!.pmt_interest;
+  repayment.loan = loan!.id;
+  repayment.principal = loan!.pmt_principal;
+  repayment.interest = loan!.pmt_interest;
   // we cannot use pmt.amount, as this may be a liquidation.
   // in the event of liquidation, the amount repaid could fall short if there is a partial or even complete write down of the debt.
   repayment.total = event.params._amount;
@@ -73,15 +92,14 @@ export function handleLiquidate(event: Liquidate): void {
   liquidationEntity.liquidator = userAddress;
   liquidationEntity.vault = vaultAddress;
   liquidationEntity.reserve = assetAddress;
-  liquidationEntity.drawdownId = event.params._drowDownId;
+  liquidationEntity.loanId = event.params._drowDownId;
   liquidationEntity.repaymentId = event.params._repaymentId;
-  liquidationEntity.drawdown = drawdownId;
+  liquidationEntity.loan = drawdownId;
   liquidationEntity.repayment = repaymentId;
   liquidationEntity.totalDebt = event.params._debt;
   liquidationEntity.amountSlashed = event.params._margin;
   liquidationEntity.totalToLiquidate = event.params._collateral;
-  liquidationEntity.numNFTsToLiquidate = event.params._numCollateral;
-  liquidationEntity.amountToWriteDown = event.params._writedown;
+  liquidationEntity.amountToWriteDown = event.params._amountToWriteDown;
 
   liquidationEntity.save();
 }

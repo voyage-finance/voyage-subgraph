@@ -131,6 +131,5 @@ type Liquidation @entity {
   totalDebt: BigInt!
   amountSlashed: BigInt!
   totalToLiquidate: BigInt!
-  numNFTsToLiquidate: BigInt!
   amountToWriteDown: BigInt!
 }

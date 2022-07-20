@@ -87,7 +87,7 @@ type CreditLine @entity {
 }
 
 type Loan @entity {
-  id: ID! # concat(vault address, underlying asset, drawdown id)
+  id: ID! # concat(vault address, underlying asset, loan id)
   vault: Vault!
   pool: Pool!
   pmt_principal: BigInt!
@@ -108,7 +108,7 @@ type Loan @entity {
 }
 
 type Repayment @entity {
-  id: ID! # concat(vault address, underlying asset, drawdown id, repayment index)
+  id: ID! # concat(vault address, underlying asset, loan id, repayment index)
   loan: Loan!
   principal: BigInt!
   interest: BigInt!

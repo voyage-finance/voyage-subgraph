@@ -1158,15 +1158,6 @@ export class Liquidation extends Entity {
     this.set("totalToLiquidate", Value.fromBigInt(value));
   }
 
-  get numNFTsToLiquidate(): BigInt {
-    let value = this.get("numNFTsToLiquidate");
-    return value!.toBigInt();
-  }
-
-  set numNFTsToLiquidate(value: BigInt) {
-    this.set("numNFTsToLiquidate", Value.fromBigInt(value));
-  }
-
   get amountToWriteDown(): BigInt {
     let value = this.get("amountToWriteDown");
     return value!.toBigInt();

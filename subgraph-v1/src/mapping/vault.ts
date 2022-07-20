@@ -130,37 +130,37 @@ export function handleLoanEvent(
     _assetAddress,
     _eventAddress
   );
-  // Update drawdowns
-  var drawdownEntity: Loan;
+  // Update loans
+  var loanEntity: Loan;
   for (
     let i = vaultState.loanList.head.toI32();
     i < vaultState.loanList.tail.toI32();
     i++
   ) {
-    const drawdown = voyage.getLoanDetail(
+    const loan = voyage.getLoanDetail(
       _vaultAddress,
       _assetAddress,
       BigInt.fromI32(i)
     );
-    const drawdownId = [vaultAddress, _assetAddress.toHex(), i.toString()].join(
+    const loanId = [vaultAddress, _assetAddress.toHex(), i.toString()].join(
       "_"
     );
-    const _drawdownEntity = Loan.load(drawdownId);
-    drawdownEntity = _drawdownEntity ? _drawdownEntity : new Loan(drawdownId);
-    drawdownEntity.vault = vaultAddress;
-    drawdownEntity.principal = drawdown.principal;
-    drawdownEntity.pmt_principal = drawdown.pmt.principal;
-    drawdownEntity.pmt_interest = drawdown.pmt.interest;
-    drawdownEntity.pmt_payment = drawdown.pmt.pmt;
-    drawdownEntity.term = drawdown.term;
-    drawdownEntity.epoch = drawdown.epoch;
-    drawdownEntity.nper = drawdown.nper;
-    drawdownEntity.apr = drawdown.apr;
-    drawdownEntity.borrowAt = drawdown.borrowAt;
-    drawdownEntity.nextPaymentDue = drawdown.nextPaymentDue;
-    drawdownEntity.totalPrincipalPaid = drawdown.totalPrincipalPaid;
-    drawdownEntity.totalInterestPaid = drawdown.totalInterestPaid;
-    drawdownEntity.paidTimes = drawdown.paidTimes;
+    const _loanEntity = Loan.load(loanId);
+    loanEntity = _loanEntity ? _loanEntity : new Loan(loanId);
+    loanEntity.vault = vaultAddress;
+    loanEntity.principal = loan.principal;
+    loanEntity.pmt_principal = loan.pmt.principal;
+    loanEntity.pmt_interest = loan.pmt.interest;
+    loanEntity.pmt_payment = loan.pmt.pmt;
+    loanEntity.term = loan.term;
+    loanEntity.epoch = loan.epoch;
+    loanEntity.nper = loan.nper;
+    loanEntity.apr = loan.apr;
+    loanEntity.borrowAt = loan.borrowAt;
+    loanEntity.nextPaymentDue = loan.nextPaymentDue;
+    loanEntity.totalPrincipalPaid = loan.totalPrincipalPaid;
+    loanEntity.totalInterestPaid = loan.totalInterestPaid;
+    loanEntity.paidTimes = loan.paidTimes;
 
     var repaymentEntity: Repayment;
     const repayments = voyage.getRepayment(
@@ -169,12 +169,12 @@ export function handleLoanEvent(
       BigInt.fromI32(i)
     );
     for (let j = 0; j < repayments.length; j++) {
-      const repaymentId = [drawdownId, j.toString()].join("_");
+      const repaymentId = [loanId, j.toString()].join("_");
       const _repaymentEntity = Repayment.load(repaymentId);
       repaymentEntity = _repaymentEntity
         ? _repaymentEntity
         : new Repayment(repaymentId);
-      repaymentEntity.loan = drawdownEntity.id;
+      repaymentEntity.loan = loanEntity.id;
       const repayment = repayments.at(j);
       repaymentEntity.principal = repayment.principal;
       repaymentEntity.interest = repayment.interest;
@@ -184,7 +184,7 @@ export function handleLoanEvent(
       repaymentEntity.save();
     }
 
-    drawdownEntity.save();
+    loanEntity.save();
   }
 }
 

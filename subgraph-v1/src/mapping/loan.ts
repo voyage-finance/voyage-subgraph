@@ -24,18 +24,18 @@ export function handleBorrow(event: Borrow): void {
     event
   );
   // creditline average borrow rate
-  // const total = drawdown.inte
+  // const total = loan.inte
   loan.save();
 }
 
 export function handleRepay(event: RepaymentEvent): void {
   const voyage = Voyage.bind(event.address);
-  const drawdownId = getLoanEntityId(
+  const loanId = getLoanEntityId(
     event.params._vault,
     event.params._asset,
     event.params._loanId
   );
-  const loan = Loan.load(drawdownId);
+  const loan = Loan.load(loanId);
   if (!loan) {
     // Should not happen, since a loan should exist in order for a repay to happen.
     log.error(
@@ -75,14 +75,12 @@ export function handleLiquidate(event: Liquidate): void {
   const assetAddress = event.params._asset.toHex();
   const userAddress = event.params._liquidator.toHex();
 
-  const drawdownId = [
+  const loanId = [
     vaultAddress,
     assetAddress,
     event.params._drowDownId.toString(),
   ].join("_");
-  const repaymentId = [drawdownId, event.params._repaymentId.toString()].join(
-    "_"
-  );
+  const repaymentId = [loanId, event.params._repaymentId.toString()].join("_");
 
   let liquidationEntity = Liquidation.load(repaymentId);
   if (!liquidationEntity) {
@@ -94,7 +92,7 @@ export function handleLiquidate(event: Liquidate): void {
   liquidationEntity.reserve = assetAddress;
   liquidationEntity.loanId = event.params._drowDownId;
   liquidationEntity.repaymentId = event.params._repaymentId;
-  liquidationEntity.loan = drawdownId;
+  liquidationEntity.loan = loanId;
   liquidationEntity.repayment = repaymentId;
   liquidationEntity.totalDebt = event.params._debt;
   liquidationEntity.amountSlashed = event.params._margin;

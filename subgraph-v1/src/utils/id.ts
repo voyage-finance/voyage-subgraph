@@ -10,13 +10,11 @@ export function getUserDepositDataId(
 export function getLoanEntityId(
   vaultAddress: Address,
   assetAddress: Address,
-  drawdownId: BigInt
+  loanId: BigInt
 ): string {
-  return [
-    vaultAddress.toHex(),
-    assetAddress.toHex(),
-    drawdownId.toString(),
-  ].join("_");
+  return [vaultAddress.toHex(), assetAddress.toHex(), loanId.toString()].join(
+    "_"
+  );
 }
 
 export function getUnbondingEntityId(
@@ -35,8 +33,8 @@ export function getCreditLineEntityId(
 }
 
 export function getRepaymentEntityId(
-  drawdownId: string,
+  loanId: string,
   repaymentId: BigInt
 ): string {
-  return [drawdownId, repaymentId.toString()].join("_");
+  return [loanId, repaymentId.toString()].join("_");
 }

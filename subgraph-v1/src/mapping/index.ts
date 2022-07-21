@@ -7,6 +7,10 @@ export {
   handleWithdraw,
   handleDepositVToken,
   handleWithdrawVToken,
+  handleLiquidationConfigurationUpdated,
+  handleIncomeRatioUpdated,
+  handleMarginParametersUpdated,
+  handleLoanParametersUpdated,
 } from "./liquidity";
 
 export { handleBorrow, handleRepay, handleLiquidate } from "./loan";

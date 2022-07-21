@@ -1,12 +1,16 @@
 type PoolConfiguration @entity {
   id: ID!
   pool: Pool!
+  liquidationBonus: BigInt!
   marginRequirement: BigInt!
   marginMin: BigInt!
   marginMax: BigInt!
+  apr: BigInt!
+  loanInterval: BigInt!
   loanTenure: BigInt!
-  optimalTrancheRatio: BigInt!
-  optimalIncomeRatio: BigInt!
+  incomeRatio: BigInt!
+  isInitialized: Boolean!
+  isActive: Boolean!
 }
 
 type Pool @entity {

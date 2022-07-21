@@ -17,12 +17,16 @@ export function updatePoolConfiguration(
     Address.fromHexString(poolConfiguration.pool)
   );
   const poolConfigState = voyage.getPoolConfiguration(assetAddress);
+  poolConfiguration.liquidationBonus = poolConfigState.liquidationBonus;
   poolConfiguration.marginRequirement = poolConfigState.marginRequirement;
   poolConfiguration.marginMin = poolConfigState.minMargin;
   poolConfiguration.marginMax = poolConfigState.maxMargin;
+  poolConfiguration.apr = poolConfigState.apr;
+  poolConfiguration.loanInterval = poolConfigState.loanInterval;
   poolConfiguration.loanTenure = poolConfigState.loanTenure;
-  // poolConfiguration.optimalIncomeRatio = poolConfigState.optimalIncomeRatio;
-  // poolConfiguration.optimalTrancheRatio = poolConfigState.optimalTrancheRatio;
+  poolConfiguration.incomeRatio = poolConfigState.incomeRatio;
+  poolConfiguration.isInitialized = poolConfigState.isInitialized;
+  poolConfiguration.isActive = poolConfigState.isActive;
 }
 
 export function updatePoolData(pool: Pool, event: ethereum.Event): void {

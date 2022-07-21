@@ -1,6 +1,10 @@
 import { Address, log } from "@graphprotocol/graph-ts";
 import {
   Deposit as VoyageDeposit,
+  IncomeRatioUpdated,
+  LiquidationConfigurationUpdated,
+  LoanParametersUpdated,
+  MarginParametersUpdated,
   ReserveActivated,
   ReserveInitialized,
   Withdraw as VoyageWithdraw,
@@ -20,7 +24,6 @@ import {
   increaseTrancheLiquidity,
   increaseVTokenLiquidity,
   updatePnL,
-  updatePoolConfiguration,
   updatePoolData,
   updateUserDepositData,
 } from "../helpers/updaters";
@@ -49,10 +52,8 @@ export function handleReserveInitialized(event: ReserveInitialized): void {
 }
 
 export function handleReserveActivated(event: ReserveActivated): void {
-  const poolConfiguration = getOrInitPoolConfiguration(event.params._asset);
-  updatePoolConfiguration(poolConfiguration, event);
-  poolConfiguration.save();
   const reserve = getOrInitPool(event.params._asset);
+  const poolConfiguration = getOrInitPoolConfiguration(event.params._asset);
   reserve.isActive = true;
   reserve.configuration = poolConfiguration.id;
   reserve.save();
@@ -63,9 +64,6 @@ export function handleDeposit(event: VoyageDeposit): void {
   const pool = getOrInitPool(event.params.asset);
   updatePoolData(pool, event);
   pool.save();
-  const poolConfiguration = getOrInitPoolConfiguration(event.params.asset);
-  updatePoolConfiguration(poolConfiguration, event);
-  poolConfiguration.save();
   // could be first time user, create one if it doesn't exist.
   const userData = getOrInitUserData(event.params.user);
   userData.save();
@@ -84,9 +82,6 @@ export function handleWithdraw(event: VoyageWithdraw): void {
   const pool = getOrInitPool(event.params.asset);
   updatePoolData(pool, event);
   pool.save();
-  const poolConfiguration = getOrInitPoolConfiguration(event.params.asset);
-  updatePoolConfiguration(poolConfiguration, event);
-  poolConfiguration.save();
   const userDepositData = getOrInitUserDepositData(
     event.params.user,
     event.params.asset,
@@ -137,4 +132,43 @@ export function handleWithdrawVToken(event: VTokenWithdraw): void {
   decreaseVTokenLiquidity(vTokenEntity, event.params.assets);
   pool.save();
   vTokenEntity.save();
+}
+
+export function handleLiquidationConfigurationUpdated(
+  event: LiquidationConfigurationUpdated
+): void {
+  const pool = getOrInitPoolConfiguration(event.params._asset);
+  pool.liquidationBonus = event.params._liquidationBonus;
+  pool.save();
+}
+
+export function handleIncomeRatioUpdated(event: IncomeRatioUpdated): void {
+  const pool = getOrInitPoolConfiguration(event.params._asset);
+  pool.incomeRatio = event.params._incomeRatio;
+  pool.save();
+}
+
+export function handleMarginParametersUpdated(
+  event: MarginParametersUpdated
+): void {
+  const pool = getOrInitPoolConfiguration(event.params._asset);
+  pool.marginMin = event.params._min;
+  pool.marginMax = event.params._max;
+  pool.marginRequirement = event.params._marginRequirement;
+  pool.save();
+}
+
+export function handleLoanParametersUpdated(
+  event: LoanParametersUpdated
+): void {
+  log.info("------- handleLoanParametersUpdated --------- {} {}", [
+    event.params._epoch.toString(),
+    event.params._term.toString(),
+    event.params._gracePeriod.toString(),
+  ]);
+  const pool = getOrInitPoolConfiguration(event.params._asset);
+  // TODO: clarify these params
+  pool.loanInterval = event.params._epoch;
+  pool.loanTenure = event.params._term;
+  pool.save();
 }

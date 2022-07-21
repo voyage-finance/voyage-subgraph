@@ -53,6 +53,15 @@ export class PoolConfiguration extends Entity {
     this.set("pool", Value.fromString(value));
   }
 
+  get liquidationBonus(): BigInt {
+    let value = this.get("liquidationBonus");
+    return value!.toBigInt();
+  }
+
+  set liquidationBonus(value: BigInt) {
+    this.set("liquidationBonus", Value.fromBigInt(value));
+  }
+
   get marginRequirement(): BigInt {
     let value = this.get("marginRequirement");
     return value!.toBigInt();
@@ -80,6 +89,24 @@ export class PoolConfiguration extends Entity {
     this.set("marginMax", Value.fromBigInt(value));
   }
 
+  get apr(): BigInt {
+    let value = this.get("apr");
+    return value!.toBigInt();
+  }
+
+  set apr(value: BigInt) {
+    this.set("apr", Value.fromBigInt(value));
+  }
+
+  get loanInterval(): BigInt {
+    let value = this.get("loanInterval");
+    return value!.toBigInt();
+  }
+
+  set loanInterval(value: BigInt) {
+    this.set("loanInterval", Value.fromBigInt(value));
+  }
+
   get loanTenure(): BigInt {
     let value = this.get("loanTenure");
     return value!.toBigInt();
@@ -89,22 +116,31 @@ export class PoolConfiguration extends Entity {
     this.set("loanTenure", Value.fromBigInt(value));
   }
 
-  get optimalTrancheRatio(): BigInt {
-    let value = this.get("optimalTrancheRatio");
+  get incomeRatio(): BigInt {
+    let value = this.get("incomeRatio");
     return value!.toBigInt();
   }
 
-  set optimalTrancheRatio(value: BigInt) {
-    this.set("optimalTrancheRatio", Value.fromBigInt(value));
+  set incomeRatio(value: BigInt) {
+    this.set("incomeRatio", Value.fromBigInt(value));
   }
 
-  get optimalIncomeRatio(): BigInt {
-    let value = this.get("optimalIncomeRatio");
-    return value!.toBigInt();
+  get isInitialized(): boolean {
+    let value = this.get("isInitialized");
+    return value!.toBoolean();
   }
 
-  set optimalIncomeRatio(value: BigInt) {
-    this.set("optimalIncomeRatio", Value.fromBigInt(value));
+  set isInitialized(value: boolean) {
+    this.set("isInitialized", Value.fromBoolean(value));
+  }
+
+  get isActive(): boolean {
+    let value = this.get("isActive");
+    return value!.toBoolean();
+  }
+
+  set isActive(value: boolean) {
+    this.set("isActive", Value.fromBoolean(value));
   }
 }
 

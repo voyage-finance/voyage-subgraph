@@ -1,3 +1,4 @@
+import { log } from "@graphprotocol/graph-ts";
 import {
   Deposit,
   ReserveActivated,
@@ -34,6 +35,7 @@ export function handleReserveActivated(event: ReserveActivated): void {
 }
 
 export function handleDeposit(event: Deposit): void {
+  log.info("------ handleDeposit -------", []);
   const pool = getOrInitPool(event.params.asset);
   updatePoolData(pool, event);
   pool.save();

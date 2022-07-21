@@ -78,7 +78,7 @@ export function getOrInitUserDepositData(
   const id = getUserDepositDataId(userAddress, assetAddress);
   let userDepositData = UserDepositData.load(id);
   if (!userDepositData) {
-    const underlying = IERC20Detailed.bind(event.address);
+    const underlying = IERC20Detailed.bind(assetAddress);
     const decimals = underlying.decimals();
     userDepositData = new UserDepositData(id);
     userDepositData.underlyingAsset = assetAddress;
@@ -89,6 +89,9 @@ export function getOrInitUserDepositData(
     userDepositData.seniorTranchePnl = zeroBI();
     userDepositData.withdrawableJuniorBalance = zeroBI();
     userDepositData.withdrawableSeniorBalance = zeroBI();
+    userDepositData.juniorTrancheBalance = zeroBI();
+    userDepositData.seniorTrancheBalance = zeroBI();
+
     const user = getOrInitUserData(userAddress);
     userDepositData.user = user.id;
     userDepositData.save();

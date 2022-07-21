@@ -21,7 +21,7 @@ export function getUnbondingEntityId(
   user: Address,
   asset: Address,
   timestamp: BigInt
-) {
+): string {
   return [user.toHex(), asset.toHex(), timestamp.toString()].join("_");
 }
 

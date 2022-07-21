@@ -4,6 +4,8 @@ import {
   VaultCreated,
   VaultCreditLineInitialized,
   Voyage,
+  Voyage__getCreditLineDataResultValue0Struct,
+  Voyage__getVaultConfigResultValue0Struct,
 } from "../../generated/Voyage/Voyage";
 import { getCreditLineEntityId } from "../utils/id";
 import { zeroBI } from "../utils/math";
@@ -26,13 +28,14 @@ export function handleVaultCreated(event: VaultCreated): void {
   createVault(event.params._vault, event.params._owner);
 }
 
-export function handleCreditLineInitialised(evt: VaultCreditLineInitialized) {
-  const { _vault, _asset } = evt.params;
-  const { vaultConfig, vaultState } = getVaultState(
-    _vault,
-    _asset,
-    evt.address
-  );
+export function handleCreditLineInitialised(
+  evt: VaultCreditLineInitialized
+): void {
+  const _vault = evt.params._vault;
+  const _asset = evt.params._asset;
+  const vaultInfo = getVaultState(_vault, _asset, evt.address);
+  const vaultState = vaultInfo.vaultState;
+  const vaultConfig = vaultInfo.vaultConfig;
 
   const creditLineId = getCreditLineEntityId(
     evt.params._vault,
@@ -71,7 +74,7 @@ export function handleMarginEvent(
   _vaultAddress: Address,
   _assetAddress: Address,
   _eventAddress: Address
-) {
+): void {
   const vaultAddress = _vaultAddress.toHex();
   const assetAddress = _assetAddress.toHex();
   let vaultEntity = Vault.load(vaultAddress);
@@ -122,14 +125,11 @@ export function handleLoanEvent(
   _vaultAddress: Address,
   _assetAddress: Address,
   _eventAddress: Address
-) {
+): void {
   const voyage = Voyage.bind(_eventAddress);
   const vaultAddress = _vaultAddress.toHex();
-  const { vaultState } = getVaultState(
-    _vaultAddress,
-    _assetAddress,
-    _eventAddress
-  );
+  const vaultInfo = getVaultState(_vaultAddress, _assetAddress, _eventAddress);
+  const vaultState = vaultInfo.vaultState;
   // Update loans
   var loanEntity: Loan;
   for (
@@ -188,11 +188,16 @@ export function handleLoanEvent(
   }
 }
 
+class IVaultState {
+  vaultConfig: Voyage__getVaultConfigResultValue0Struct;
+  vaultState: Voyage__getCreditLineDataResultValue0Struct;
+}
+
 function getVaultState(
   vaultAddress: Address,
   assetAddress: Address,
   voyageAddress: Address
-) {
+): IVaultState {
   const voyage = Voyage.bind(voyageAddress);
   const vaultConfig = voyage.getVaultConfig(assetAddress, vaultAddress);
   const vaultState = voyage.getCreditLineData(vaultAddress, assetAddress);

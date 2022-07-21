@@ -43,6 +43,8 @@ export function handleCreditLineInitialised(
   );
   const creditLine = new CreditLine(creditLineId);
 
+  creditLine.vault = _vault.toHex();
+  creditLine.pool = _asset.toHex();
   creditLine.marginEscrow = evt.params._me;
   creditLine.creditEscrow = evt.params._ce;
   creditLine.borrowRate = zeroBI();

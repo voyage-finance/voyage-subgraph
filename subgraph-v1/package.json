@@ -3,11 +3,14 @@
   "license": "UNLICENSED",
   "scripts": {
     "codegen": "graph codegen",
-    "build": "graph build",
-    "deploy": "graph deploy --product hosted-service voyage-finance/protocol_v1_fuji",
     "create-local": "graph create --node http://localhost:8020/ voyage-finance/subgraph-v1",
     "remove-local": "graph remove --node http://localhost:8020/ voyage-finance/subgraph-v1",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 voyage-finance/subgraph-v1"
+    "build-local": "graph build --network hh",
+    "build-goerli": "graph build --network goerli",
+    "build-rinkeby": "graph build --network rinkeby",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 voyage-finance/subgraph-v1",
+    "deploy-goerli": "graph deploy --product hosted-service voyage-finance/protocol_v1_fuji",
+    "deploy-rinkeby": "graph deploy --product hosted-service voyage-finance/protocol_v1_fuji"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.30.4",

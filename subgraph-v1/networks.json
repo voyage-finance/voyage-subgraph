@@ -1,7 +1,20 @@
 {
+  "goerli": {
+    "Voyage": {
+      "address": "0xe881530F7cD4034e907ce5E100aacffaa10c431b",
+      "startBlock": 7259669
+    }
+  },
+  "hh": {
+    "Voyage": {
+      "address": "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d",
+      "startBlock": 417
+    }
+  },
   "rinkeby": {
-    "Voyager": {
-      "address": "0xE273C1D2716374391A9B12d4066215CaAc26beC5"
+    "Voyage": {
+      "address": "0xE273C1D2716374391A9B12d4066215CaAc26beC5",
+      "startBlock": 11061131
     }
   }
 }

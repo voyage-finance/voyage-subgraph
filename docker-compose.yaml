@@ -18,8 +18,10 @@ services:
       postgres_db: graph-node
       ipfs: "ipfs:5001"
       # Change next line if you want to connect to a different JSON-RPC endpoint
-      ethereum: "rinkeby:https://eth-rinkeby.alchemyapi.io/v2/2rkHcv3Pdg7j3iHPWUu9cDsEOtSoXtoB"
+      ethereum: "${NETWORK_RPC}"
       GRAPH_LOG: info
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   ipfs:
     image: ipfs/go-ipfs:v0.4.23
     ports:

@@ -12,19 +12,21 @@ export function updatePoolConfiguration(
   event: ethereum.Event
 ): void {
   const voyage = Voyage.bind(event.address);
-  const assetAddress = Address.fromHexString(poolConfiguration.pool);
+  const assetAddress = Address.fromBytes(
+    Address.fromHexString(poolConfiguration.pool)
+  );
   const poolConfigState = voyage.getPoolConfiguration(assetAddress);
   poolConfiguration.marginRequirement = poolConfigState.marginRequirement;
   poolConfiguration.marginMin = poolConfigState.minMargin;
   poolConfiguration.marginMax = poolConfigState.maxMargin;
   poolConfiguration.loanTenure = poolConfigState.loanTenure;
-  poolConfiguration.optimalIncomeRatio = poolConfigState.optimalIncomeRatio;
-  poolConfiguration.optimalTrancheRatio = poolConfigState.optimalTrancheRatio;
+  // poolConfiguration.optimalIncomeRatio = poolConfigState.optimalIncomeRatio;
+  // poolConfiguration.optimalTrancheRatio = poolConfigState.optimalTrancheRatio;
 }
 
 export function updatePoolData(pool: Pool, event: ethereum.Event): void {
   const voyage = Voyage.bind(event.address);
-  const poolState = voyage.getPoolData(pool.underlyingAsset);
+  const poolState = voyage.getPoolData(Address.fromBytes(pool.underlyingAsset));
 
   pool.isActive = poolState.isActive;
   pool.juniorTrancheTotalLiquidity = poolState.juniorLiquidity;
@@ -50,7 +52,10 @@ export function updateUserDepositData(
   const voyage = Voyage.bind(event.address);
   const userAddress = Address.fromHexString(userDepositData.user);
   const assetAddress = userDepositData.underlyingAsset;
-  const userPoolData = voyage.getUserPoolData(assetAddress, userAddress);
+  const userPoolData = voyage.getUserPoolData(
+    Address.fromBytes(assetAddress),
+    Address.fromBytes(userAddress)
+  );
   userDepositData.juniorTrancheBalance = userPoolData.juniorTrancheBalance;
   userDepositData.seniorTrancheBalance = userPoolData.seniorTrancheBalance;
   userDepositData.withdrawableJuniorBalance =
@@ -89,7 +94,7 @@ export function updateLoanEntity(
   assetAddress: Address,
   id: BigInt,
   event: ethereum.Event
-) {
+): void {
   const voyage = Voyage.bind(event.address);
   const loanData = voyage.getLoanDetail(vaultAddress, assetAddress, id);
   loan.vault = vaultAddress.toHex();

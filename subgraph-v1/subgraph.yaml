@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: Voyage
-    network: fuji
+    network: rinkeby
     source:
-      address: "0x03283567F0BCeB25829e7A4DfE0a00D7A1E8E9A6"
+      address: "0xE273C1D2716374391A9B12d4066215CaAc26beC5"
       abi: Voyage
-      startBlock: 11321004
+      startBlock: 11061131
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5

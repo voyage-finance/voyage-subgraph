@@ -25,6 +25,8 @@ export function getOrInitPool(assetAddress: Address): Pool {
     pool = new Pool(id);
     pool.isActive = false;
     pool.underlyingAsset = assetAddress;
+    pool.symbol = "";
+    pool.decimals = zeroBI();
     pool.seniorTrancheLiquidityRate = zeroBI();
     pool.seniorTrancheTotalLiquidity = zeroBI();
     pool.seniorTrancheAvailableLiquidity = zeroBI();

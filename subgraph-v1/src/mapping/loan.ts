@@ -49,19 +49,19 @@ export function handleRepay(event: RepaymentEvent): void {
     return;
   }
   updateLoanEntity(
-    loan!,
+    loan,
     event.params._vault,
     event.params._asset,
     event.params._loanId,
     event
   );
-  loan!.save();
+  loan.save();
 
-  const id = getRepaymentEntityId(loan!.id, event.params._repaymentId);
+  const id = getRepaymentEntityId(loan.id, event.params._repaymentId);
   const repayment = new Repayment(id);
-  repayment.loan = loan!.id;
-  repayment.principal = loan!.pmt_principal;
-  repayment.interest = loan!.pmt_interest;
+  repayment.loan = loan.id;
+  repayment.principal = loan.pmt_principal;
+  repayment.interest = loan.pmt_interest;
   // we cannot use pmt.amount, as this may be a liquidation.
   // in the event of liquidation, the amount repaid could fall short if there is a partial or even complete write down of the debt.
   repayment.total = event.params._amount;

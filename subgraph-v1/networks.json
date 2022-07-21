@@ -1,7 +1,7 @@
 {
-  "fuji": {
+  "rinkeby": {
     "Voyager": {
-      "address": "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318"
+      "address": "0xE273C1D2716374391A9B12d4066215CaAc26beC5"
     }
   }
 }

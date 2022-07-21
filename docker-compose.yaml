@@ -18,7 +18,7 @@ services:
       postgres_db: graph-node
       ipfs: "ipfs:5001"
       # Change next line if you want to connect to a different JSON-RPC endpoint
-      ethereum: "fuji:https://api.avax-test.network/ext/bc/C/rpc"
+      ethereum: "rinkeby:https://eth-rinkeby.alchemyapi.io/v2/2rkHcv3Pdg7j3iHPWUu9cDsEOtSoXtoB"
       GRAPH_LOG: info
   ipfs:
     image: ipfs/go-ipfs:v0.4.23

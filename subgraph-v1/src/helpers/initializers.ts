@@ -50,12 +50,17 @@ export function getOrInitPoolConfiguration(
     poolConfiguration = new PoolConfiguration(id);
     const pool = getOrInitPool(assetAddress);
     poolConfiguration.pool = pool.id;
+    poolConfiguration.liquidationBonus = zeroBI();
     poolConfiguration.marginRequirement = zeroBI();
     poolConfiguration.marginMin = zeroBI();
     poolConfiguration.marginMax = zeroBI();
+    poolConfiguration.apr = zeroBI();
+    poolConfiguration.loanInterval = zeroBI();
     poolConfiguration.loanTenure = zeroBI();
-    poolConfiguration.optimalIncomeRatio = zeroBI();
-    poolConfiguration.optimalTrancheRatio = zeroBI();
+    poolConfiguration.incomeRatio = zeroBI();
+    poolConfiguration.isInitialized = false;
+    poolConfiguration.isActive = false;
+
     poolConfiguration.save();
   }
   return poolConfiguration;

@@ -5,7 +5,6 @@ type PoolConfiguration @entity {
   marginRequirement: BigInt!
   marginMin: BigInt!
   marginMax: BigInt!
-  apr: BigInt!
   loanInterval: BigInt!
   loanTenure: BigInt!
   incomeRatio: BigInt!

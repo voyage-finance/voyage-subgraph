@@ -54,7 +54,6 @@ export function getOrInitPoolConfiguration(
     poolConfiguration.marginRequirement = zeroBI();
     poolConfiguration.marginMin = zeroBI();
     poolConfiguration.marginMax = zeroBI();
-    poolConfiguration.apr = zeroBI();
     poolConfiguration.loanInterval = zeroBI();
     poolConfiguration.loanTenure = zeroBI();
     poolConfiguration.incomeRatio = zeroBI();

@@ -21,7 +21,6 @@ export function updatePoolConfiguration(
   poolConfiguration.marginRequirement = poolConfigState.marginRequirement;
   poolConfiguration.marginMin = poolConfigState.minMargin;
   poolConfiguration.marginMax = poolConfigState.maxMargin;
-  poolConfiguration.apr = poolConfigState.apr;
   poolConfiguration.loanInterval = poolConfigState.loanInterval;
   poolConfiguration.loanTenure = poolConfigState.loanTenure;
   poolConfiguration.incomeRatio = poolConfigState.incomeRatio;

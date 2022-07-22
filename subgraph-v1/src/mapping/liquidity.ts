@@ -1,9 +1,9 @@
 import { log } from "@graphprotocol/graph-ts";
 import {
-  Deposit,
+  Deposit as VoyageDeposit,
   ReserveActivated,
   ReserveInitialized,
-  Withdraw,
+  Withdraw as VoyageWithdraw,
 } from "../../generated/Voyage/Voyage";
 import { Tranche } from "../helpers/consts";
 import {
@@ -19,9 +19,16 @@ import {
   updatePoolData,
   updateUserDepositData,
 } from "../helpers/updaters";
+import { VToken } from "../../generated/templates";
+import {
+  Deposit as VTokenDeposit,
+  Withdraw as VTokenWithdraw,
+} from "../../generated/templates/VToken/VToken";
 
 export function handleReserveInitialized(event: ReserveInitialized): void {
   getOrInitPool(event.params._asset);
+  VToken.create(event.params._juniorDepositTokenAddress);
+  VToken.create(event.params._seniorDepositTokenAddress);
 }
 
 export function handleReserveActivated(event: ReserveActivated): void {
@@ -34,8 +41,14 @@ export function handleReserveActivated(event: ReserveActivated): void {
   reserve.save();
 }
 
-export function handleDeposit(event: Deposit): void {
-  log.info("------ handleDeposit -------", []);
+export function handleDeposit(event: VoyageDeposit): void {
+  log.info("------ handleDeposit Voyage -------", []);
+  log.info("Voyage Deposit asset {} amount {} tranche {} user {}", [
+    event.params.asset.toHex(),
+    event.params.amount.toString(),
+    event.params.tranche.toString(),
+    event.params.user.toHex(),
+  ]);
   const pool = getOrInitPool(event.params.asset);
   updatePoolData(pool, event);
   pool.save();
@@ -55,7 +68,8 @@ export function handleDeposit(event: Deposit): void {
   userDepositData.save();
 }
 
-export function handleWithdraw(event: Withdraw): void {
+export function handleWithdraw(event: VoyageWithdraw): void {
+  log.info("------ handleWithdraw Voyage -------", []);
   const pool = getOrInitPool(event.params.asset);
   updatePoolData(pool, event);
   pool.save();
@@ -80,4 +94,18 @@ export function handleWithdraw(event: Withdraw): void {
   unbonding.save();
 
   userDepositData.save();
+}
+
+export function handleDepositVToken(event: VTokenDeposit): void {
+  log.info("------ handleDepositVToken VToken -------", []);
+  log.info("VToken Deposit assets {} caller {} owner {} shares {}", [
+    event.params.assets.toString(),
+    event.params.caller.toHex(),
+    event.params.owner.toHex(),
+    event.params.shares.toString(),
+  ]);
+}
+
+export function handleWithdrawVToken(event: VTokenWithdraw): void {
+  log.info("------ handleWithdraw VToken -------", []);
 }

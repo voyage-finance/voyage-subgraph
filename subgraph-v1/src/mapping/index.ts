@@ -5,6 +5,8 @@ export {
   handleReserveActivated,
   handleDeposit,
   handleWithdraw,
+  handleDepositVToken,
+  handleWithdrawVToken,
 } from "./liquidity";
 
 export { handleBorrow, handleRepay, handleLiquidate } from "./loan";

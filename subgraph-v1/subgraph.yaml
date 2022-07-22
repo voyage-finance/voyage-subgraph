@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: Voyage
-    network: rinkeby
+    network: hh
     source:
-      address: "0xE273C1D2716374391A9B12d4066215CaAc26beC5"
       abi: Voyage
-      startBlock: 11061131
+      address: "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d"
+      startBlock: 417
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -48,7 +48,8 @@ dataSources:
           handler: handleUnpaused
         - event: VaultCreated(address,address,uint256)
           handler: handleVaultCreated
-        - event: VaultCreditLineInitialized(indexed address,indexed address,address,address)
+        - event: VaultCreditLineInitialized(indexed address,indexed
+            address,address,address)
           handler: handleCreditLineInitialised
         - event: VaultMarginCredited(indexed address,indexed address,address,uint256)
           handler: handleMarginEvent
@@ -56,8 +57,31 @@ dataSources:
           handler: handleMarginEvent
         - event: Borrow(indexed address,indexed address,uint256,uint256,uint256,uint256)
           handler: handleBorrow
-        - event: Repayment(indexed address,indexed address,indexed address,uint256,uint256,uint256,bool)
+        - event: Repayment(indexed address,indexed address,indexed
+            address,uint256,uint256,uint256,bool)
           handler: handleRepay
-        - event: Liquidate(indexed address,indexed address,indexed address,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
+        - event: Liquidate(indexed address,indexed address,indexed
+            address,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
           handler: handleLiquidate
       file: ./src/mapping/index.ts
+templates:
+  - kind: ethereum
+    name: VToken
+    source:
+      abi: VToken
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - VToken
+      abis:
+        - name: VToken
+          file: ./abis/templates/VToken.json
+      eventHandlers:
+        - event: Deposit(indexed address,indexed address,uint256,uint256)
+          handler: handleDepositVToken
+        - event: Withdraw(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleWithdrawVToken
+      file: ./src/mapping/index.ts
+    network: hh

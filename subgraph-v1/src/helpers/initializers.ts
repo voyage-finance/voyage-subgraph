@@ -8,6 +8,7 @@ import {
   UserData,
   UserDepositData,
   Vault,
+  VToken,
 } from "../../generated/schema";
 import { IERC20Detailed } from "../../generated/Voyage/IERC20Detailed";
 import {
@@ -68,6 +69,19 @@ export function getOrInitUserData(userAddress: Address): UserData {
     userData.save();
   }
   return userData;
+}
+
+export function initVToken(
+  tokenAddress: Address,
+  assetAddress: Address,
+  trancheType: string
+): VToken {
+  const vToken = new VToken(tokenAddress.toHex());
+  vToken.trancheType = trancheType;
+  vToken.asset = assetAddress.toHex();
+  vToken.totalLiquidity = zeroBI();
+  vToken.save();
+  return vToken;
 }
 
 export function getOrInitUserDepositData(

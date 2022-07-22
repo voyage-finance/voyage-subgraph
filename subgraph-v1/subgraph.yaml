@@ -15,33 +15,16 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Pool
-        - Deposit
-        - ReserveActivated
-        - ReserveInitialized
-        - Withdraw
-        - Paused
-        - Unpaused
-        - VaultCreated
-        - VaultInitialized
-        - VaultAssetInitialized
-        - VaultMarginCredited
-        - VaultMarginRedeemed
-        - Borrow
-        - Liquidate
       abis:
         - name: Voyage
           file: ./abis/Voyage.json
         - name: IERC20Detailed
           file: ./abis/helpers/IERC20Detailed.json
       eventHandlers:
-        - event: Deposit(indexed address,indexed address,indexed uint8,uint256)
-          handler: handleDeposit
         - event: ReserveActivated(indexed address)
           handler: handleReserveActivated
         - event: ReserveInitialized(indexed address,address,address,address)
           handler: handleReserveInitialized
-        - event: Withdraw(indexed address,indexed address,indexed uint8,uint256)
-          handler: handleWithdraw
         - event: Paused(address)
           handler: handlePaused
         - event: Unpaused(address)
@@ -63,6 +46,10 @@ dataSources:
         - event: Liquidate(indexed address,indexed address,indexed
             address,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
           handler: handleLiquidate
+        # - event: Deposit(indexed address,indexed address,indexed uint8,uint256)
+        #   handler: handleDeposit
+        # - event: Withdraw(indexed address,indexed address,indexed uint8,uint256)
+        #   handler: handleWithdraw
       file: ./src/mapping/index.ts
 templates:
   - kind: ethereum

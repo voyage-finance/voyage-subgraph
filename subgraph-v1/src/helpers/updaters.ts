@@ -4,6 +4,7 @@ import {
   Pool,
   PoolConfiguration,
   UserDepositData,
+  VToken,
 } from "../../generated/schema";
 import { Voyage } from "../../generated/Voyage/Voyage";
 
@@ -39,10 +40,44 @@ export function updatePoolData(pool: Pool, event: ethereum.Event): void {
   pool.totalLiquidity = poolState.totalLiquidity;
   pool.totalBorrow = poolState.totalDebt;
   pool.trancheRatio = poolState.trancheRatio;
-  // let poolConfiguration = updatePoolConfiguration(assetAddress, eventAddress);
-  // pool.configuration = poolConfiguration.id;
-  // pool.save();
-  // return pool;
+}
+
+export function increaseTrancheLiquidity(
+  pool: Pool,
+  trancheType: string,
+  amount: BigInt
+): void {
+  if (trancheType === "Junior")
+    pool.juniorTrancheTotalLiquidity = pool.juniorTrancheTotalLiquidity.plus(
+      amount
+    );
+  else
+    pool.seniorTrancheTotalLiquidity = pool.seniorTrancheTotalLiquidity.plus(
+      amount
+    );
+}
+
+export function decreaseTrancheLiquidity(
+  pool: Pool,
+  trancheType: string,
+  amount: BigInt
+): void {
+  if (trancheType === "Junior")
+    pool.juniorTrancheTotalLiquidity = pool.juniorTrancheTotalLiquidity.minus(
+      amount
+    );
+  else
+    pool.seniorTrancheTotalLiquidity = pool.seniorTrancheTotalLiquidity.minus(
+      amount
+    );
+}
+
+export function increaseVTokenLiquidity(vtoken: VToken, amount: BigInt): void {
+  vtoken.totalLiquidity = vtoken.totalLiquidity.plus(amount);
+}
+
+export function decreaseVTokenLiquidity(vtoken: VToken, amount: BigInt): void {
+  vtoken.totalLiquidity = vtoken.totalLiquidity.minus(amount);
 }
 
 export function updateUserDepositData(

@@ -26,6 +26,13 @@ type Pool @entity {
   configuration: PoolConfiguration
 }
 
+type VToken @entity {
+  id: ID! # address of Junior/Senior deposit token
+  asset: Pool!
+  trancheType: Tranche!
+  totalLiquidity: BigInt!
+}
+
 type UserData @entity {
   id: ID!
   depositData: [UserDepositData!]! @derivedFrom(field: "user")

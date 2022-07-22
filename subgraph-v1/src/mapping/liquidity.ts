@@ -1,4 +1,4 @@
-import { log } from "@graphprotocol/graph-ts";
+import { Address, log } from "@graphprotocol/graph-ts";
 import {
   Deposit as VoyageDeposit,
   ReserveActivated,
@@ -12,23 +12,40 @@ import {
   getOrInitUnbonding,
   getOrInitUserData,
   getOrInitUserDepositData,
+  initVToken,
 } from "../helpers/initializers";
 import {
+  decreaseTrancheLiquidity,
+  decreaseVTokenLiquidity,
+  increaseTrancheLiquidity,
+  increaseVTokenLiquidity,
   updatePnL,
   updatePoolConfiguration,
   updatePoolData,
   updateUserDepositData,
 } from "../helpers/updaters";
-import { VToken } from "../../generated/templates";
+import { VToken as VTokenSource } from "../../generated/templates";
 import {
   Deposit as VTokenDeposit,
   Withdraw as VTokenWithdraw,
 } from "../../generated/templates/VToken/VToken";
+import { VToken } from "../../generated/schema";
 
 export function handleReserveInitialized(event: ReserveInitialized): void {
   getOrInitPool(event.params._asset);
-  VToken.create(event.params._juniorDepositTokenAddress);
-  VToken.create(event.params._seniorDepositTokenAddress);
+  VTokenSource.create(event.params._juniorDepositTokenAddress);
+  initVToken(
+    event.params._juniorDepositTokenAddress,
+    event.params._asset,
+    "Junior"
+  );
+
+  VTokenSource.create(event.params._seniorDepositTokenAddress);
+  initVToken(
+    event.params._seniorDepositTokenAddress,
+    event.params._asset,
+    "Senior"
+  );
 }
 
 export function handleReserveActivated(event: ReserveActivated): void {
@@ -41,14 +58,8 @@ export function handleReserveActivated(event: ReserveActivated): void {
   reserve.save();
 }
 
+// not used, currenly VToken's deposit events is being index
 export function handleDeposit(event: VoyageDeposit): void {
-  log.info("------ handleDeposit Voyage -------", []);
-  log.info("Voyage Deposit asset {} amount {} tranche {} user {}", [
-    event.params.asset.toHex(),
-    event.params.amount.toString(),
-    event.params.tranche.toString(),
-    event.params.user.toHex(),
-  ]);
   const pool = getOrInitPool(event.params.asset);
   updatePoolData(pool, event);
   pool.save();
@@ -68,8 +79,8 @@ export function handleDeposit(event: VoyageDeposit): void {
   userDepositData.save();
 }
 
+// not used, currenly VToken's withdraw events is being index
 export function handleWithdraw(event: VoyageWithdraw): void {
-  log.info("------ handleWithdraw Voyage -------", []);
   const pool = getOrInitPool(event.params.asset);
   updatePoolData(pool, event);
   pool.save();
@@ -97,15 +108,33 @@ export function handleWithdraw(event: VoyageWithdraw): void {
 }
 
 export function handleDepositVToken(event: VTokenDeposit): void {
-  log.info("------ handleDepositVToken VToken -------", []);
-  log.info("VToken Deposit assets {} caller {} owner {} shares {}", [
-    event.params.assets.toString(),
-    event.params.caller.toHex(),
-    event.params.owner.toHex(),
-    event.params.shares.toString(),
-  ]);
+  const vTokenEntity = VToken.load(event.address.toHex());
+  if (!vTokenEntity) {
+    log.error(
+      "tried to handle deposit event for a non-existent VToken. address: {}",
+      [event.address.toHex()]
+    );
+    return;
+  }
+  let pool = getOrInitPool(Address.fromString(vTokenEntity.asset));
+  increaseTrancheLiquidity(pool, vTokenEntity.trancheType, event.params.assets);
+  increaseVTokenLiquidity(vTokenEntity, event.params.assets);
+  pool.save();
+  vTokenEntity.save();
 }
 
 export function handleWithdrawVToken(event: VTokenWithdraw): void {
-  log.info("------ handleWithdraw VToken -------", []);
+  const vTokenEntity = VToken.load(event.address.toHex());
+  if (!vTokenEntity) {
+    log.error(
+      "tried to handle withdraw event for a non-existent VToken. address: {}",
+      [event.address.toHex()]
+    );
+    return;
+  }
+  let pool = getOrInitPool(Address.fromString(vTokenEntity.asset));
+  decreaseTrancheLiquidity(pool, vTokenEntity.trancheType, event.params.assets);
+  decreaseVTokenLiquidity(vTokenEntity, event.params.assets);
+  pool.save();
+  vTokenEntity.save();
 }

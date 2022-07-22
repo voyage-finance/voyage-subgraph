@@ -36,6 +36,7 @@ import { VToken } from "../../generated/schema";
 
 export function handleReserveInitialized(event: ReserveInitialized): void {
   getOrInitPool(event.params._asset);
+
   VTokenSource.create(event.params._juniorDepositTokenAddress);
   initVToken(
     event.params._juniorDepositTokenAddress,
@@ -49,6 +50,10 @@ export function handleReserveInitialized(event: ReserveInitialized): void {
     event.params._asset,
     "Senior"
   );
+
+  const poolConfiguration = getOrInitPoolConfiguration(event.params._asset);
+  poolConfiguration.isInitialized = true;
+  poolConfiguration.save();
 }
 
 export function handleReserveActivated(event: ReserveActivated): void {

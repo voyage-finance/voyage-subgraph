@@ -89,15 +89,6 @@ export class PoolConfiguration extends Entity {
     this.set("marginMax", Value.fromBigInt(value));
   }
 
-  get apr(): BigInt {
-    let value = this.get("apr");
-    return value!.toBigInt();
-  }
-
-  set apr(value: BigInt) {
-    this.set("apr", Value.fromBigInt(value));
-  }
-
   get loanInterval(): BigInt {
     let value = this.get("loanInterval");
     return value!.toBigInt();

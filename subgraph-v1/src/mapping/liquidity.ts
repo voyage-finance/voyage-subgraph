@@ -20,8 +20,10 @@ import {
 } from "../helpers/initializers";
 import {
   decreaseTrancheLiquidity,
+  decreaseUserTrancheLiquidity,
   decreaseVTokenLiquidity,
   increaseTrancheLiquidity,
+  increaseUserTrancheLiquidity,
   increaseVTokenLiquidity,
   updatePnL,
   updatePoolData,
@@ -64,7 +66,7 @@ export function handleReserveActivated(event: ReserveActivated): void {
   reserve.save();
 }
 
-// not used, currenly VToken's deposit events is being index
+// deprecated, currenly VToken's deposit events is being index
 export function handleDeposit(event: VoyageDeposit): void {
   const pool = getOrInitPool(event.params.asset);
   updatePoolData(pool, event);
@@ -78,11 +80,11 @@ export function handleDeposit(event: VoyageDeposit): void {
     event
   );
   updateUserDepositData(userDepositData, event);
-  updatePnL(userDepositData, event.params.amount, event.params.tranche);
+  // updatePnL(userDepositData, event.params.amount, event.params.tranche);
   userDepositData.save();
 }
 
-// not used, currenly VToken's withdraw events is being index
+// deprecated, currenly VToken's withdraw events is being index
 export function handleWithdraw(event: VoyageWithdraw): void {
   const pool = getOrInitPool(event.params.asset);
   updatePoolData(pool, event);
@@ -93,7 +95,7 @@ export function handleWithdraw(event: VoyageWithdraw): void {
     event
   );
   updateUserDepositData(userDepositData, event);
-  updatePnL(userDepositData, event.params.amount, event.params.tranche);
+  // updatePnL(userDepositData, event.params.amount, event.params.tranche);
   const unbonding = getOrInitUnbonding(
     event.params.user,
     event.params.asset,
@@ -109,6 +111,7 @@ export function handleWithdraw(event: VoyageWithdraw): void {
 
 export function handleDepositVToken(event: VTokenDeposit): void {
   const vTokenEntity = VToken.load(event.address.toHex());
+  const amount = event.params.assets;
   if (!vTokenEntity) {
     log.error(
       "tried to handle deposit event for a non-existent VToken. address: {}",
@@ -117,14 +120,32 @@ export function handleDepositVToken(event: VTokenDeposit): void {
     return;
   }
   let pool = getOrInitPool(Address.fromString(vTokenEntity.asset));
-  increaseTrancheLiquidity(pool, vTokenEntity.trancheType, event.params.assets);
-  increaseVTokenLiquidity(vTokenEntity, event.params.assets);
+  increaseTrancheLiquidity(pool, vTokenEntity.trancheType, amount);
+  increaseVTokenLiquidity(vTokenEntity, amount);
   pool.save();
+
+  // could be first time user, create one if it doesn't exist.
+  const userData = getOrInitUserData(event.params.owner);
+  const userDepositData = getOrInitUserDepositData(
+    event.params.owner,
+    Address.fromString(vTokenEntity.asset),
+    event
+  );
+  increaseUserTrancheLiquidity(
+    userDepositData,
+    vTokenEntity.trancheType,
+    amount
+  );
+  updatePnL(userDepositData, amount.neg(), vTokenEntity.trancheType);
+  userDepositData.save();
+  userData.save();
   vTokenEntity.save();
 }
 
 export function handleWithdrawVToken(event: VTokenWithdraw): void {
   const vTokenEntity = VToken.load(event.address.toHex());
+  const amount = event.params.assets;
+
   if (!vTokenEntity) {
     log.error(
       "tried to handle withdraw event for a non-existent VToken. address: {}",
@@ -133,9 +154,25 @@ export function handleWithdrawVToken(event: VTokenWithdraw): void {
     return;
   }
   let pool = getOrInitPool(Address.fromString(vTokenEntity.asset));
-  decreaseTrancheLiquidity(pool, vTokenEntity.trancheType, event.params.assets);
-  decreaseVTokenLiquidity(vTokenEntity, event.params.assets);
+  decreaseTrancheLiquidity(pool, vTokenEntity.trancheType, amount);
+  decreaseVTokenLiquidity(vTokenEntity, amount);
   pool.save();
+
+  const userData = getOrInitUserData(event.params.owner);
+  const userDepositData = getOrInitUserDepositData(
+    event.params.owner,
+    Address.fromString(vTokenEntity.asset),
+    event
+  );
+  decreaseUserTrancheLiquidity(
+    userDepositData,
+    vTokenEntity.trancheType,
+    amount
+  );
+  updatePnL(userDepositData, amount, vTokenEntity.trancheType);
+
+  userDepositData.save();
+  userData.save();
   vTokenEntity.save();
 }
 

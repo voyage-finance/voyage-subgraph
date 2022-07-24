@@ -102,14 +102,44 @@ export function updateUserDepositData(
     userPoolData.withdrawableSeniorTrancheBalance;
 }
 
-// sum(withdrawalsFromJunior) + juniorTrancheBalance - sum(depositsInJunior)
+export function increaseUserTrancheLiquidity(
+  userDepositData: UserDepositData,
+  trancheType: string,
+  amount: BigInt
+): void {
+  if (trancheType === "Junior")
+    userDepositData.juniorTrancheBalance = userDepositData.juniorTrancheBalance.plus(
+      amount
+    );
+  else
+    userDepositData.seniorTrancheBalance = userDepositData.seniorTrancheBalance.plus(
+      amount
+    );
+}
+
+export function decreaseUserTrancheLiquidity(
+  userDepositData: UserDepositData,
+  trancheType: string,
+  amount: BigInt
+): void {
+  if (trancheType == "Junior") {
+    userDepositData.juniorTrancheBalance = userDepositData.juniorTrancheBalance.minus(
+      amount
+    );
+  } else {
+    userDepositData.seniorTrancheBalance = userDepositData.seniorTrancheBalance.minus(
+      amount
+    );
+  }
+}
+
+// sum(withdrawalsFromJunior) + trancherancheBalance - sum(depositsInTranche)
 export function updatePnL(
   userDepositData: UserDepositData,
   amount: BigInt,
-  tranche: number
+  trancheType: string
 ): void {
-  log.info("[updateTranchePnl]", []);
-  if (tranche === 1) {
+  if (trancheType == "Senior") {
     userDepositData.seniorDepositWithdrawalDiff = userDepositData.seniorDepositWithdrawalDiff.plus(
       amount
     );

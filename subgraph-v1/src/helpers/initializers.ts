@@ -24,10 +24,12 @@ export function getOrInitPool(assetAddress: Address): Pool {
   let pool = Pool.load(id);
   if (!pool) {
     pool = new Pool(id);
+    const underlying = IERC20Detailed.bind(assetAddress);
+    const decimals = underlying.decimals();
     pool.isActive = false;
     pool.underlyingAsset = assetAddress;
     pool.symbol = "";
-    pool.decimals = zeroBI();
+    pool.decimals = BigInt.fromI32(decimals);
     pool.seniorTrancheLiquidityRate = zeroBI();
     pool.seniorTrancheTotalLiquidity = zeroBI();
     pool.seniorTrancheAvailableLiquidity = zeroBI();

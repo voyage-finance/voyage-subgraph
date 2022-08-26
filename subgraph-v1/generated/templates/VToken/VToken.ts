@@ -56,6 +56,10 @@ export class Claim__Params {
   get amount(): BigInt {
     return this._event.parameters[1].value.toBigInt();
   }
+
+  get shares(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
 }
 
 export class Deposit extends ethereum.Event {
@@ -166,27 +170,27 @@ export class Withdraw__Params {
   }
 }
 
-export class VToken__unbondingResult {
-  value0: Array<BigInt>;
-  value1: Array<BigInt>;
+export class VToken__unbondingsResult {
+  value0: BigInt;
+  value1: BigInt;
 
-  constructor(value0: Array<BigInt>, value1: Array<BigInt>) {
+  constructor(value0: BigInt, value1: BigInt) {
     this.value0 = value0;
     this.value1 = value1;
   }
 
   toMap(): TypedMap<string, ethereum.Value> {
     let map = new TypedMap<string, ethereum.Value>();
-    map.set("value0", ethereum.Value.fromUnsignedBigIntArray(this.value0));
-    map.set("value1", ethereum.Value.fromUnsignedBigIntArray(this.value1));
+    map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
+    map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
     return map;
   }
 
-  getValue0(): Array<BigInt> {
+  getShares(): BigInt {
     return this.value0;
   }
 
-  getValue1(): Array<BigInt> {
+  getMaxUnderlying(): BigInt {
     return this.value1;
   }
 }
@@ -540,6 +544,29 @@ export class VToken extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
+  maximumClaimable(_user: Address): BigInt {
+    let result = super.call(
+      "maximumClaimable",
+      "maximumClaimable(address):(uint256)",
+      [ethereum.Value.fromAddress(_user)]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_maximumClaimable(_user: Address): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "maximumClaimable",
+      "maximumClaimable(address):(uint256)",
+      [ethereum.Value.fromAddress(_user)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
   mint(shares: BigInt, receiver: Address): BigInt {
     let result = super.call("mint", "mint(uint256,address):(uint256)", [
       ethereum.Value.fromUnsignedBigInt(shares),
@@ -784,6 +811,29 @@ export class VToken extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
+  totalUnbondingAsset(): BigInt {
+    let result = super.call(
+      "totalUnbondingAsset",
+      "totalUnbondingAsset():(uint256)",
+      []
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_totalUnbondingAsset(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "totalUnbondingAsset",
+      "totalUnbondingAsset():(uint256)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
   transfer(to: Address, amount: BigInt): boolean {
     let result = super.call("transfer", "transfer(address,uint256):(bool)", [
       ethereum.Value.fromAddress(to),
@@ -840,34 +890,52 @@ export class VToken extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
-  unbonding(_user: Address): VToken__unbondingResult {
+  unbonding(_user: Address): BigInt {
+    let result = super.call("unbonding", "unbonding(address):(uint256)", [
+      ethereum.Value.fromAddress(_user)
+    ]);
+
+    return result[0].toBigInt();
+  }
+
+  try_unbonding(_user: Address): ethereum.CallResult<BigInt> {
+    let result = super.tryCall("unbonding", "unbonding(address):(uint256)", [
+      ethereum.Value.fromAddress(_user)
+    ]);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  unbondings(param0: Address): VToken__unbondingsResult {
     let result = super.call(
-      "unbonding",
-      "unbonding(address):(uint256[],uint256[])",
-      [ethereum.Value.fromAddress(_user)]
+      "unbondings",
+      "unbondings(address):(uint256,uint256)",
+      [ethereum.Value.fromAddress(param0)]
     );
 
-    return new VToken__unbondingResult(
-      result[0].toBigIntArray(),
-      result[1].toBigIntArray()
+    return new VToken__unbondingsResult(
+      result[0].toBigInt(),
+      result[1].toBigInt()
     );
   }
 
-  try_unbonding(_user: Address): ethereum.CallResult<VToken__unbondingResult> {
+  try_unbondings(
+    param0: Address
+  ): ethereum.CallResult<VToken__unbondingsResult> {
     let result = super.tryCall(
-      "unbonding",
-      "unbonding(address):(uint256[],uint256[])",
-      [ethereum.Value.fromAddress(_user)]
+      "unbondings",
+      "unbondings(address):(uint256,uint256)",
+      [ethereum.Value.fromAddress(param0)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new VToken__unbondingResult(
-        value[0].toBigIntArray(),
-        value[1].toBigIntArray()
-      )
+      new VToken__unbondingsResult(value[0].toBigInt(), value[1].toBigInt())
     );
   }
 
@@ -960,10 +1028,6 @@ export class ClaimCall__Inputs {
 
   constructor(call: ClaimCall) {
     this._call = call;
-  }
-
-  get _index(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
   }
 }
 

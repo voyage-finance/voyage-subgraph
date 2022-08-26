@@ -2,17 +2,17 @@ import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 export function getUserDepositDataId(
   userAddress: Address,
-  assetAddress: Address
+  collection: Address
 ): string {
-  return [userAddress.toHex(), assetAddress.toHex()].join("_");
+  return [userAddress.toHex(), collection.toHex()].join("_");
 }
 
 export function getLoanEntityId(
   vaultAddress: Address,
-  assetAddress: Address,
+  collection: Address,
   loanId: BigInt
 ): string {
-  return [vaultAddress.toHex(), assetAddress.toHex(), loanId.toString()].join(
+  return [vaultAddress.toHex(), collection.toHex(), loanId.toString()].join(
     "_"
   );
 }
@@ -27,9 +27,9 @@ export function getUnbondingEntityId(
 
 export function getCreditLineEntityId(
   vaultAddress: Address,
-  assetAddress: Address
+  collection: Address
 ): string {
-  return [vaultAddress.toHex(), assetAddress.toHex()].join("_");
+  return [vaultAddress.toHex(), collection.toHex()].join("_");
 }
 
 export function getRepaymentEntityId(
@@ -37,4 +37,11 @@ export function getRepaymentEntityId(
   repaymentId: BigInt
 ): string {
   return [loanId, repaymentId.toString()].join("_");
+}
+
+export function getCurrencyId(
+    address: Address,
+    symbol: string,
+): string {
+  return [address.toHex(), symbol].join("_");
 }

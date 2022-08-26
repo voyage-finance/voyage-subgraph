@@ -11,7 +11,7 @@ import {
   BigDecimal
 } from "@graphprotocol/graph-ts";
 
-export class PoolConfiguration extends Entity {
+export class ReserveConfiguration extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -19,19 +19,19 @@ export class PoolConfiguration extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save PoolConfiguration entity without an ID");
+    assert(id != null, "Cannot save ReserveConfiguration entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type PoolConfiguration must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type ReserveConfiguration must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("PoolConfiguration", id.toString(), this);
+      store.set("ReserveConfiguration", id.toString(), this);
     }
   }
 
-  static load(id: string): PoolConfiguration | null {
-    return changetype<PoolConfiguration | null>(
-      store.get("PoolConfiguration", id)
+  static load(id: string): ReserveConfiguration | null {
+    return changetype<ReserveConfiguration | null>(
+      store.get("ReserveConfiguration", id)
     );
   }
 
@@ -44,13 +44,13 @@ export class PoolConfiguration extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get pool(): string {
-    let value = this.get("pool");
+  get reserve(): string {
+    let value = this.get("reserve");
     return value!.toString();
   }
 
-  set pool(value: string) {
-    this.set("pool", Value.fromString(value));
+  set reserve(value: string) {
+    this.set("reserve", Value.fromString(value));
   }
 
   get liquidationBonus(): BigInt {
@@ -60,33 +60,6 @@ export class PoolConfiguration extends Entity {
 
   set liquidationBonus(value: BigInt) {
     this.set("liquidationBonus", Value.fromBigInt(value));
-  }
-
-  get marginRequirement(): BigInt {
-    let value = this.get("marginRequirement");
-    return value!.toBigInt();
-  }
-
-  set marginRequirement(value: BigInt) {
-    this.set("marginRequirement", Value.fromBigInt(value));
-  }
-
-  get marginMin(): BigInt {
-    let value = this.get("marginMin");
-    return value!.toBigInt();
-  }
-
-  set marginMin(value: BigInt) {
-    this.set("marginMin", Value.fromBigInt(value));
-  }
-
-  get marginMax(): BigInt {
-    let value = this.get("marginMax");
-    return value!.toBigInt();
-  }
-
-  set marginMax(value: BigInt) {
-    this.set("marginMax", Value.fromBigInt(value));
   }
 
   get loanInterval(): BigInt {
@@ -135,7 +108,7 @@ export class PoolConfiguration extends Entity {
   }
 }
 
-export class Pool extends Entity {
+export class Currency extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -143,18 +116,77 @@ export class Pool extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save Pool entity without an ID");
+    assert(id != null, "Cannot save Currency entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type Pool must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type Currency must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("Pool", id.toString(), this);
+      store.set("Currency", id.toString(), this);
     }
   }
 
-  static load(id: string): Pool | null {
-    return changetype<Pool | null>(store.get("Pool", id));
+  static load(id: string): Currency | null {
+    return changetype<Currency | null>(store.get("Currency", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get address(): Bytes {
+    let value = this.get("address");
+    return value!.toBytes();
+  }
+
+  set address(value: Bytes) {
+    this.set("address", Value.fromBytes(value));
+  }
+
+  get symbol(): string {
+    let value = this.get("symbol");
+    return value!.toString();
+  }
+
+  set symbol(value: string) {
+    this.set("symbol", Value.fromString(value));
+  }
+
+  get decimals(): BigInt {
+    let value = this.get("decimals");
+    return value!.toBigInt();
+  }
+
+  set decimals(value: BigInt) {
+    this.set("decimals", Value.fromBigInt(value));
+  }
+}
+
+export class Reserve extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Reserve entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Reserve must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Reserve", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Reserve | null {
+    return changetype<Reserve | null>(store.get("Reserve", id));
   }
 
   get id(): string {
@@ -175,31 +207,22 @@ export class Pool extends Entity {
     this.set("isActive", Value.fromBoolean(value));
   }
 
-  get underlyingAsset(): Bytes {
-    let value = this.get("underlyingAsset");
+  get collection(): Bytes {
+    let value = this.get("collection");
     return value!.toBytes();
   }
 
-  set underlyingAsset(value: Bytes) {
-    this.set("underlyingAsset", Value.fromBytes(value));
+  set collection(value: Bytes) {
+    this.set("collection", Value.fromBytes(value));
   }
 
-  get symbol(): string {
-    let value = this.get("symbol");
+  get currency(): string {
+    let value = this.get("currency");
     return value!.toString();
   }
 
-  set symbol(value: string) {
-    this.set("symbol", Value.fromString(value));
-  }
-
-  get decimals(): BigInt {
-    let value = this.get("decimals");
-    return value!.toBigInt();
-  }
-
-  set decimals(value: BigInt) {
-    this.set("decimals", Value.fromBigInt(value));
+  set currency(value: string) {
+    this.set("currency", Value.fromString(value));
   }
 
   get juniorTrancheTotalLiquidity(): BigInt {
@@ -449,13 +472,13 @@ export class UserDepositData extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get underlyingAsset(): Bytes {
-    let value = this.get("underlyingAsset");
+  get collection(): Bytes {
+    let value = this.get("collection");
     return value!.toBytes();
   }
 
-  set underlyingAsset(value: Bytes) {
-    this.set("underlyingAsset", Value.fromBytes(value));
+  set collection(value: Bytes) {
+    this.set("collection", Value.fromBytes(value));
   }
 
   get juniorTrancheBalance(): BigInt {
@@ -716,13 +739,13 @@ export class CreditLine extends Entity {
     this.set("vault", Value.fromString(value));
   }
 
-  get pool(): string {
-    let value = this.get("pool");
+  get reserve(): string {
+    let value = this.get("reserve");
     return value!.toString();
   }
 
-  set pool(value: string) {
-    this.set("pool", Value.fromString(value));
+  set reserve(value: string) {
+    this.set("reserve", Value.fromString(value));
   }
 
   get marginEscrow(): Bytes {
@@ -874,13 +897,13 @@ export class Loan extends Entity {
     this.set("vault", Value.fromString(value));
   }
 
-  get pool(): string {
-    let value = this.get("pool");
+  get reserve(): string {
+    let value = this.get("reserve");
     return value!.toString();
   }
 
-  set pool(value: string) {
-    this.set("pool", Value.fromString(value));
+  set reserve(value: string) {
+    this.set("reserve", Value.fromString(value));
   }
 
   get pmt_principal(): BigInt {
@@ -1224,24 +1247,6 @@ export class Liquidation extends Entity {
 
   set totalDebt(value: BigInt) {
     this.set("totalDebt", Value.fromBigInt(value));
-  }
-
-  get amountSlashed(): BigInt {
-    let value = this.get("amountSlashed");
-    return value!.toBigInt();
-  }
-
-  set amountSlashed(value: BigInt) {
-    this.set("amountSlashed", Value.fromBigInt(value));
-  }
-
-  get totalToLiquidate(): BigInt {
-    let value = this.get("totalToLiquidate");
-    return value!.toBigInt();
-  }
-
-  set totalToLiquidate(value: BigInt) {
-    this.set("totalToLiquidate", Value.fromBigInt(value));
   }
 
   get amountToWriteDown(): BigInt {

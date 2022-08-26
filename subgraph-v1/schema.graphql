@@ -1,10 +1,7 @@
-type PoolConfiguration @entity {
+type ReserveConfiguration @entity {
   id: ID!
-  pool: Pool!
+  reserve: Reserve!
   liquidationBonus: BigInt!
-  marginRequirement: BigInt!
-  marginMin: BigInt!
-  marginMax: BigInt!
   loanInterval: BigInt!
   loanTenure: BigInt!
   incomeRatio: BigInt!
@@ -12,12 +9,18 @@ type PoolConfiguration @entity {
   isActive: Boolean!
 }
 
-type Pool @entity {
+type Currency @entity(immutable: true) {
+    id: ID!
+    address: Bytes!
+    symbol: String!
+    decimals: BigInt!
+}
+
+type Reserve @entity {
   id: ID!
   isActive: Boolean!
-  underlyingAsset: Bytes!
-  symbol: String!
-  decimals: BigInt!
+  collection: Bytes!
+  currency: Currency!
   juniorTrancheTotalLiquidity: BigInt!
   juniorTrancheLiquidityRate: BigInt!
   seniorTrancheTotalLiquidity: BigInt!
@@ -26,12 +29,12 @@ type Pool @entity {
   totalLiquidity: BigInt!
   totalBorrow: BigInt!
   trancheRatio: BigInt!
-  configuration: PoolConfiguration
+  configuration: ReserveConfiguration
 }
 
 type VToken @entity {
   id: ID! # address of Junior/Senior deposit token
-  asset: Pool!
+  asset: Reserve!
   trancheType: Tranche!
   totalLiquidity: BigInt!
 }
@@ -45,7 +48,7 @@ type UserData @entity {
 
 type UserDepositData @entity {
   id: ID!
-  underlyingAsset: Bytes!
+  collection: Bytes!
   juniorTrancheBalance: BigInt!
   juniorDepositWithdrawalDiff: BigInt!
   juniorTranchePnl: BigInt!
@@ -81,7 +84,7 @@ type Vault @entity {
 type CreditLine @entity {
   id: ID! # concat(vault address, underlying asset)
   vault: Vault!
-  pool: Pool!
+  reserve: Reserve!
   marginEscrow: Bytes!
   creditEscrow: Bytes!
   borrowRate: BigInt! # weighted average, updated on every borrow and final repayment
@@ -99,7 +102,7 @@ type CreditLine @entity {
 type Loan @entity {
   id: ID! # concat(vault address, underlying asset, loan id)
   vault: Vault!
-  pool: Pool!
+  reserve: Reserve!
   pmt_principal: BigInt!
   pmt_interest: BigInt!
   pmt_payment: BigInt!
@@ -133,13 +136,11 @@ type Liquidation @entity {
   id: ID! # same as Repayment.id
   liquidator: String! # address of user
   vault: Vault!
-  reserve: Pool!
+  reserve: Reserve!
   loanId: BigInt! # id in sc's
   repaymentId: BigInt! # id in sc's
   loan: Loan!
   repayment: Repayment!
   totalDebt: BigInt!
-  amountSlashed: BigInt!
-  totalToLiquidate: BigInt!
   amountToWriteDown: BigInt!
 }

@@ -1,76 +1,76 @@
 import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
 import {
   Loan,
-  Pool,
-  PoolConfiguration,
+  Reserve,
+  ReserveConfiguration,
   UserDepositData,
   VToken,
 } from "../../generated/schema";
 import { Voyage } from "../../generated/Voyage/Voyage";
 
 export function updatePoolConfiguration(
-  poolConfiguration: PoolConfiguration,
+  reserveConfiguration: ReserveConfiguration,
   event: ethereum.Event
 ): void {
   const voyage = Voyage.bind(event.address);
-  const assetAddress = Address.fromBytes(
-    Address.fromHexString(poolConfiguration.pool)
+  const collection = Address.fromBytes(
+    Address.fromHexString(reserveConfiguration.reserve)
   );
-  const poolConfigState = voyage.getPoolConfiguration(assetAddress);
-  poolConfiguration.liquidationBonus = poolConfigState.liquidationBonus;
-  poolConfiguration.marginRequirement = poolConfigState.marginRequirement;
-  poolConfiguration.marginMin = poolConfigState.minMargin;
-  poolConfiguration.marginMax = poolConfigState.maxMargin;
-  poolConfiguration.loanInterval = poolConfigState.loanInterval;
-  poolConfiguration.loanTenure = poolConfigState.loanTenure;
-  poolConfiguration.incomeRatio = poolConfigState.incomeRatio;
-  poolConfiguration.isInitialized = poolConfigState.isInitialized;
-  poolConfiguration.isActive = poolConfigState.isActive;
+  const poolConfigState = voyage.getPoolConfiguration(collection);
+  reserveConfiguration.liquidationBonus = poolConfigState.liquidationBonus;
+  // reserveConfiguration.marginRequirement = poolConfigState.marginRequirement;
+  // reserveConfiguration.marginMin = poolConfigState.minMargin;
+  // reserveConfiguration.marginMax = poolConfigState.maxMargin;
+  reserveConfiguration.loanInterval = poolConfigState.loanInterval;
+  reserveConfiguration.loanTenure = poolConfigState.loanTenure;
+  reserveConfiguration.incomeRatio = poolConfigState.incomeRatio;
+  reserveConfiguration.isInitialized = poolConfigState.isInitialized;
+  reserveConfiguration.isActive = poolConfigState.isActive;
 }
 
-export function updatePoolData(pool: Pool, event: ethereum.Event): void {
+export function updatePoolData(reserve: Reserve, event: ethereum.Event): void {
   const voyage = Voyage.bind(event.address);
-  const poolState = voyage.getPoolData(Address.fromBytes(pool.underlyingAsset));
+  const poolState = voyage.getPoolData(Address.fromBytes(reserve.collection));
 
-  pool.isActive = poolState.isActive;
-  pool.juniorTrancheTotalLiquidity = poolState.juniorLiquidity;
-  pool.juniorTrancheLiquidityRate = poolState.juniorLiquidityRate;
-  pool.seniorTrancheTotalLiquidity = poolState.seniorLiquidity;
-  pool.seniorTrancheAvailableLiquidity = poolState.seniorLiquidity.minus(
+  reserve.isActive = poolState.isActive;
+  reserve.juniorTrancheTotalLiquidity = poolState.juniorLiquidity;
+  reserve.juniorTrancheLiquidityRate = poolState.juniorLiquidityRate;
+  reserve.seniorTrancheTotalLiquidity = poolState.seniorLiquidity;
+  reserve.seniorTrancheAvailableLiquidity = poolState.seniorLiquidity.minus(
     poolState.totalDebt
   );
-  pool.seniorTrancheLiquidityRate = poolState.seniorLiquidityRate;
-  pool.totalLiquidity = poolState.totalLiquidity;
-  pool.totalBorrow = poolState.totalDebt;
-  pool.trancheRatio = poolState.trancheRatio;
+  reserve.seniorTrancheLiquidityRate = poolState.seniorLiquidityRate;
+  reserve.totalLiquidity = poolState.totalLiquidity;
+  reserve.totalBorrow = poolState.totalDebt;
+  reserve.trancheRatio = poolState.trancheRatio;
 }
 
 export function increaseTrancheLiquidity(
-  pool: Pool,
+  reserve: Reserve,
   trancheType: string,
   amount: BigInt
 ): void {
   if (trancheType === "Junior")
-    pool.juniorTrancheTotalLiquidity = pool.juniorTrancheTotalLiquidity.plus(
+    reserve.juniorTrancheTotalLiquidity = reserve.juniorTrancheTotalLiquidity.plus(
       amount
     );
   else
-    pool.seniorTrancheTotalLiquidity = pool.seniorTrancheTotalLiquidity.plus(
+    reserve.seniorTrancheTotalLiquidity = reserve.seniorTrancheTotalLiquidity.plus(
       amount
     );
 }
 
 export function decreaseTrancheLiquidity(
-  pool: Pool,
+  reserve: Reserve,
   trancheType: string,
   amount: BigInt
 ): void {
   if (trancheType === "Junior")
-    pool.juniorTrancheTotalLiquidity = pool.juniorTrancheTotalLiquidity.minus(
+    reserve.juniorTrancheTotalLiquidity = reserve.juniorTrancheTotalLiquidity.minus(
       amount
     );
   else
-    pool.seniorTrancheTotalLiquidity = pool.seniorTrancheTotalLiquidity.minus(
+    reserve.seniorTrancheTotalLiquidity = reserve.seniorTrancheTotalLiquidity.minus(
       amount
     );
 }
@@ -87,11 +87,12 @@ export function updateUserDepositData(
   userDepositData: UserDepositData,
   event: ethereum.Event
 ): void {
+  log.info("Here ----------------", [])
   const voyage = Voyage.bind(event.address);
   const userAddress = Address.fromHexString(userDepositData.user);
-  const assetAddress = userDepositData.underlyingAsset;
+  const collection = userDepositData.collection;
   const userPoolData = voyage.getUserPoolData(
-    Address.fromBytes(assetAddress),
+    Address.fromBytes(collection),
     Address.fromBytes(userAddress)
   );
   userDepositData.juniorTrancheBalance = userPoolData.juniorTrancheBalance;
@@ -129,12 +130,12 @@ export function updatePnL(
 export function updateLoanEntity(
   loan: Loan,
   vaultAddress: Address,
-  assetAddress: Address,
+  collection: Address,
   id: BigInt,
   event: ethereum.Event
 ): void {
   const voyage = Voyage.bind(event.address);
-  const loanData = voyage.getLoanDetail(vaultAddress, assetAddress, id);
+  const loanData = voyage.getLoanDetail(vaultAddress, collection, id);
   loan.vault = vaultAddress.toHex();
   loan.principal = loanData.principal;
   loan.pmt_principal = loanData.pmt.principal;

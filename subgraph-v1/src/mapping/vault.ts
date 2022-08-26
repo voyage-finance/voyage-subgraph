@@ -1,14 +1,10 @@
 import { Address, BigInt, log } from "@graphprotocol/graph-ts";
-import { CreditLine, Loan, Repayment, Vault } from "../../generated/schema";
+import { Loan, Repayment, Vault } from "../../generated/schema";
 import {
   VaultCreated,
-  VaultCreditLineInitialized,
   Voyage,
   Voyage__getCreditLineDataResultValue0Struct,
-  Voyage__getVaultConfigResultValue0Struct,
 } from "../../generated/Voyage/Voyage";
-import { getCreditLineEntityId } from "../utils/id";
-import { zeroBI } from "../utils/math";
 
 function createVault(_vaultAddress: Address, _userAddress: Address): Vault {
   const vaultAddress = _vaultAddress.toHex();
@@ -28,91 +24,6 @@ export function handleVaultCreated(event: VaultCreated): void {
   createVault(event.params._vault, event.params._owner);
 }
 
-export function handleCreditLineInitialised(
-  evt: VaultCreditLineInitialized
-): void {
-  const _vault = evt.params._vault;
-  const _asset = evt.params._asset;
-  const vaultInfo = getVaultState(_vault, _asset, evt.address);
-  const vaultState = vaultInfo.vaultState;
-  const vaultConfig = vaultInfo.vaultConfig;
-
-  const creditLineId = getCreditLineEntityId(
-    evt.params._vault,
-    evt.params._asset
-  );
-  const creditLine = new CreditLine(creditLineId);
-
-  creditLine.vault = _vault.toHex();
-  creditLine.pool = _asset.toHex();
-  creditLine.marginEscrow = evt.params._me;
-  creditLine.creditEscrow = evt.params._ce;
-  creditLine.borrowRate = zeroBI();
-  creditLine.totalDebt = zeroBI();
-  creditLine.totalMargin = zeroBI();
-  creditLine.marginRequirement = vaultConfig.marginRequirement;
-  creditLine.withdrawableSecurityDeposit =
-    vaultState.withdrawableSecurityDeposit;
-  creditLine.creditLimit = vaultState.creditLimit;
-  creditLine.spendableBalance = vaultState.spendableBalance;
-  creditLine.gav = vaultState.gav;
-  creditLine.ltv = vaultState.ltv;
-  creditLine.healthFactor = vaultState.healthFactor;
-
-  creditLine.save();
-}
-
-/**
- * Updates credit line state when margin is credited or redeemed.
- * Called for:
- * - VaultMarginCredited
- * - VaultMarginRedeemed
- * @param _vaultAddress - the vault which emitted the event
- * @param _assetAddress - the underlying asset
- * @param _eventAddress - Voyage diamond address
- * @returns
- */
-export function handleMarginEvent(
-  _vaultAddress: Address,
-  _assetAddress: Address,
-  _eventAddress: Address
-): void {
-  const vaultAddress = _vaultAddress.toHex();
-  const assetAddress = _assetAddress.toHex();
-  let vaultEntity = Vault.load(vaultAddress);
-  if (!vaultEntity) {
-    vaultEntity = new Vault(vaultAddress);
-  }
-
-  const creditLineId = getCreditLineEntityId(_vaultAddress, _assetAddress);
-  const creditLine = CreditLine.load(creditLineId);
-  if (!creditLine) {
-    // Should not happen, since a credit line should exist in order for a margin deposit to happen.
-    log.error(
-      "tried to handle margin event for a non-existent credit line. vault: {} asset: {}",
-      [vaultAddress, assetAddress]
-    );
-    return;
-  }
-
-  const voyage = Voyage.bind(_eventAddress);
-  const vaultData = voyage.getCreditLineData(_vaultAddress, _assetAddress);
-  const vaultConfigData = voyage.getVaultConfig(_assetAddress, _vaultAddress);
-
-  // TODO: compute the weighted average interest rate of draw downs
-  // creditLine.borrowRate = vaultData.borrowRate;
-  creditLine.totalDebt = vaultData.totalDebt;
-  creditLine.totalMargin = vaultData.totalMargin;
-  creditLine.marginRequirement = vaultConfigData.marginRequirement;
-  creditLine.withdrawableSecurityDeposit =
-    vaultData.withdrawableSecurityDeposit;
-  creditLine.creditLimit = vaultData.creditLimit;
-  creditLine.spendableBalance = vaultData.spendableBalance;
-  creditLine.gav = vaultData.gav;
-  creditLine.ltv = vaultData.ltv;
-  creditLine.healthFactor = vaultData.healthFactor;
-  creditLine.save();
-}
 
 /**
  * Called for:
@@ -191,17 +102,17 @@ export function handleLoanEvent(
 }
 
 class IVaultState {
-  vaultConfig: Voyage__getVaultConfigResultValue0Struct;
   vaultState: Voyage__getCreditLineDataResultValue0Struct;
 }
 
 function getVaultState(
   vaultAddress: Address,
-  assetAddress: Address,
+  collection: Address,
   voyageAddress: Address
 ): IVaultState {
   const voyage = Voyage.bind(voyageAddress);
-  const vaultConfig = voyage.getVaultConfig(assetAddress, vaultAddress);
-  const vaultState = voyage.getCreditLineData(vaultAddress, assetAddress);
-  return { vaultConfig, vaultState };
+  // const vaultConfig = voyage.getVaultConfig(collection, vaultAddress);
+  const vaultState = voyage.getCreditLineData(vaultAddress, collection);
+  // todo-refactor
+  return { vaultState };
 }

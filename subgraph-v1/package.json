@@ -5,7 +5,7 @@
     "codegen": "graph codegen",
     "create-local": "graph create --node http://localhost:8020/ voyage-finance/subgraph-v1",
     "remove-local": "graph remove --node http://localhost:8020/ voyage-finance/subgraph-v1",
-    "build-local": "graph build --network hh",
+    "build-local": "graph build --network localhost",
     "build-goerli": "graph build --network goerli",
     "build-rinkeby": "graph build --network rinkeby",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 voyage-finance/subgraph-v1",

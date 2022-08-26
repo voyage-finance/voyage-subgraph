@@ -1,9 +1,9 @@
-import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
+import {Address, BigInt, Bytes, ethereum, log} from "@graphprotocol/graph-ts";
 import {
-  CreditLine,
+  Currency,
   Loan,
-  Pool,
-  PoolConfiguration,
+  Reserve,
+  ReserveConfiguration,
   Unbonding,
   UserData,
   UserDepositData,
@@ -12,57 +12,78 @@ import {
 } from "../../generated/schema";
 import { IERC20Detailed } from "../../generated/Voyage/IERC20Detailed";
 import {
-  getCreditLineEntityId,
+  getCreditLineEntityId, getCurrencyId,
   getLoanEntityId,
   getUnbondingEntityId,
   getUserDepositDataId,
 } from "../utils/id";
 import { zeroBI } from "../utils/math";
+import {IERC721} from "../../generated/Voyage/IERC721";
 
-export function getOrInitPool(assetAddress: Address): Pool {
-  const id = assetAddress.toHex();
-  let pool = Pool.load(id);
-  if (!pool) {
-    pool = new Pool(id);
-    pool.isActive = false;
-    pool.underlyingAsset = assetAddress;
-    pool.symbol = "";
-    pool.decimals = zeroBI();
-    pool.seniorTrancheLiquidityRate = zeroBI();
-    pool.seniorTrancheTotalLiquidity = zeroBI();
-    pool.seniorTrancheAvailableLiquidity = zeroBI();
-    pool.juniorTrancheTotalLiquidity = zeroBI();
-    pool.juniorTrancheLiquidityRate = zeroBI();
-    pool.totalLiquidity = zeroBI();
-    pool.totalBorrow = zeroBI();
-    pool.trancheRatio = zeroBI();
-    pool.save();
+
+export function getOrInitCurrency(
+    address: Address
+): Currency {
+  const erc20Instance = IERC20Detailed.bind(address)
+  const id = getCurrencyId(address, erc20Instance.symbol())
+
+  let currencyInstance = Currency.load(id);
+  if (!currencyInstance) {
+    currencyInstance = new Currency(id);
+    currencyInstance.address = address;
+    currencyInstance.symbol = erc20Instance.symbol();
+    currencyInstance.decimals = BigInt.fromI32(erc20Instance.decimals());
+
+
+    currencyInstance.save();
   }
-  return pool;
+  return currencyInstance;
 }
 
-export function getOrInitPoolConfiguration(
-  assetAddress: Address
-): PoolConfiguration {
-  const id = assetAddress.toHex();
-  let poolConfiguration = PoolConfiguration.load(id);
-  if (!poolConfiguration) {
-    poolConfiguration = new PoolConfiguration(id);
-    const pool = getOrInitPool(assetAddress);
-    poolConfiguration.pool = pool.id;
-    poolConfiguration.liquidationBonus = zeroBI();
-    poolConfiguration.marginRequirement = zeroBI();
-    poolConfiguration.marginMin = zeroBI();
-    poolConfiguration.marginMax = zeroBI();
-    poolConfiguration.loanInterval = zeroBI();
-    poolConfiguration.loanTenure = zeroBI();
-    poolConfiguration.incomeRatio = zeroBI();
-    poolConfiguration.isInitialized = false;
-    poolConfiguration.isActive = false;
+export function getOrInitReserve(collection: Address, currencyAddress: Address | null): Reserve {
+  const id = collection.toHex();
+  let reserve = Reserve.load(id);
+  if (!reserve) {
+    reserve = new Reserve(id);
+    reserve.isActive = false;
+    reserve.collection = collection;
+    reserve.seniorTrancheLiquidityRate = zeroBI();
+    reserve.seniorTrancheTotalLiquidity = zeroBI();
+    reserve.seniorTrancheAvailableLiquidity = zeroBI();
+    reserve.juniorTrancheTotalLiquidity = zeroBI();
+    reserve.juniorTrancheLiquidityRate = zeroBI();
+    reserve.totalLiquidity = zeroBI();
+    reserve.totalBorrow = zeroBI();
+    reserve.trancheRatio = zeroBI();
+    if (currencyAddress !== null) {
+      const currency = getOrInitCurrency(currencyAddress);
+      reserve.currency = currency.id;
+    }else throw new Error("currency is not defined when Reserve is creating!")
 
-    poolConfiguration.save();
+    reserve.save();
   }
-  return poolConfiguration;
+  return reserve;
+}
+
+export function getOrInitReserveConfiguration(
+  collection: Address
+): ReserveConfiguration {
+  const id = collection.toHex();
+  let reserveConfiguration = ReserveConfiguration.load(id);
+  if (!reserveConfiguration) {
+    reserveConfiguration = new ReserveConfiguration(id);
+    const reserve = getOrInitReserve(collection, null);
+    reserveConfiguration.reserve = reserve.id;
+    reserveConfiguration.liquidationBonus = zeroBI();
+    reserveConfiguration.loanInterval = zeroBI();
+    reserveConfiguration.loanTenure = zeroBI();
+    reserveConfiguration.incomeRatio = zeroBI();
+    reserveConfiguration.isInitialized = false;
+    reserveConfiguration.isActive = false;
+
+    reserveConfiguration.save();
+  }
+  return reserveConfiguration;
 }
 
 export function getOrInitUserData(userAddress: Address): UserData {
@@ -77,12 +98,14 @@ export function getOrInitUserData(userAddress: Address): UserData {
 
 export function initVToken(
   tokenAddress: Address,
-  assetAddress: Address,
+  collection: Address,
+  currency: Address,
   trancheType: string
 ): VToken {
+  getOrInitReserve(collection, currency);
   const vToken = new VToken(tokenAddress.toHex());
   vToken.trancheType = trancheType;
-  vToken.asset = assetAddress.toHex();
+  vToken.asset = collection.toHex();
   vToken.totalLiquidity = zeroBI();
   vToken.save();
   return vToken;
@@ -90,17 +113,15 @@ export function initVToken(
 
 export function getOrInitUserDepositData(
   userAddress: Address,
-  assetAddress: Address,
+  collection: Address,
   event: ethereum.Event
 ): UserDepositData {
-  const id = getUserDepositDataId(userAddress, assetAddress);
+  const id = getUserDepositDataId(userAddress, collection);
   let userDepositData = UserDepositData.load(id);
   if (!userDepositData) {
-    const underlying = IERC20Detailed.bind(assetAddress);
-    const decimals = underlying.decimals();
     userDepositData = new UserDepositData(id);
-    userDepositData.underlyingAsset = assetAddress;
-    userDepositData.decimals = BigInt.fromI32(decimals);
+    userDepositData.collection = collection;
+    userDepositData.decimals = BigInt.fromI32(18);
     userDepositData.juniorDepositWithdrawalDiff = zeroBI();
     userDepositData.seniorDepositWithdrawalDiff = zeroBI();
     userDepositData.juniorTranchePnl = zeroBI();
@@ -119,10 +140,10 @@ export function getOrInitUserDepositData(
 
 export function getOrInitUnbonding(
   userAddress: Address,
-  assetAddress: Address,
+  collection: Address,
   withdrawalTime: BigInt
 ): Unbonding {
-  const id = getUnbondingEntityId(userAddress, assetAddress, withdrawalTime);
+  const id = getUnbondingEntityId(userAddress, collection, withdrawalTime);
   let unbonding = Unbonding.load(id);
   if (!unbonding) {
     const user = getOrInitUserData(userAddress);
@@ -136,10 +157,10 @@ export function getOrInitUnbonding(
 
 export function getOrInitLoan(
   vaultAddress: Address,
-  assetAddress: Address,
+  collection: Address,
   loanId: BigInt
 ): Loan {
-  const id = getLoanEntityId(vaultAddress, assetAddress, loanId);
+  const id = getLoanEntityId(vaultAddress, collection, loanId);
   let loan = Loan.load(id);
   if (!loan) {
     loan = new Loan(id);
@@ -156,17 +177,4 @@ export function getOrInitVault(vaultAddress: Address): Vault {
     vault.save();
   }
   return vault;
-}
-
-export function getOrInitCreditLine(
-  vaultAddress: Address,
-  assetAddress: Address
-): CreditLine {
-  const id = getCreditLineEntityId(vaultAddress, assetAddress);
-  let creditLine = CreditLine.load(id);
-  if (!creditLine) {
-    creditLine = new CreditLine(id);
-    creditLine.save();
-  }
-  return creditLine;
 }

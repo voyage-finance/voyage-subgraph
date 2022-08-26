@@ -13,13 +13,13 @@ import { log } from "@graphprotocol/graph-ts";
 export function handleBorrow(event: Borrow): void {
   const loan = getOrInitLoan(
     event.params._vault,
-    event.params._asset,
+    event.params._collection,
     event.params._loanId
   );
   updateLoanEntity(
     loan,
     event.params._vault,
-    event.params._asset,
+    event.params._collection,
     event.params._loanId,
     event
   );
@@ -32,7 +32,7 @@ export function handleRepay(event: RepaymentEvent): void {
   const voyage = Voyage.bind(event.address);
   const loanId = getLoanEntityId(
     event.params._vault,
-    event.params._asset,
+    event.params._collection,
     event.params._loanId
   );
   const loan = Loan.load(loanId);
@@ -42,7 +42,7 @@ export function handleRepay(event: RepaymentEvent): void {
       "tried to handle repay event for a non-existent loan. vault: {} asset: {} loan: {}",
       [
         event.params._vault.toHex(),
-        event.params._asset.toHex(),
+        event.params._collection.toHex(),
         event.params._loanId.toString(),
       ]
     );
@@ -51,7 +51,7 @@ export function handleRepay(event: RepaymentEvent): void {
   updateLoanEntity(
     loan,
     event.params._vault,
-    event.params._asset,
+    event.params._collection,
     event.params._loanId,
     event
   );
@@ -72,12 +72,12 @@ export function handleRepay(event: RepaymentEvent): void {
 
 export function handleLiquidate(event: Liquidate): void {
   const vaultAddress = event.params._vault.toHex();
-  const assetAddress = event.params._asset.toHex();
+  const collection = event.params._collection.toHex();
   const userAddress = event.params._liquidator.toHex();
 
   const loanId = [
     vaultAddress,
-    assetAddress,
+    collection,
     event.params._drowDownId.toString(),
   ].join("_");
   const repaymentId = [loanId, event.params._repaymentId.toString()].join("_");
@@ -89,14 +89,14 @@ export function handleLiquidate(event: Liquidate): void {
 
   liquidationEntity.liquidator = userAddress;
   liquidationEntity.vault = vaultAddress;
-  liquidationEntity.reserve = assetAddress;
+  liquidationEntity.reserve = collection;
   liquidationEntity.loanId = event.params._drowDownId;
   liquidationEntity.repaymentId = event.params._repaymentId;
   liquidationEntity.loan = loanId;
   liquidationEntity.repayment = repaymentId;
   liquidationEntity.totalDebt = event.params._debt;
-  liquidationEntity.amountSlashed = event.params._margin;
-  liquidationEntity.totalToLiquidate = event.params._collateral;
+  // liquidationEntity.amountSlashed = event.params._margin;
+  // liquidationEntity.totalToLiquidate = event.params._collateral;
   liquidationEntity.amountToWriteDown = event.params._amountToWriteDown;
 
   liquidationEntity.save();

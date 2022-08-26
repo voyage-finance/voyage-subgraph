@@ -20,6 +20,7 @@ services:
       # Change next line if you want to connect to a different JSON-RPC endpoint
       ethereum: "${NETWORK_RPC}"
       GRAPH_LOG: info
+      RUST_BACKTRACE: 0
     extra_hosts:
       - "host.docker.internal:host-gateway"
   ipfs:

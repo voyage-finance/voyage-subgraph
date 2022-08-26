@@ -1,5 +1,5 @@
 up-local:
-	NETWORK_RPC=hh:http://host.docker.internal:8545 docker-compose -p hh up
+	NETWORK_RPC=localhost:http://host.docker.internal:8545 docker-compose -p localhost up
 up-rinkeby:
 	NETWORK_RPC=goerli:https://eth-rinkeby.alchemyapi.io/v2/2rkHcv3Pdg7j3iHPWUu9cDsEOtSoXtoB docker-compose -p rinkeby up
 up-goerli:

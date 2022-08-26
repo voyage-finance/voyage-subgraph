@@ -1,24 +1,24 @@
-import { Paused, Unpaused } from "../../generated/Voyage/Voyage";
+import {Paused, Unpaused} from "../../generated/Voyage/Voyage";
 
 export {
-  handleReserveInitialized,
-  handleReserveActivated,
   handleDeposit,
   handleWithdraw,
   handleDepositVToken,
   handleWithdrawVToken,
-  handleLiquidationConfigurationUpdated,
-  handleIncomeRatioUpdated,
-  handleMarginParametersUpdated,
-  handleLoanParametersUpdated,
 } from "./liquidity";
 
 export { handleBorrow, handleRepay, handleLiquidate } from "./loan";
 
 export {
+  handleReserveInitialized,
+  handleReserveActivated,
+  handleLiquidationConfigurationUpdated,
+  handleIncomeRatioUpdated,
+  handleLoanParametersUpdated
+} from "./reserves";
+
+export {
   handleVaultCreated,
-  handleCreditLineInitialised,
-  handleMarginEvent,
   handleLoanEvent,
 } from "./vault";
 

@@ -52,6 +52,10 @@ export function handleWithdraw(event: VoyageWithdraw): void {
   const reserve = getOrInitReserve(event.params._collection, event.params._currency);
   updatePoolData(reserve, event);
   reserve.save();
+  /**
+   * We'll eventually merge this and handleVTokenWIthdraw;
+   * however, would like to point out that we probably have to aalso pass event.params_asset here in that change.
+   */
   const userDepositData = getOrInitUserDepositData(
     event.params._user,
     event.params._collection,
@@ -81,7 +85,7 @@ export function handleDepositVToken(event: VTokenDeposit): void {
     );
     return;
   }
-  let reserve = getOrInitReserve(Address.fromString(vTokenEntity.asset), null);
+  let reserve = getOrInitReserve(Address.fromBytes(vTokenEntity.asset), null);
   increaseTrancheLiquidity(reserve, vTokenEntity.trancheType, event.params.assets);
   increaseVTokenLiquidity(vTokenEntity, event.params.assets);
   reserve.save();
@@ -97,7 +101,7 @@ export function handleWithdrawVToken(event: VTokenWithdraw): void {
     );
     return;
   }
-  let reserve = getOrInitReserve(Address.fromString(vTokenEntity.asset), null);
+  let reserve = getOrInitReserve(Address.fromBytes(vTokenEntity.asset), null);
   decreaseTrancheLiquidity(reserve, vTokenEntity.trancheType, event.params.assets);
   decreaseVTokenLiquidity(vTokenEntity, event.params.assets);
   reserve.save();

@@ -12,13 +12,12 @@ import {
 } from "../../generated/schema";
 import { IERC20Detailed } from "../../generated/Voyage/IERC20Detailed";
 import {
-  getCreditLineEntityId, getCurrencyId,
+  getCurrencyId,
   getLoanEntityId,
   getUnbondingEntityId,
   getUserDepositDataId,
 } from "../utils/id";
 import { zeroBI } from "../utils/math";
-import {IERC721} from "../../generated/Voyage/IERC721";
 
 
 export function getOrInitCurrency(
@@ -105,7 +104,7 @@ export function initVToken(
   getOrInitReserve(collection, currency);
   const vToken = new VToken(tokenAddress.toHex());
   vToken.trancheType = trancheType;
-  vToken.asset = collection.toHex();
+  vToken.asset = collection;
   vToken.totalLiquidity = zeroBI();
   vToken.save();
   return vToken;

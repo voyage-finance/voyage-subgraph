@@ -34,7 +34,7 @@ type Reserve @entity {
 
 type VToken @entity {
   id: ID! # address of Junior/Senior deposit token
-  asset: Reserve!
+  asset: Bytes!
   trancheType: Tranche!
   totalLiquidity: BigInt!
 }

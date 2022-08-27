@@ -23,8 +23,6 @@ export function handleBorrow(event: Borrow): void {
     event.params._loanId,
     event
   );
-  // creditline average borrow rate
-  // const total = loan.inte
   loan.save();
 }
 
@@ -95,8 +93,6 @@ export function handleLiquidate(event: Liquidate): void {
   liquidationEntity.loan = loanId;
   liquidationEntity.repayment = repaymentId;
   liquidationEntity.totalDebt = event.params._debt;
-  // liquidationEntity.amountSlashed = event.params._margin;
-  // liquidationEntity.totalToLiquidate = event.params._collateral;
   liquidationEntity.amountToWriteDown = event.params._amountToWriteDown;
 
   liquidationEntity.save();

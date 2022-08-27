@@ -70,14 +70,3 @@ export function handleLoanParametersUpdated(
     reserve.loanTenure = event.params._term;
     reserve.save();
 }
-
-// todo-review: removed because margin-related fields deleted from ReserveConfiguration
-// export function handleMarginParametersUpdated(
-//     event: MarginParametersUpdated
-// ): void {
-//     const reserve = getOrInitReserveConfiguration(event.params._collection);
-//     reserve.marginMin = event.params._min;
-//     reserve.marginMax = event.params._max;
-//     reserve.marginRequirement = event.params._marginRequirement;
-//     reserve.save();
-// }

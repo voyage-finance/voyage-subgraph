@@ -346,13 +346,13 @@ export class VToken extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get asset(): string {
+  get asset(): Bytes {
     let value = this.get("asset");
-    return value!.toString();
+    return value!.toBytes();
   }
 
-  set asset(value: string) {
-    this.set("asset", Value.fromString(value));
+  set asset(value: Bytes) {
+    this.set("asset", Value.fromBytes(value));
   }
 
   get trancheType(): string {

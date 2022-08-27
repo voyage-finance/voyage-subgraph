@@ -18,9 +18,6 @@ export function updatePoolConfiguration(
   );
   const poolConfigState = voyage.getPoolConfiguration(collection);
   reserveConfiguration.liquidationBonus = poolConfigState.liquidationBonus;
-  // reserveConfiguration.marginRequirement = poolConfigState.marginRequirement;
-  // reserveConfiguration.marginMin = poolConfigState.minMargin;
-  // reserveConfiguration.marginMax = poolConfigState.maxMargin;
   reserveConfiguration.loanInterval = poolConfigState.loanInterval;
   reserveConfiguration.loanTenure = poolConfigState.loanTenure;
   reserveConfiguration.incomeRatio = poolConfigState.incomeRatio;

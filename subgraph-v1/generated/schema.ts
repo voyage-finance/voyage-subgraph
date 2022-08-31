@@ -53,13 +53,31 @@ export class ReserveConfiguration extends Entity {
     this.set("reserve", Value.fromString(value));
   }
 
-  get liquidationBonus(): BigInt {
-    let value = this.get("liquidationBonus");
+  get isInitialized(): boolean {
+    let value = this.get("isInitialized");
+    return value!.toBoolean();
+  }
+
+  set isInitialized(value: boolean) {
+    this.set("isInitialized", Value.fromBoolean(value));
+  }
+
+  get isActive(): boolean {
+    let value = this.get("isActive");
+    return value!.toBoolean();
+  }
+
+  set isActive(value: boolean) {
+    this.set("isActive", Value.fromBoolean(value));
+  }
+
+  get incomeRatio(): BigInt {
+    let value = this.get("incomeRatio");
     return value!.toBigInt();
   }
 
-  set liquidationBonus(value: BigInt) {
-    this.set("liquidationBonus", Value.fromBigInt(value));
+  set incomeRatio(value: BigInt) {
+    this.set("incomeRatio", Value.fromBigInt(value));
   }
 
   get loanInterval(): BigInt {
@@ -80,31 +98,22 @@ export class ReserveConfiguration extends Entity {
     this.set("loanTenure", Value.fromBigInt(value));
   }
 
-  get incomeRatio(): BigInt {
-    let value = this.get("incomeRatio");
+  get gracePeriod(): BigInt {
+    let value = this.get("gracePeriod");
     return value!.toBigInt();
   }
 
-  set incomeRatio(value: BigInt) {
-    this.set("incomeRatio", Value.fromBigInt(value));
+  set gracePeriod(value: BigInt) {
+    this.set("gracePeriod", Value.fromBigInt(value));
   }
 
-  get isInitialized(): boolean {
-    let value = this.get("isInitialized");
-    return value!.toBoolean();
+  get liquidationBonus(): BigInt {
+    let value = this.get("liquidationBonus");
+    return value!.toBigInt();
   }
 
-  set isInitialized(value: boolean) {
-    this.set("isInitialized", Value.fromBoolean(value));
-  }
-
-  get isActive(): boolean {
-    let value = this.get("isActive");
-    return value!.toBoolean();
-  }
-
-  set isActive(value: boolean) {
-    this.set("isActive", Value.fromBoolean(value));
+  set liquidationBonus(value: BigInt) {
+    this.set("liquidationBonus", Value.fromBigInt(value));
   }
 }
 
@@ -137,15 +146,6 @@ export class Currency extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
-  }
-
-  get address(): Bytes {
-    let value = this.get("address");
-    return value!.toBytes();
-  }
-
-  set address(value: Bytes) {
-    this.set("address", Value.fromBytes(value));
   }
 
   get symbol(): string {
@@ -198,15 +198,6 @@ export class Reserve extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get isActive(): boolean {
-    let value = this.get("isActive");
-    return value!.toBoolean();
-  }
-
-  set isActive(value: boolean) {
-    this.set("isActive", Value.fromBoolean(value));
-  }
-
   get collection(): Bytes {
     let value = this.get("collection");
     return value!.toBytes();
@@ -225,78 +216,6 @@ export class Reserve extends Entity {
     this.set("currency", Value.fromString(value));
   }
 
-  get juniorTrancheTotalLiquidity(): BigInt {
-    let value = this.get("juniorTrancheTotalLiquidity");
-    return value!.toBigInt();
-  }
-
-  set juniorTrancheTotalLiquidity(value: BigInt) {
-    this.set("juniorTrancheTotalLiquidity", Value.fromBigInt(value));
-  }
-
-  get juniorTrancheLiquidityRate(): BigInt {
-    let value = this.get("juniorTrancheLiquidityRate");
-    return value!.toBigInt();
-  }
-
-  set juniorTrancheLiquidityRate(value: BigInt) {
-    this.set("juniorTrancheLiquidityRate", Value.fromBigInt(value));
-  }
-
-  get seniorTrancheTotalLiquidity(): BigInt {
-    let value = this.get("seniorTrancheTotalLiquidity");
-    return value!.toBigInt();
-  }
-
-  set seniorTrancheTotalLiquidity(value: BigInt) {
-    this.set("seniorTrancheTotalLiquidity", Value.fromBigInt(value));
-  }
-
-  get seniorTrancheAvailableLiquidity(): BigInt {
-    let value = this.get("seniorTrancheAvailableLiquidity");
-    return value!.toBigInt();
-  }
-
-  set seniorTrancheAvailableLiquidity(value: BigInt) {
-    this.set("seniorTrancheAvailableLiquidity", Value.fromBigInt(value));
-  }
-
-  get seniorTrancheLiquidityRate(): BigInt {
-    let value = this.get("seniorTrancheLiquidityRate");
-    return value!.toBigInt();
-  }
-
-  set seniorTrancheLiquidityRate(value: BigInt) {
-    this.set("seniorTrancheLiquidityRate", Value.fromBigInt(value));
-  }
-
-  get totalLiquidity(): BigInt {
-    let value = this.get("totalLiquidity");
-    return value!.toBigInt();
-  }
-
-  set totalLiquidity(value: BigInt) {
-    this.set("totalLiquidity", Value.fromBigInt(value));
-  }
-
-  get totalBorrow(): BigInt {
-    let value = this.get("totalBorrow");
-    return value!.toBigInt();
-  }
-
-  set totalBorrow(value: BigInt) {
-    this.set("totalBorrow", Value.fromBigInt(value));
-  }
-
-  get trancheRatio(): BigInt {
-    let value = this.get("trancheRatio");
-    return value!.toBigInt();
-  }
-
-  set trancheRatio(value: BigInt) {
-    this.set("trancheRatio", Value.fromBigInt(value));
-  }
-
   get configuration(): string | null {
     let value = this.get("configuration");
     if (!value || value.kind == ValueKind.NULL) {
@@ -312,6 +231,132 @@ export class Reserve extends Entity {
     } else {
       this.set("configuration", Value.fromString(<string>value));
     }
+  }
+
+  get totalPrincipal(): BigInt {
+    let value = this.get("totalPrincipal");
+    return value!.toBigInt();
+  }
+
+  set totalPrincipal(value: BigInt) {
+    this.set("totalPrincipal", Value.fromBigInt(value));
+  }
+
+  get totalInterest(): BigInt {
+    let value = this.get("totalInterest");
+    return value!.toBigInt();
+  }
+
+  set totalInterest(value: BigInt) {
+    this.set("totalInterest", Value.fromBigInt(value));
+  }
+
+  get totalBorrow(): BigInt {
+    let value = this.get("totalBorrow");
+    return value!.toBigInt();
+  }
+
+  set totalBorrow(value: BigInt) {
+    this.set("totalBorrow", Value.fromBigInt(value));
+  }
+
+  get totalLiquidity(): BigInt {
+    let value = this.get("totalLiquidity");
+    return value!.toBigInt();
+  }
+
+  set totalLiquidity(value: BigInt) {
+    this.set("totalLiquidity", Value.fromBigInt(value));
+  }
+
+  get liquidityRatio(): BigInt {
+    let value = this.get("liquidityRatio");
+    return value!.toBigInt();
+  }
+
+  set liquidityRatio(value: BigInt) {
+    this.set("liquidityRatio", Value.fromBigInt(value));
+  }
+
+  get utilizationRate(): BigInt {
+    let value = this.get("utilizationRate");
+    return value!.toBigInt();
+  }
+
+  set utilizationRate(value: BigInt) {
+    this.set("utilizationRate", Value.fromBigInt(value));
+  }
+
+  get borrowRate(): BigInt {
+    let value = this.get("borrowRate");
+    return value!.toBigInt();
+  }
+
+  set borrowRate(value: BigInt) {
+    this.set("borrowRate", Value.fromBigInt(value));
+  }
+
+  get depositRate(): BigInt {
+    let value = this.get("depositRate");
+    return value!.toBigInt();
+  }
+
+  set depositRate(value: BigInt) {
+    this.set("depositRate", Value.fromBigInt(value));
+  }
+
+  get seniorTrancheVToken(): string {
+    let value = this.get("seniorTrancheVToken");
+    return value!.toString();
+  }
+
+  set seniorTrancheVToken(value: string) {
+    this.set("seniorTrancheVToken", Value.fromString(value));
+  }
+
+  get seniorTrancheLiquidity(): BigInt {
+    let value = this.get("seniorTrancheLiquidity");
+    return value!.toBigInt();
+  }
+
+  set seniorTrancheLiquidity(value: BigInt) {
+    this.set("seniorTrancheLiquidity", Value.fromBigInt(value));
+  }
+
+  get seniorTrancheDepositRate(): BigInt {
+    let value = this.get("seniorTrancheDepositRate");
+    return value!.toBigInt();
+  }
+
+  set seniorTrancheDepositRate(value: BigInt) {
+    this.set("seniorTrancheDepositRate", Value.fromBigInt(value));
+  }
+
+  get juniorTrancheVToken(): string {
+    let value = this.get("juniorTrancheVToken");
+    return value!.toString();
+  }
+
+  set juniorTrancheVToken(value: string) {
+    this.set("juniorTrancheVToken", Value.fromString(value));
+  }
+
+  get juniorTrancheLiquidity(): BigInt {
+    let value = this.get("juniorTrancheLiquidity");
+    return value!.toBigInt();
+  }
+
+  set juniorTrancheLiquidity(value: BigInt) {
+    this.set("juniorTrancheLiquidity", Value.fromBigInt(value));
+  }
+
+  get juniorTrancheDepositRate(): BigInt {
+    let value = this.get("juniorTrancheDepositRate");
+    return value!.toBigInt();
+  }
+
+  set juniorTrancheDepositRate(value: BigInt) {
+    this.set("juniorTrancheDepositRate", Value.fromBigInt(value));
   }
 }
 
@@ -346,31 +391,49 @@ export class VToken extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get asset(): Bytes {
-    let value = this.get("asset");
-    return value!.toBytes();
-  }
-
-  set asset(value: Bytes) {
-    this.set("asset", Value.fromBytes(value));
-  }
-
-  get trancheType(): string {
-    let value = this.get("trancheType");
+  get reserve(): string {
+    let value = this.get("reserve");
     return value!.toString();
   }
 
-  set trancheType(value: string) {
-    this.set("trancheType", Value.fromString(value));
+  set reserve(value: string) {
+    this.set("reserve", Value.fromString(value));
   }
 
-  get totalLiquidity(): BigInt {
-    let value = this.get("totalLiquidity");
+  get tranche(): string {
+    let value = this.get("tranche");
+    return value!.toString();
+  }
+
+  set tranche(value: string) {
+    this.set("tranche", Value.fromString(value));
+  }
+
+  get asset(): string {
+    let value = this.get("asset");
+    return value!.toString();
+  }
+
+  set asset(value: string) {
+    this.set("asset", Value.fromString(value));
+  }
+
+  get totalAssets(): BigInt {
+    let value = this.get("totalAssets");
     return value!.toBigInt();
   }
 
-  set totalLiquidity(value: BigInt) {
-    this.set("totalLiquidity", Value.fromBigInt(value));
+  set totalAssets(value: BigInt) {
+    this.set("totalAssets", Value.fromBigInt(value));
+  }
+
+  get totalShares(): BigInt {
+    let value = this.get("totalShares");
+    return value!.toBigInt();
+  }
+
+  set totalShares(value: BigInt) {
+    this.set("totalShares", Value.fromBigInt(value));
   }
 }
 
@@ -405,22 +468,22 @@ export class UserData extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get depositData(): Array<string> {
-    let value = this.get("depositData");
+  get deposits(): Array<string> {
+    let value = this.get("deposits");
     return value!.toStringArray();
   }
 
-  set depositData(value: Array<string>) {
-    this.set("depositData", Value.fromStringArray(value));
+  set deposits(value: Array<string>) {
+    this.set("deposits", Value.fromStringArray(value));
   }
 
-  get unbondings(): Array<string> {
-    let value = this.get("unbondings");
+  get unbonding(): Array<string> {
+    let value = this.get("unbonding");
     return value!.toStringArray();
   }
 
-  set unbondings(value: Array<string>) {
-    this.set("unbondings", Value.fromStringArray(value));
+  set unbonding(value: Array<string>) {
+    this.set("unbonding", Value.fromStringArray(value));
   }
 
   get vault(): string | null {
@@ -572,7 +635,7 @@ export class UserDepositData extends Entity {
   }
 }
 
-export class Unbonding extends Entity {
+export class UserUnbondingData extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -580,18 +643,20 @@ export class Unbonding extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save Unbonding entity without an ID");
+    assert(id != null, "Cannot save UserUnbondingData entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type Unbonding must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type UserUnbondingData must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("Unbonding", id.toString(), this);
+      store.set("UserUnbondingData", id.toString(), this);
     }
   }
 
-  static load(id: string): Unbonding | null {
-    return changetype<Unbonding | null>(store.get("Unbonding", id));
+  static load(id: string): UserUnbondingData | null {
+    return changetype<UserUnbondingData | null>(
+      store.get("UserUnbondingData", id)
+    );
   }
 
   get id(): string {
@@ -612,22 +677,31 @@ export class Unbonding extends Entity {
     this.set("time", Value.fromBigInt(value));
   }
 
-  get amount(): BigInt {
-    let value = this.get("amount");
+  get blocknum(): BigInt {
+    let value = this.get("blocknum");
     return value!.toBigInt();
   }
 
-  set amount(value: BigInt) {
-    this.set("amount", Value.fromBigInt(value));
+  set blocknum(value: BigInt) {
+    this.set("blocknum", Value.fromBigInt(value));
   }
 
-  get type(): string {
-    let value = this.get("type");
-    return value!.toString();
+  get shares(): BigInt {
+    let value = this.get("shares");
+    return value!.toBigInt();
   }
 
-  set type(value: string) {
-    this.set("type", Value.fromString(value));
+  set shares(value: BigInt) {
+    this.set("shares", Value.fromBigInt(value));
+  }
+
+  get maxUnderlying(): BigInt {
+    let value = this.get("maxUnderlying");
+    return value!.toBigInt();
+  }
+
+  set maxUnderlying(value: BigInt) {
+    this.set("maxUnderlying", Value.fromBigInt(value));
   }
 
   get user(): string {
@@ -888,6 +962,15 @@ export class Loan extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get reserve(): string {
+    let value = this.get("reserve");
+    return value!.toString();
+  }
+
+  set reserve(value: string) {
+    this.set("reserve", Value.fromString(value));
+  }
+
   get vault(): string {
     let value = this.get("vault");
     return value!.toString();
@@ -897,13 +980,40 @@ export class Loan extends Entity {
     this.set("vault", Value.fromString(value));
   }
 
-  get reserve(): string {
-    let value = this.get("reserve");
-    return value!.toString();
+  get loanId(): BigInt {
+    let value = this.get("loanId");
+    return value!.toBigInt();
   }
 
-  set reserve(value: string) {
-    this.set("reserve", Value.fromString(value));
+  set loanId(value: BigInt) {
+    this.set("loanId", Value.fromBigInt(value));
+  }
+
+  get tokenId(): BigInt {
+    let value = this.get("tokenId");
+    return value!.toBigInt();
+  }
+
+  set tokenId(value: BigInt) {
+    this.set("tokenId", Value.fromBigInt(value));
+  }
+
+  get principal(): BigInt {
+    let value = this.get("principal");
+    return value!.toBigInt();
+  }
+
+  set principal(value: BigInt) {
+    this.set("principal", Value.fromBigInt(value));
+  }
+
+  get interest(): BigInt {
+    let value = this.get("interest");
+    return value!.toBigInt();
+  }
+
+  set interest(value: BigInt) {
+    this.set("interest", Value.fromBigInt(value));
   }
 
   get pmt_principal(): BigInt {
@@ -931,15 +1041,6 @@ export class Loan extends Entity {
 
   set pmt_payment(value: BigInt) {
     this.set("pmt_payment", Value.fromBigInt(value));
-  }
-
-  get principal(): BigInt {
-    let value = this.get("principal");
-    return value!.toBigInt();
-  }
-
-  set principal(value: BigInt) {
-    this.set("principal", Value.fromBigInt(value));
   }
 
   get term(): BigInt {
@@ -978,13 +1079,13 @@ export class Loan extends Entity {
     this.set("apr", Value.fromBigInt(value));
   }
 
-  get borrowAt(): BigInt {
-    let value = this.get("borrowAt");
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
     return value!.toBigInt();
   }
 
-  set borrowAt(value: BigInt) {
-    this.set("borrowAt", Value.fromBigInt(value));
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
   }
 
   get nextPaymentDue(): BigInt {

@@ -1,111 +1,112 @@
-import { Address, log } from "@graphprotocol/graph-ts";
-import {
-  Deposit as VoyageDeposit,
-  Withdraw as VoyageWithdraw,
-} from "../../generated/Voyage/Voyage";
-import { Tranche } from "../helpers/consts";
+import { Address } from '@graphprotocol/graph-ts';
+import { Claim, Deposit, Withdraw } from '../../generated/templates/VToken/VToken';
+import { JUNIOR_TRANCHE, SENIOR_TRANCHE, trancheFromString } from '../helpers/consts';
 import {
   getOrInitReserve,
-  getOrInitUnbonding,
-  getOrInitUserData,
+  getOrInitReserveConfiguration,
   getOrInitUserDepositData,
-} from "../helpers/initializers";
+  getOrInitUserUnbondingData,
+  getOrInitVToken,
+} from '../helpers/initializers';
 import {
-  decreaseTrancheLiquidity,
-  decreaseVTokenLiquidity,
-  increaseTrancheLiquidity,
-  increaseVTokenLiquidity,
-  updatePnL,
-  updatePoolData,
-  updateUserDepositData,
-} from "../helpers/updaters";
-import {
-  Deposit as VTokenDeposit,
-  Withdraw as VTokenWithdraw,
-} from "../../generated/templates/VToken/VToken";
-import { VToken } from "../../generated/schema";
+  computeDepositRate,
+  computeJuniorDepositRate,
+  computeLiquidityRatio,
+  computeSeniorDepositRate,
+  computeUtilizationRate,
+} from '../helpers/reserve-logic';
+import { decreaseTrancheLiquidity, increaseTrancheLiquidity } from '../helpers/updaters';
 
+export function handleDeposit(event: Deposit): void {
+  const vToken = getOrInitVToken(event.address);
+  vToken.totalAssets = vToken.totalAssets.plus(event.params.assets);
+  vToken.totalShares = vToken.totalShares.plus(event.params.shares);
+  vToken.save();
 
-
-
-
-// not used, currenly VToken's deposit events is being index
-export function handleDeposit(event: VoyageDeposit): void {
-  const reserve = getOrInitReserve(event.params._collection, event.params._currency);
-  updatePoolData(reserve, event);
+  const reserve = getOrInitReserve(Address.fromString(vToken.reserve));
+  const reserveConfiguration = getOrInitReserveConfiguration(Address.fromHexString(reserve.id));
+  reserve.totalLiquidity = reserve.totalLiquidity.plus(event.params.assets);
+  increaseTrancheLiquidity(reserve, trancheFromString(vToken.tranche), event.params.assets);
+  reserve.liquidityRatio = computeLiquidityRatio(reserve);
+  reserve.utilizationRate = computeUtilizationRate(reserve);
+  reserve.depositRate = computeDepositRate(reserve);
+  reserve.seniorTrancheDepositRate = computeSeniorDepositRate(reserve, reserveConfiguration);
+  reserve.juniorTrancheDepositRate = computeJuniorDepositRate(reserve, reserveConfiguration);
   reserve.save();
-  // could be first time user, create one if it doesn't exist.
-  const userData = getOrInitUserData(event.params._user);
-  userData.save();
+
   const userDepositData = getOrInitUserDepositData(
-    event.params._user,
-    event.params._collection,
-    event
+    event.params.owner,
+    Address.fromBytes(reserve.collection),
   );
-  updateUserDepositData(userDepositData, event);
-  updatePnL(userDepositData, event.params.amount, event.params._tranche);
+  if (vToken.tranche == JUNIOR_TRANCHE) {
+    userDepositData.juniorTrancheBalance = userDepositData.juniorTrancheBalance.plus(
+      event.params.assets,
+    );
+  } else {
+    userDepositData.seniorTrancheBalance = userDepositData.juniorTrancheBalance.plus(
+      event.params.assets,
+    );
+  }
+  // updatePnL(userDepositData, event.params.amount, event.params._tranche);
   userDepositData.save();
 }
 
-// not used, currenly VToken's withdraw events is being index
-export function handleWithdraw(event: VoyageWithdraw): void {
-  const reserve = getOrInitReserve(event.params._collection, event.params._currency);
-  updatePoolData(reserve, event);
+export function handleWithdraw(event: Withdraw): void {
+  const vToken = getOrInitVToken(event.address);
+  vToken.totalAssets = vToken.totalAssets.minus(event.params.assets);
+  vToken.totalShares = vToken.totalShares.minus(event.params.shares);
+  vToken.save();
+
+  const reserve = getOrInitReserve(Address.fromString(vToken.reserve));
+  const reserveConfiguration = getOrInitReserveConfiguration(Address.fromHexString(reserve.id));
+  reserve.totalLiquidity = reserve.totalLiquidity.minus(event.params.assets);
+  decreaseTrancheLiquidity(reserve, trancheFromString(vToken.tranche), event.params.assets);
+  reserve.liquidityRatio = computeLiquidityRatio(reserve);
+  reserve.utilizationRate = computeUtilizationRate(reserve);
+  reserve.depositRate = computeDepositRate(reserve);
+  reserve.seniorTrancheDepositRate = computeSeniorDepositRate(reserve, reserveConfiguration);
+  reserve.juniorTrancheDepositRate = computeJuniorDepositRate(reserve, reserveConfiguration);
   reserve.save();
-  /**
-   * We'll eventually merge this and handleVTokenWIthdraw;
-   * however, would like to point out that we probably have to aalso pass event.params_asset here in that change.
-   */
+
   const userDepositData = getOrInitUserDepositData(
-    event.params._user,
-    event.params._collection,
-    event
+    event.params.owner,
+    Address.fromBytes(reserve.collection),
   );
-  updateUserDepositData(userDepositData, event);
-  updatePnL(userDepositData, event.params.amount, event.params._tranche);
-  const unbonding = getOrInitUnbonding(
-    event.params._user,
-    event.params._collection,
-    event.block.timestamp
+  if (vToken.tranche == JUNIOR_TRANCHE) {
+    userDepositData.juniorTrancheBalance = userDepositData.juniorTrancheBalance.minus(
+      event.params.assets,
+    );
+  } else {
+    userDepositData.seniorTrancheBalance = userDepositData.seniorTrancheBalance.minus(
+      event.params.assets,
+    );
+  }
+
+  // updatePnL(userDepositData, event.params.amount, event.params._tranche);
+  userDepositData.save();
+
+  // unbonding only applies to senior tranche withdrawals
+  if (vToken.tranche == SENIOR_TRANCHE) {
+    const userUnbondingData = getOrInitUserUnbondingData(
+      event.params.owner,
+      Address.fromBytes(reserve.collection),
+      event,
+    );
+    userUnbondingData.maxUnderlying = userUnbondingData.maxUnderlying.plus(event.params.assets);
+    userUnbondingData.shares = userUnbondingData.shares.plus(event.params.shares);
+    userUnbondingData.save();
+  }
+}
+
+export function handleClaim(event: Claim): void {
+  const vToken = getOrInitVToken(event.address);
+  const reserve = getOrInitReserve(Address.fromString(vToken.reserve));
+  const unbonding = getOrInitUserUnbondingData(
+    event.params.receiver,
+    Address.fromBytes(reserve.collection),
+    event,
   );
-  unbonding.amount = event.params.amount;
-  unbonding.type =
-    event.params._tranche === Tranche.Junior ? "Junior" : "Senior";
+  unbonding.shares = unbonding.shares.minus(event.params.shares);
+  unbonding.maxUnderlying = unbonding.maxUnderlying.minus(event.params.amount);
   unbonding.save();
-
-  userDepositData.save();
 }
-
-export function handleDepositVToken(event: VTokenDeposit): void {
-  const vTokenEntity = VToken.load(event.address.toHex());
-  if (!vTokenEntity) {
-    log.error(
-      "tried to handle deposit event for a non-existent VToken. address: {}",
-      [event.address.toHex()]
-    );
-    return;
-  }
-  let reserve = getOrInitReserve(Address.fromBytes(vTokenEntity.asset), null);
-  increaseTrancheLiquidity(reserve, vTokenEntity.trancheType, event.params.assets);
-  increaseVTokenLiquidity(vTokenEntity, event.params.assets);
-  reserve.save();
-  vTokenEntity.save();
-}
-
-export function handleWithdrawVToken(event: VTokenWithdraw): void {
-  const vTokenEntity = VToken.load(event.address.toHex());
-  if (!vTokenEntity) {
-    log.error(
-      "tried to handle withdraw event for a non-existent VToken. address: {}",
-      [event.address.toHex()]
-    );
-    return;
-  }
-  let reserve = getOrInitReserve(Address.fromBytes(vTokenEntity.asset), null);
-  decreaseTrancheLiquidity(reserve, vTokenEntity.trancheType, event.params.assets);
-  decreaseVTokenLiquidity(vTokenEntity, event.params.assets);
-  reserve.save();
-  vTokenEntity.save();
-}
-
-

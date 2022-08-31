@@ -1,72 +1,79 @@
+import { log } from '@graphprotocol/graph-ts';
+import { VToken as VTokenSource } from '../../generated/templates';
 import {
-    IncomeRatioUpdated,
-    LiquidationConfigurationUpdated, LoanParametersUpdated, MarginParametersUpdated,
-    ReserveActivated,
-    ReserveInitialized
-} from "../../generated/Voyage/Voyage";
-import {getOrInitReserve, getOrInitReserveConfiguration, initVToken} from "../helpers/initializers";
-import {VToken as VTokenSource} from "../../generated/templates";
-import {log} from "@graphprotocol/graph-ts";
-
+  IncomeRatioUpdated,
+  LiquidationConfigurationUpdated,
+  LoanParametersUpdated,
+  ReserveActivated,
+  ReserveInitialized,
+} from '../../generated/Voyage/Voyage';
+import { JUNIOR_TRANCHE, SENIOR_TRANCHE, Tranche } from '../helpers/consts';
+import {
+  getOrInitReserve,
+  getOrInitReserveConfiguration,
+  getOrInitVToken,
+} from '../helpers/initializers';
 
 export function handleReserveInitialized(event: ReserveInitialized): void {
-    getOrInitReserve(event.params._collection, event.params._currency);
+  const reserve = getOrInitReserve(event.params._collection);
+  const reserveConfiguration = getOrInitReserveConfiguration(event.params._collection);
+  reserveConfiguration.isInitialized = true;
+  reserveConfiguration.save();
+  reserve.configuration = reserveConfiguration.id;
 
-    VTokenSource.create(event.params._juniorDepositTokenAddress);
-    initVToken(
-        event.params._juniorDepositTokenAddress,
-        event.params._collection,
-        event.params._currency,
-        "Junior"
-    );
+  VTokenSource.create(event.params._juniorDepositTokenAddress);
+  const juniorTrancheVToken = getOrInitVToken(
+    event.params._juniorDepositTokenAddress,
+    JUNIOR_TRANCHE,
+  );
+  juniorTrancheVToken.reserve = event.params._collection.toHexString();
+  juniorTrancheVToken.asset = event.params._currency.toHexString();
+  juniorTrancheVToken.save();
 
-    VTokenSource.create(event.params._seniorDepositTokenAddress);
-    initVToken(
-        event.params._seniorDepositTokenAddress,
-        event.params._collection,
-        event.params._currency,
-        "Senior"
-    );
+  VTokenSource.create(event.params._seniorDepositTokenAddress);
+  const seniorTrancheVToken = getOrInitVToken(
+    event.params._seniorDepositTokenAddress,
+    SENIOR_TRANCHE,
+  );
+  seniorTrancheVToken.reserve = event.params._collection.toHexString();
+  seniorTrancheVToken.asset = event.params._currency.toHexString();
+  seniorTrancheVToken.save();
 
-    const reserveConfiguratio = getOrInitReserveConfiguration(event.params._collection);
-    reserveConfiguratio.isInitialized = true;
-    reserveConfiguratio.save();
+  reserve.juniorTrancheVToken = juniorTrancheVToken.id;
+  reserve.seniorTrancheVToken = seniorTrancheVToken.id;
+
+  reserve.save();
 }
 
 export function handleReserveActivated(event: ReserveActivated): void {
-    const reserve = getOrInitReserve(event.params._collection, null);
-    const reserveConfiguratio = getOrInitReserveConfiguration(event.params._collection);
-    reserve.isActive = true;
-    reserve.configuration = reserveConfiguratio.id;
-    reserve.save();
+  const reserveConfiguration = getOrInitReserveConfiguration(event.params._collection);
+  reserveConfiguration.isActive = true;
+  reserveConfiguration.save();
 }
 
 export function handleLiquidationConfigurationUpdated(
-    event: LiquidationConfigurationUpdated
+  event: LiquidationConfigurationUpdated,
 ): void {
-    const reserve = getOrInitReserveConfiguration(event.params._collection);
-    reserve.liquidationBonus = event.params._liquidationBonus;
-    reserve.save();
+  const reserveConfiguration = getOrInitReserveConfiguration(event.params._collection);
+  reserveConfiguration.liquidationBonus = event.params._liquidationBonus;
+  reserveConfiguration.save();
 }
 
 export function handleIncomeRatioUpdated(event: IncomeRatioUpdated): void {
-    const reserve = getOrInitReserveConfiguration(event.params._collection);
-    reserve.incomeRatio = event.params._incomeRatio;
-    reserve.save();
+  const reserveConfiguration = getOrInitReserveConfiguration(event.params._collection);
+  reserveConfiguration.incomeRatio = event.params._incomeRatio;
+  reserveConfiguration.save();
 }
 
-
-export function handleLoanParametersUpdated(
-    event: LoanParametersUpdated
-): void {
-    log.info("------- handleLoanParametersUpdated --------- {} {}", [
-        event.params._epoch.toString(),
-        event.params._term.toString(),
-        event.params._gracePeriod.toString(),
-    ]);
-    const reserve = getOrInitReserveConfiguration(event.params._collection);
-    // TODO: clarify these params
-    reserve.loanInterval = event.params._epoch;
-    reserve.loanTenure = event.params._term;
-    reserve.save();
+export function handleLoanParametersUpdated(event: LoanParametersUpdated): void {
+  log.info('------- handleLoanParametersUpdated --------- {} {}', [
+    event.params._epoch.toString(),
+    event.params._term.toString(),
+    event.params._gracePeriod.toString(),
+  ]);
+  const reserveConfiguration = getOrInitReserveConfiguration(event.params._collection);
+  reserveConfiguration.loanInterval = event.params._epoch;
+  reserveConfiguration.loanTenure = event.params._term;
+  reserveConfiguration.gracePeriod = event.params._gracePeriod;
+  reserveConfiguration.save();
 }

@@ -1,52 +1,66 @@
 type ReserveConfiguration @entity {
   id: ID!
   reserve: Reserve!
-  liquidationBonus: BigInt!
-  loanInterval: BigInt!
-  loanTenure: BigInt!
-  incomeRatio: BigInt!
   isInitialized: Boolean!
   isActive: Boolean!
+  incomeRatio: BigInt!
+  loanInterval: BigInt!
+  loanTenure: BigInt!
+  gracePeriod: BigInt!
+  liquidationBonus: BigInt!
 }
 
 type Currency @entity(immutable: true) {
-    id: ID!
-    address: Bytes!
-    symbol: String!
-    decimals: BigInt!
+  id: ID! # id is the address of the currency
+  symbol: String!
+  decimals: BigInt!
 }
 
 type Reserve @entity {
   id: ID!
-  isActive: Boolean!
   collection: Bytes!
   currency: Currency!
-  juniorTrancheTotalLiquidity: BigInt!
-  juniorTrancheLiquidityRate: BigInt!
-  seniorTrancheTotalLiquidity: BigInt!
-  seniorTrancheAvailableLiquidity: BigInt!
-  seniorTrancheLiquidityRate: BigInt!
-  totalLiquidity: BigInt!
-  totalBorrow: BigInt!
-  trancheRatio: BigInt!
   configuration: ReserveConfiguration
+
+  totalPrincipal: BigInt!
+  totalInterest: BigInt!
+  totalBorrow: BigInt!
+  totalLiquidity: BigInt!
+  liquidityRatio: BigInt!
+  utilizationRate: BigInt!
+
+  borrowRate: BigInt!
+  depositRate: BigInt!
+
+  seniorTrancheVToken: VToken!
+  seniorTrancheLiquidity: BigInt!
+  seniorTrancheDepositRate: BigInt!
+
+  juniorTrancheVToken: VToken!
+  juniorTrancheLiquidity: BigInt!
+  juniorTrancheDepositRate: BigInt!
 }
 
 type VToken @entity {
   id: ID! # address of Junior/Senior deposit token
-  asset: Bytes!
-  trancheType: Tranche!
-  totalLiquidity: BigInt!
+  reserve: Reserve!
+  tranche: Tranche!
+  asset: Currency!
+  totalAssets: BigInt!
+  totalShares: BigInt!
 }
 
 type UserData @entity {
   id: ID!
-  depositData: [UserDepositData!]! @derivedFrom(field: "user")
-  unbondings: [Unbonding!]! @derivedFrom(field: "user")
+  deposits: [UserDepositData!]! @derivedFrom(field: "user")
+  unbonding: [UserUnbondingData!]! @derivedFrom(field: "user")
   vault: Vault # a user may only be a depositor. vault is optional.
 }
 
 type UserDepositData @entity {
+  """
+  user address + collection address
+  """
   id: ID!
   collection: Bytes!
   juniorTrancheBalance: BigInt!
@@ -61,17 +75,21 @@ type UserDepositData @entity {
   user: UserData!
 }
 
+type UserUnbondingData @entity {
+  """
+  user address + collection address
+  """
+  id: ID!
+  time: BigInt!
+  blocknum: BigInt!
+  shares: BigInt!
+  maxUnderlying: BigInt!
+  user: UserData!
+}
+
 enum Tranche {
   Senior
   Junior
-}
-
-type Unbonding @entity {
-  id: ID!
-  time: BigInt!
-  amount: BigInt!
-  type: Tranche!
-  user: UserData!
 }
 
 type Vault @entity {
@@ -100,19 +118,29 @@ type CreditLine @entity {
 }
 
 type Loan @entity {
-  id: ID! # concat(vault address, underlying asset, loan id)
-  vault: Vault!
+  """
+  vault + collection + loan id
+  """
+  id: ID!
   reserve: Reserve!
+  vault: Vault!
+  loanId: BigInt!
+  tokenId: BigInt!
+
+  principal: BigInt!
+  interest: BigInt!
   pmt_principal: BigInt!
   pmt_interest: BigInt!
   pmt_payment: BigInt!
-  principal: BigInt!
+
   term: BigInt!
   epoch: BigInt!
   nper: BigInt!
   apr: BigInt!
-  borrowAt: BigInt!
+
+  timestamp: BigInt!
   nextPaymentDue: BigInt!
+
   totalPrincipalPaid: BigInt!
   totalInterestPaid: BigInt!
   paidTimes: BigInt!

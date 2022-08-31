@@ -7,8 +7,8 @@
   },
   "localhost": {
     "Voyage": {
-      "address": "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",
-      "startBlock": 21
+      "address": "0xb8723e8B731123616b82AF7e171B5808ddDa7Fbc",
+      "startBlock": 1
     }
   },
   "rinkeby": {

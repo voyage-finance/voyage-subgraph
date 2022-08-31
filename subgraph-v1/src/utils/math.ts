@@ -1,11 +1,17 @@
 // see https://github.dev/aave/protocol-subgraphs/blob/main/src/mapping/lending-pool/v3.ts
-import { BigInt, BigDecimal, Bytes } from "@graphprotocol/graph-ts";
+import { BigInt, BigDecimal, Bytes } from '@graphprotocol/graph-ts';
+import { OwnershipTransferred } from '../../generated/Voyage/Voyage';
 
 let RAY = BigInt.fromI32(10).pow(27);
 let WAD_RAY_RATIO = BigInt.fromI32(10).pow(9);
 let WAD = BigInt.fromI32(10).pow(18);
 let halfRAY = RAY.div(BigInt.fromI32(2));
-let SECONDS_PER_YEAR = BigInt.fromI32(31556952);
+let halfWAD = WAD.div(BigInt.fromI32(2));
+let WAD_PERCENT_RATIO = BigInt.fromI32(10).pow(14);
+export let PERCENT = BigInt.fromI32(10).pow(4);
+let halfPERCENT = PERCENT.div(BigInt.fromI32(2));
+
+export const MAX_U64_BI = BigInt.fromU64(U64.MAX_VALUE);
 
 export function rayToWad(a: BigInt): BigInt {
   let halfRatio = WAD_RAY_RATIO.div(BigInt.fromI32(2));
@@ -15,6 +21,26 @@ export function rayToWad(a: BigInt): BigInt {
 export function wadToRay(a: BigInt): BigInt {
   let result = a.times(WAD_RAY_RATIO);
   return result;
+}
+
+export function wadToPercent(a: BigInt): BigInt {
+  let halfRatio = WAD_PERCENT_RATIO.div(BigInt.fromI32(2));
+  return halfRatio.plus(a).div(WAD_PERCENT_RATIO);
+}
+
+export function wadDiv(a: BigInt, b: BigInt): BigInt {
+  let halfB = b.div(BigInt.fromI32(2));
+  let result = a.times(WAD);
+  result = result.plus(halfB);
+  let division = result.div(b);
+  return division;
+}
+
+export function wadMul(a: BigInt, b: BigInt): BigInt {
+  let result = a.times(b);
+  result = result.plus(halfWAD);
+  let mult = result.div(WAD);
+  return mult;
 }
 
 export function rayDiv(a: BigInt, b: BigInt): BigInt {
@@ -32,74 +58,21 @@ export function rayMul(a: BigInt, b: BigInt): BigInt {
   return mult;
 }
 
-export function calculateCompoundedInterest(
-  rate: BigInt,
-  lastUpdatedTimestamp: BigInt,
-  nowTimestamp: BigInt
-): BigInt {
-  let timeDiff = nowTimestamp.minus(lastUpdatedTimestamp);
-
-  if (timeDiff.equals(zeroBI())) {
-    return RAY;
-  }
-
-  let expMinusOne = timeDiff.minus(BigInt.fromI32(1));
-
-  let expMinusTwo = timeDiff.gt(BigInt.fromI32(2))
-    ? timeDiff.minus(BigInt.fromI32(2))
-    : zeroBI();
-
-  let ratePerSecond = rate.div(SECONDS_PER_YEAR);
-
-  let basePowerTwo = rayMul(ratePerSecond, ratePerSecond);
-  let basePowerThree = rayMul(basePowerTwo, ratePerSecond);
-
-  let secondTerm = timeDiff
-    .times(expMinusOne)
-    .times(basePowerTwo)
-    .div(BigInt.fromI32(2));
-  let thirdTerm = timeDiff
-    .times(expMinusOne)
-    .times(expMinusTwo)
-    .times(basePowerThree)
-    .div(BigInt.fromI32(6));
-
-  return RAY.plus(ratePerSecond.times(timeDiff))
-    .plus(secondTerm)
-    .plus(thirdTerm);
+export function percentMul(a: BigInt, b: BigInt): BigInt {
+  let result = a.times(b);
+  result = result.plus(halfPERCENT);
+  return result.div(PERCENT);
 }
 
-export function calculateLinearInterest(
-  rate: BigInt,
-  lastUpdatedTimestamp: BigInt,
-  nowTimestamp: BigInt
-): BigInt {
-  let timeDifference = nowTimestamp.minus(lastUpdatedTimestamp);
-
-  let timeDelta = rayDiv(wadToRay(timeDifference), wadToRay(SECONDS_PER_YEAR));
-
-  return rayMul(rate, timeDelta);
-}
-
-export function calculateGrowth(
-  amount: BigInt,
-  rate: BigInt,
-  lastUpdatedTimestamp: BigInt,
-  nowTimestamp: BigInt
-): BigInt {
-  let growthRate = calculateLinearInterest(
-    rate,
-    lastUpdatedTimestamp,
-    nowTimestamp
-  );
-
-  let growth = rayMul(wadToRay(amount), growthRate);
-
-  return rayToWad(growth);
+export function percentDiv(a: BigInt, b: BigInt): BigInt {
+  let halfB = b.div(BigInt.fromI32(2));
+  let result = a.times(PERCENT);
+  result = result.plus(halfB);
+  return result.div(b);
 }
 
 export function zeroBD(): BigDecimal {
-  return BigDecimal.fromString("0");
+  return BigDecimal.fromString('0');
 }
 
 export function zeroBI(): BigInt {
@@ -107,7 +80,5 @@ export function zeroBI(): BigInt {
 }
 
 export function zeroAddress(): Bytes {
-  return Bytes.fromHexString(
-    "0x0000000000000000000000000000000000000000"
-  ) as Bytes;
+  return Bytes.fromHexString('0x0000000000000000000000000000000000000000') as Bytes;
 }

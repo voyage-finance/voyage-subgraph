@@ -7,8 +7,8 @@ dataSources:
     network: localhost
     source:
       abi: Voyage
-      address: "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c"
-      startBlock: 21
+      address: "0xb8723e8B731123616b82AF7e171B5808ddDa7Fbc"
+      startBlock: 1
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -24,25 +24,22 @@ dataSources:
         - name: IERC721
           file: ./abis/helpers/IERC721.json
       eventHandlers:
+        - event: ReserveInitialized(indexed address,indexed
+            address,address,address,address)
+          handler: handleReserveInitialized
         - event: ReserveActivated(indexed address)
           handler: handleReserveActivated
-        - event: Paused(address)
-          handler: handlePaused
-        - event: Unpaused(address)
-          handler: handleUnpaused
-        - event: VaultCreated(address,address,uint256)
-          handler: handleVaultCreated
         - event: LiquidationConfigurationUpdated(indexed address,uint256)
           handler: handleLiquidationConfigurationUpdated
         - event: IncomeRatioUpdated(indexed address,uint256)
           handler: handleIncomeRatioUpdated
         - event: LoanParametersUpdated(indexed address,uint256,uint256,uint256)
           handler: handleLoanParametersUpdated
-        - event: Deposit(indexed address,indexed address,indexed address,uint8,uint256)
-          handler: handleDeposit
-        - event: ReserveInitialized(indexed address,indexed
-            address,address,address,address)
-          handler: handleReserveInitialized
+        - event: Borrow(indexed address,indexed address,indexed
+            address,uint256,uint256,uint256,uint256,uint256)
+          handler: handleBorrow
+        - event: VaultCreated(address,address,uint256)
+          handler: handleVaultCreated
       file: ./src/mapping/index.ts
 templates:
   - kind: ethereum
@@ -60,8 +57,10 @@ templates:
           file: ./abis/templates/VToken.json
       eventHandlers:
         - event: Deposit(indexed address,indexed address,uint256,uint256)
-          handler: handleDepositVToken
+          handler: handleDeposit
         - event: Withdraw(indexed address,indexed address,indexed address,uint256,uint256)
-          handler: handleWithdrawVToken
+          handler: handleWithdraw
+        - event: Claim(address,uint256,uint256)
+          handler: handleClaim
       file: ./src/mapping/index.ts
     network: localhost

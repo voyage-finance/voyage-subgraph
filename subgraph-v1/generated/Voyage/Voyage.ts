@@ -162,6 +162,24 @@ export class ReserveActivated__Params {
   }
 }
 
+export class ReserveInactived extends ethereum.Event {
+  get params(): ReserveInactived__Params {
+    return new ReserveInactived__Params(this);
+  }
+}
+
+export class ReserveInactived__Params {
+  _event: ReserveInactived;
+
+  constructor(event: ReserveInactived) {
+    this._event = event;
+  }
+
+  get _collection(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
 export class ReserveInitialized extends ethereum.Event {
   get params(): ReserveInitialized__Params {
     return new ReserveInitialized__Params(this);
@@ -441,7 +459,7 @@ export class VaultMarginCredited__Params {
     return this._event.parameters[0].value.toAddress();
   }
 
-  get _collection(): Address {
+  get _asset(): Address {
     return this._event.parameters[1].value.toAddress();
   }
 
@@ -471,7 +489,7 @@ export class VaultMarginRedeemed__Params {
     return this._event.parameters[0].value.toAddress();
   }
 
-  get _collection(): Address {
+  get _asset(): Address {
     return this._event.parameters[1].value.toAddress();
   }
 
@@ -554,36 +572,6 @@ export class LoanParametersUpdated__Params {
   }
 
   get _gracePeriod(): BigInt {
-    return this._event.parameters[3].value.toBigInt();
-  }
-}
-
-export class MarginParametersUpdated extends ethereum.Event {
-  get params(): MarginParametersUpdated__Params {
-    return new MarginParametersUpdated__Params(this);
-  }
-}
-
-export class MarginParametersUpdated__Params {
-  _event: MarginParametersUpdated;
-
-  constructor(event: MarginParametersUpdated) {
-    this._event = event;
-  }
-
-  get _collection(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
-  get _min(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-
-  get _max(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
-  }
-
-  get _marginRequirement(): BigInt {
     return this._event.parameters[3].value.toBigInt();
   }
 }
@@ -796,6 +784,12 @@ export class Voyage__previewBuyNowParamsResultValue0Struct extends ethereum.Tupl
       this[22].toTuple()
     );
   }
+
+  get assetInfo(): Voyage__previewBuyNowParamsResultValue0AssetInfoStruct {
+    return changetype<Voyage__previewBuyNowParamsResultValue0AssetInfoStruct>(
+      this[23].toTuple()
+    );
+  }
 }
 
 export class Voyage__previewBuyNowParamsResultValue0PmtStruct extends ethereum.Tuple {
@@ -809,6 +803,16 @@ export class Voyage__previewBuyNowParamsResultValue0PmtStruct extends ethereum.T
 
   get pmt(): BigInt {
     return this[2].toBigInt();
+  }
+}
+
+export class Voyage__previewBuyNowParamsResultValue0AssetInfoStruct extends ethereum.Tuple {
+  get tokenId(): BigInt {
+    return this[0].toBigInt();
+  }
+
+  get assetPrice(): BigInt {
+    return this[1].toBigInt();
   }
 }
 
@@ -1083,6 +1087,16 @@ export class Voyage__getUserPoolDataResultValue0Struct extends ethereum.Tuple {
 
   get decimals(): BigInt {
     return this[4].toBigInt();
+  }
+}
+
+export class Voyage__extractAssetInfoResultValue0Struct extends ethereum.Tuple {
+  get tokenId(): BigInt {
+    return this[0].toBigInt();
+  }
+
+  get assetPrice(): BigInt {
+    return this[1].toBigInt();
   }
 }
 
@@ -1597,7 +1611,7 @@ export class Voyage extends ethereum.SmartContract {
   ): Voyage__previewBuyNowParamsResultValue0Struct {
     let result = super.call(
       "previewBuyNowParams",
-      "previewBuyNowParams(address):((address,address,address,uint256,address,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint40,uint40,uint40,uint256,uint256,uint256,uint256,uint256,uint256,(uint256,uint256,uint256)))",
+      "previewBuyNowParams(address):((address,address,address,uint256,address,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint40,uint40,uint40,uint256,uint256,uint256,uint256,uint256,uint256,(uint256,uint256,uint256),(uint256,uint256)))",
       [ethereum.Value.fromAddress(_collection)]
     );
 
@@ -1611,7 +1625,7 @@ export class Voyage extends ethereum.SmartContract {
   ): ethereum.CallResult<Voyage__previewBuyNowParamsResultValue0Struct> {
     let result = super.tryCall(
       "previewBuyNowParams",
-      "previewBuyNowParams(address):((address,address,address,uint256,address,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint40,uint40,uint40,uint256,uint256,uint256,uint256,uint256,uint256,(uint256,uint256,uint256)))",
+      "previewBuyNowParams(address):((address,address,address,uint256,address,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint40,uint40,uint40,uint256,uint256,uint256,uint256,uint256,uint256,(uint256,uint256,uint256),(uint256,uint256)))",
       [ethereum.Value.fromAddress(_collection)]
     );
     if (result.reverted) {
@@ -2152,26 +2166,31 @@ export class Voyage extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  extractAssetPrice(_marketplace: Address, _data: Bytes): BigInt {
+  extractAssetInfo(
+    _marketplace: Address,
+    _data: Bytes
+  ): Voyage__extractAssetInfoResultValue0Struct {
     let result = super.call(
-      "extractAssetPrice",
-      "extractAssetPrice(address,bytes):(uint256)",
+      "extractAssetInfo",
+      "extractAssetInfo(address,bytes):((uint256,uint256))",
       [
         ethereum.Value.fromAddress(_marketplace),
         ethereum.Value.fromBytes(_data)
       ]
     );
 
-    return result[0].toBigInt();
+    return changetype<Voyage__extractAssetInfoResultValue0Struct>(
+      result[0].toTuple()
+    );
   }
 
-  try_extractAssetPrice(
+  try_extractAssetInfo(
     _marketplace: Address,
     _data: Bytes
-  ): ethereum.CallResult<BigInt> {
+  ): ethereum.CallResult<Voyage__extractAssetInfoResultValue0Struct> {
     let result = super.tryCall(
-      "extractAssetPrice",
-      "extractAssetPrice(address,bytes):(uint256)",
+      "extractAssetInfo",
+      "extractAssetInfo(address,bytes):((uint256,uint256))",
       [
         ethereum.Value.fromAddress(_marketplace),
         ethereum.Value.fromBytes(_data)
@@ -2181,7 +2200,9 @@ export class Voyage extends ethereum.SmartContract {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    return ethereum.CallResult.fromValue(
+      changetype<Voyage__extractAssetInfoResultValue0Struct>(value[0].toTuple())
+    );
   }
 }
 
@@ -2711,6 +2732,36 @@ export class ActivateReserveCall__Outputs {
   _call: ActivateReserveCall;
 
   constructor(call: ActivateReserveCall) {
+    this._call = call;
+  }
+}
+
+export class DeactivateReserveCall extends ethereum.Call {
+  get inputs(): DeactivateReserveCall__Inputs {
+    return new DeactivateReserveCall__Inputs(this);
+  }
+
+  get outputs(): DeactivateReserveCall__Outputs {
+    return new DeactivateReserveCall__Outputs(this);
+  }
+}
+
+export class DeactivateReserveCall__Inputs {
+  _call: DeactivateReserveCall;
+
+  constructor(call: DeactivateReserveCall) {
+    this._call = call;
+  }
+
+  get _collection(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class DeactivateReserveCall__Outputs {
+  _call: DeactivateReserveCall;
+
+  constructor(call: DeactivateReserveCall) {
     this._call = call;
   }
 }

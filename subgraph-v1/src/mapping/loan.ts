@@ -1,29 +1,59 @@
+import { BigInt, log } from '@graphprotocol/graph-ts';
+import { Liquidation, Loan, Repayment } from '../../generated/schema';
 import {
   Borrow,
   Liquidate,
-  Voyage,
   Repayment as RepaymentEvent,
-} from "../../generated/Voyage/Voyage";
-import { getLoanEntityId, getRepaymentEntityId } from "../utils/id";
-import { getOrInitLoan } from "../helpers/initializers";
-import { updateLoanEntity } from "../helpers/updaters";
-import { Liquidation, Loan, Repayment } from "../../generated/schema";
-import { log } from "@graphprotocol/graph-ts";
+  Voyage,
+} from '../../generated/Voyage/Voyage';
+import {
+  getOrInitLoan,
+  getOrInitReserve,
+  getOrInitReserveConfiguration,
+} from '../helpers/initializers';
+import { updateLoanEntity } from '../helpers/updaters';
+import { getLoanEntityId, getRepaymentEntityId } from '../utils/id';
+import { rayDiv, rayMul } from '../utils/math';
 
 export function handleBorrow(event: Borrow): void {
+  const configuration = getOrInitReserveConfiguration(event.params._collection);
   const loan = getOrInitLoan(
     event.params._vault,
     event.params._collection,
-    event.params._loanId
-  );
-  updateLoanEntity(
-    loan,
-    event.params._vault,
-    event.params._collection,
     event.params._loanId,
-    event
+    event,
   );
+
+  const nper = configuration.loanTenure.div(configuration.loanInterval);
+  loan.tokenId = event.params._tokenId;
+  loan.apr = event.params._apr;
+  loan.epoch = configuration.loanInterval;
+  loan.term = configuration.loanTenure;
+  loan.nper = nper;
+
+  loan.principal = event.params._principal;
+  loan.interest = event.params._interest;
+  loan.pmt_principal = event.params._principal.div(nper);
+  loan.pmt_interest = event.params._interest.div(nper);
+  loan.pmt_payment = loan.pmt_principal.plus(loan.pmt_interest);
+
+  loan.totalPrincipalPaid = loan.pmt_principal;
+  loan.totalInterestPaid = loan.pmt_interest;
+  loan.paidTimes = BigInt.fromI32(1);
   loan.save();
+
+  const reserve = getOrInitReserve(event.params._collection);
+  const numer = rayMul(reserve.totalPrincipal, reserve.borrowRate).plus(
+    rayMul(loan.principal, loan.apr),
+  );
+  const denom = reserve.totalPrincipal.plus(loan.principal);
+  reserve.borrowRate = rayDiv(numer, denom);
+  reserve.totalPrincipal = reserve.totalPrincipal.plus(event.params._principal);
+  reserve.totalInterest = reserve.totalInterest.plus(event.params._interest);
+  const loanBorrow = event.params._principal.plus(event.params._interest);
+  reserve.totalBorrow = reserve.totalBorrow.plus(loanBorrow);
+  reserve.totalLiquidity = reserve.totalLiquidity.plus(event.params._interest);
+  reserve.save();
 }
 
 export function handleRepay(event: RepaymentEvent): void {
@@ -31,19 +61,16 @@ export function handleRepay(event: RepaymentEvent): void {
   const loanId = getLoanEntityId(
     event.params._vault,
     event.params._collection,
-    event.params._loanId
+    event.params._loanId,
   );
   const loan = Loan.load(loanId);
   if (!loan) {
     // Should not happen, since a loan should exist in order for a repay to happen.
-    log.error(
-      "tried to handle repay event for a non-existent loan. vault: {} asset: {} loan: {}",
-      [
-        event.params._vault.toHex(),
-        event.params._collection.toHex(),
-        event.params._loanId.toString(),
-      ]
-    );
+    log.error('tried to handle repay event for a non-existent loan. vault: {} asset: {} loan: {}', [
+      event.params._vault.toHex(),
+      event.params._collection.toHex(),
+      event.params._loanId.toString(),
+    ]);
     return;
   }
   updateLoanEntity(
@@ -51,7 +78,7 @@ export function handleRepay(event: RepaymentEvent): void {
     event.params._vault,
     event.params._collection,
     event.params._loanId,
-    event
+    event,
   );
   loan.save();
 
@@ -73,12 +100,8 @@ export function handleLiquidate(event: Liquidate): void {
   const collection = event.params._collection.toHex();
   const userAddress = event.params._liquidator.toHex();
 
-  const loanId = [
-    vaultAddress,
-    collection,
-    event.params._drowDownId.toString(),
-  ].join("_");
-  const repaymentId = [loanId, event.params._repaymentId.toString()].join("_");
+  const loanId = [vaultAddress, collection, event.params._drowDownId.toString()].join('_');
+  const repaymentId = [loanId, event.params._repaymentId.toString()].join('_');
 
   let liquidationEntity = Liquidation.load(repaymentId);
   if (!liquidationEntity) {

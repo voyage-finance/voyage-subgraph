@@ -576,6 +576,28 @@ export class LoanParametersUpdated__Params {
   }
 }
 
+export class OptimalLiquidityRatioUpdated extends ethereum.Event {
+  get params(): OptimalLiquidityRatioUpdated__Params {
+    return new OptimalLiquidityRatioUpdated__Params(this);
+  }
+}
+
+export class OptimalLiquidityRatioUpdated__Params {
+  _event: OptimalLiquidityRatioUpdated;
+
+  constructor(event: OptimalLiquidityRatioUpdated) {
+    this._event = event;
+  }
+
+  get _collection(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get _optimalRatio(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+}
+
 export class MarketplaceAdapterUpdated extends ethereum.Event {
   get params(): MarketplaceAdapterUpdated__Params {
     return new MarketplaceAdapterUpdated__Params(this);
@@ -691,103 +713,45 @@ export class Voyage__getVaultDebtResult {
 }
 
 export class Voyage__previewBuyNowParamsResultValue0Struct extends ethereum.Tuple {
-  get collection(): Address {
-    return this[0].toAddress();
-  }
-
-  get currency(): Address {
-    return this[1].toAddress();
-  }
-
-  get marketplace(): Address {
-    return this[2].toAddress();
-  }
-
-  get tokenId(): BigInt {
-    return this[3].toBigInt();
-  }
-
-  get vault(): Address {
-    return this[4].toAddress();
-  }
-
-  get totalPrincipal(): BigInt {
-    return this[5].toBigInt();
-  }
-
-  get totalInterest(): BigInt {
-    return this[6].toBigInt();
-  }
-
-  get totalDebt(): BigInt {
-    return this[7].toBigInt();
-  }
-
-  get outstandingPrincipal(): BigInt {
-    return this[8].toBigInt();
-  }
-
-  get outstandingInterest(): BigInt {
-    return this[9].toBigInt();
-  }
-
-  get outstandingDebt(): BigInt {
-    return this[10].toBigInt();
-  }
-
-  get fv(): BigInt {
-    return this[11].toBigInt();
-  }
-
-  get timestamp(): BigInt {
-    return this[12].toBigInt();
+  get epoch(): BigInt {
+    return this[0].toBigInt();
   }
 
   get term(): BigInt {
-    return this[13].toBigInt();
-  }
-
-  get epoch(): BigInt {
-    return this[14].toBigInt();
+    return this[1].toBigInt();
   }
 
   get nper(): BigInt {
-    return this[15].toBigInt();
+    return this[2].toBigInt();
   }
 
-  get downpayment(): BigInt {
-    return this[16].toBigInt();
+  get totalPrincipal(): BigInt {
+    return this[3].toBigInt();
+  }
+
+  get totalInterest(): BigInt {
+    return this[4].toBigInt();
   }
 
   get borrowRate(): BigInt {
-    return this[17].toBigInt();
+    return this[5].toBigInt();
   }
 
-  get availableLiquidity(): BigInt {
-    return this[18].toBigInt();
+  get cutRatio(): BigInt {
+    return this[6].toBigInt();
   }
 
-  get totalBalance(): BigInt {
-    return this[19].toBigInt();
-  }
-
-  get totalPending(): BigInt {
-    return this[20].toBigInt();
+  get protocolFee(): BigInt {
+    return this[7].toBigInt();
   }
 
   get loanId(): BigInt {
-    return this[21].toBigInt();
+    return this[8].toBigInt();
   }
 
   get pmt(): Voyage__previewBuyNowParamsResultValue0PmtStruct {
     return changetype<Voyage__previewBuyNowParamsResultValue0PmtStruct>(
-      this[22].toTuple()
-    );
-  }
-
-  get assetInfo(): Voyage__previewBuyNowParamsResultValue0AssetInfoStruct {
-    return changetype<Voyage__previewBuyNowParamsResultValue0AssetInfoStruct>(
-      this[23].toTuple()
+      this[9].toTuple()
     );
   }
 }
@@ -803,16 +767,6 @@ export class Voyage__previewBuyNowParamsResultValue0PmtStruct extends ethereum.T
 
   get pmt(): BigInt {
     return this[2].toBigInt();
-  }
-}
-
-export class Voyage__previewBuyNowParamsResultValue0AssetInfoStruct extends ethereum.Tuple {
-  get tokenId(): BigInt {
-    return this[0].toBigInt();
-  }
-
-  get assetPrice(): BigInt {
-    return this[1].toBigInt();
   }
 }
 
@@ -1073,20 +1027,16 @@ export class Voyage__getUserPoolDataResultValue0Struct extends ethereum.Tuple {
     return this[0].toBigInt();
   }
 
-  get withdrawableJuniorTrancheBalance(): BigInt {
+  get seniorTrancheBalance(): BigInt {
     return this[1].toBigInt();
   }
 
-  get seniorTrancheBalance(): BigInt {
+  get withdrawableSeniorTrancheBalance(): BigInt {
     return this[2].toBigInt();
   }
 
-  get withdrawableSeniorTrancheBalance(): BigInt {
-    return this[3].toBigInt();
-  }
-
   get decimals(): BigInt {
-    return this[4].toBigInt();
+    return this[3].toBigInt();
   }
 }
 
@@ -1457,14 +1407,13 @@ export class Voyage extends ethereum.SmartContract {
     );
   }
 
-  unbonding(_collection: Address, _user: Address, _tranche: i32): BigInt {
+  unbonding(_collection: Address, _user: Address): BigInt {
     let result = super.call(
       "unbonding",
-      "unbonding(address,address,uint8):(uint256)",
+      "unbonding(address,address):(uint256)",
       [
         ethereum.Value.fromAddress(_collection),
-        ethereum.Value.fromAddress(_user),
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(_tranche))
+        ethereum.Value.fromAddress(_user)
       ]
     );
 
@@ -1473,16 +1422,14 @@ export class Voyage extends ethereum.SmartContract {
 
   try_unbonding(
     _collection: Address,
-    _user: Address,
-    _tranche: i32
+    _user: Address
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "unbonding",
-      "unbonding(address,address,uint8):(uint256)",
+      "unbonding(address,address):(uint256)",
       [
         ethereum.Value.fromAddress(_collection),
-        ethereum.Value.fromAddress(_user),
-        ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(_tranche))
+        ethereum.Value.fromAddress(_user)
       ]
     );
     if (result.reverted) {
@@ -1606,13 +1553,51 @@ export class Voyage extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
+  juniorInterestBalance(_collection: Address, _asset: Address): BigInt {
+    let result = super.call(
+      "juniorInterestBalance",
+      "juniorInterestBalance(address,address):(uint256)",
+      [
+        ethereum.Value.fromAddress(_collection),
+        ethereum.Value.fromAddress(_asset)
+      ]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_juniorInterestBalance(
+    _collection: Address,
+    _asset: Address
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "juniorInterestBalance",
+      "juniorInterestBalance(address,address):(uint256)",
+      [
+        ethereum.Value.fromAddress(_collection),
+        ethereum.Value.fromAddress(_asset)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
   previewBuyNowParams(
-    _collection: Address
+    _collection: Address,
+    _vault: Address,
+    _principal: BigInt
   ): Voyage__previewBuyNowParamsResultValue0Struct {
     let result = super.call(
       "previewBuyNowParams",
-      "previewBuyNowParams(address):((address,address,address,uint256,address,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint40,uint40,uint40,uint256,uint256,uint256,uint256,uint256,uint256,(uint256,uint256,uint256),(uint256,uint256)))",
-      [ethereum.Value.fromAddress(_collection)]
+      "previewBuyNowParams(address,address,uint256):((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,(uint256,uint256,uint256)))",
+      [
+        ethereum.Value.fromAddress(_collection),
+        ethereum.Value.fromAddress(_vault),
+        ethereum.Value.fromUnsignedBigInt(_principal)
+      ]
     );
 
     return changetype<Voyage__previewBuyNowParamsResultValue0Struct>(
@@ -1621,12 +1606,18 @@ export class Voyage extends ethereum.SmartContract {
   }
 
   try_previewBuyNowParams(
-    _collection: Address
+    _collection: Address,
+    _vault: Address,
+    _principal: BigInt
   ): ethereum.CallResult<Voyage__previewBuyNowParamsResultValue0Struct> {
     let result = super.tryCall(
       "previewBuyNowParams",
-      "previewBuyNowParams(address):((address,address,address,uint256,address,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint40,uint40,uint40,uint256,uint256,uint256,uint256,uint256,uint256,(uint256,uint256,uint256),(uint256,uint256)))",
-      [ethereum.Value.fromAddress(_collection)]
+      "previewBuyNowParams(address,address,uint256):((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,(uint256,uint256,uint256)))",
+      [
+        ethereum.Value.fromAddress(_collection),
+        ethereum.Value.fromAddress(_vault),
+        ethereum.Value.fromUnsignedBigInt(_principal)
+      ]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -1654,6 +1645,38 @@ export class Voyage extends ethereum.SmartContract {
       "principalBalance",
       "principalBalance(address):(uint256)",
       [ethereum.Value.fromAddress(_collection)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  seniorInterestBalance(_collection: Address, _asset: Address): BigInt {
+    let result = super.call(
+      "seniorInterestBalance",
+      "seniorInterestBalance(address,address):(uint256)",
+      [
+        ethereum.Value.fromAddress(_collection),
+        ethereum.Value.fromAddress(_asset)
+      ]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_seniorInterestBalance(
+    _collection: Address,
+    _asset: Address
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "seniorInterestBalance",
+      "seniorInterestBalance(address,address):(uint256)",
+      [
+        ethereum.Value.fromAddress(_collection),
+        ethereum.Value.fromAddress(_asset)
+      ]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -1734,6 +1757,21 @@ export class Voyage extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
+  getVaultImpl(): Address {
+    let result = super.call("getVaultImpl", "getVaultImpl():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_getVaultImpl(): ethereum.CallResult<Address> {
+    let result = super.tryCall("getVaultImpl", "getVaultImpl():(address)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
   subVaultBeacon(): Address {
     let result = super.call("subVaultBeacon", "subVaultBeacon():(address)", []);
 
@@ -1766,6 +1804,29 @@ export class Voyage extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  getIncomeRatio(_collection: Address): BigInt {
+    let result = super.call(
+      "getIncomeRatio",
+      "getIncomeRatio(address):(uint256)",
+      [ethereum.Value.fromAddress(_collection)]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_getIncomeRatio(_collection: Address): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "getIncomeRatio",
+      "getIncomeRatio(address):(uint256)",
+      [ethereum.Value.fromAddress(_collection)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   getCollections(): Array<Address> {
@@ -2050,7 +2111,7 @@ export class Voyage extends ethereum.SmartContract {
   ): Voyage__getUserPoolDataResultValue0Struct {
     let result = super.call(
       "getUserPoolData",
-      "getUserPoolData(address,address):((uint256,uint256,uint256,uint256,uint256))",
+      "getUserPoolData(address,address):((uint256,uint256,uint256,uint256))",
       [
         ethereum.Value.fromAddress(_collection),
         ethereum.Value.fromAddress(_user)
@@ -2068,7 +2129,7 @@ export class Voyage extends ethereum.SmartContract {
   ): ethereum.CallResult<Voyage__getUserPoolDataResultValue0Struct> {
     let result = super.tryCall(
       "getUserPoolData",
-      "getUserPoolData(address,address):((uint256,uint256,uint256,uint256,uint256))",
+      "getUserPoolData(address,address):((uint256,uint256,uint256,uint256))",
       [
         ethereum.Value.fromAddress(_collection),
         ethereum.Value.fromAddress(_user)
@@ -2100,38 +2161,6 @@ export class Voyage extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toAddress());
-  }
-
-  pendingJuniorWithdrawals(_user: Address, _collection: Address): BigInt {
-    let result = super.call(
-      "pendingJuniorWithdrawals",
-      "pendingJuniorWithdrawals(address,address):(uint256)",
-      [
-        ethereum.Value.fromAddress(_user),
-        ethereum.Value.fromAddress(_collection)
-      ]
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_pendingJuniorWithdrawals(
-    _user: Address,
-    _collection: Address
-  ): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "pendingJuniorWithdrawals",
-      "pendingJuniorWithdrawals(address,address):(uint256)",
-      [
-        ethereum.Value.fromAddress(_user),
-        ethereum.Value.fromAddress(_collection)
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   pendingSeniorWithdrawals(_user: Address, _collection: Address): BigInt {
@@ -3138,20 +3167,20 @@ export class CreateVaultCall__Outputs {
   }
 }
 
-export class SetVaultBeaconCall extends ethereum.Call {
-  get inputs(): SetVaultBeaconCall__Inputs {
-    return new SetVaultBeaconCall__Inputs(this);
+export class SetVaultImplCall extends ethereum.Call {
+  get inputs(): SetVaultImplCall__Inputs {
+    return new SetVaultImplCall__Inputs(this);
   }
 
-  get outputs(): SetVaultBeaconCall__Outputs {
-    return new SetVaultBeaconCall__Outputs(this);
+  get outputs(): SetVaultImplCall__Outputs {
+    return new SetVaultImplCall__Outputs(this);
   }
 }
 
-export class SetVaultBeaconCall__Inputs {
-  _call: SetVaultBeaconCall;
+export class SetVaultImplCall__Inputs {
+  _call: SetVaultImplCall;
 
-  constructor(call: SetVaultBeaconCall) {
+  constructor(call: SetVaultImplCall) {
     this._call = call;
   }
 
@@ -3160,28 +3189,28 @@ export class SetVaultBeaconCall__Inputs {
   }
 }
 
-export class SetVaultBeaconCall__Outputs {
-  _call: SetVaultBeaconCall;
+export class SetVaultImplCall__Outputs {
+  _call: SetVaultImplCall;
 
-  constructor(call: SetVaultBeaconCall) {
+  constructor(call: SetVaultImplCall) {
     this._call = call;
   }
 }
 
-export class TransferReserveCall extends ethereum.Call {
-  get inputs(): TransferReserveCall__Inputs {
-    return new TransferReserveCall__Inputs(this);
+export class TransferCurrencyCall extends ethereum.Call {
+  get inputs(): TransferCurrencyCall__Inputs {
+    return new TransferCurrencyCall__Inputs(this);
   }
 
-  get outputs(): TransferReserveCall__Outputs {
-    return new TransferReserveCall__Outputs(this);
+  get outputs(): TransferCurrencyCall__Outputs {
+    return new TransferCurrencyCall__Outputs(this);
   }
 }
 
-export class TransferReserveCall__Inputs {
-  _call: TransferReserveCall;
+export class TransferCurrencyCall__Inputs {
+  _call: TransferCurrencyCall;
 
-  constructor(call: TransferReserveCall) {
+  constructor(call: TransferCurrencyCall) {
     this._call = call;
   }
 
@@ -3202,10 +3231,10 @@ export class TransferReserveCall__Inputs {
   }
 }
 
-export class TransferReserveCall__Outputs {
-  _call: TransferReserveCall;
+export class TransferCurrencyCall__Outputs {
+  _call: TransferCurrencyCall;
 
-  constructor(call: TransferReserveCall) {
+  constructor(call: TransferCurrencyCall) {
     this._call = call;
   }
 }
@@ -3354,6 +3383,40 @@ export class SetLoanParamsCall__Outputs {
   _call: SetLoanParamsCall;
 
   constructor(call: SetLoanParamsCall) {
+    this._call = call;
+  }
+}
+
+export class SetOptimalLiquidityRatioCall extends ethereum.Call {
+  get inputs(): SetOptimalLiquidityRatioCall__Inputs {
+    return new SetOptimalLiquidityRatioCall__Inputs(this);
+  }
+
+  get outputs(): SetOptimalLiquidityRatioCall__Outputs {
+    return new SetOptimalLiquidityRatioCall__Outputs(this);
+  }
+}
+
+export class SetOptimalLiquidityRatioCall__Inputs {
+  _call: SetOptimalLiquidityRatioCall;
+
+  constructor(call: SetOptimalLiquidityRatioCall) {
+    this._call = call;
+  }
+
+  get _collection(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get _ratio(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+}
+
+export class SetOptimalLiquidityRatioCall__Outputs {
+  _call: SetOptimalLiquidityRatioCall;
+
+  constructor(call: SetOptimalLiquidityRatioCall) {
     this._call = call;
   }
 }
@@ -3821,8 +3884,12 @@ export class PurchaseCall__Inputs {
     return this._call.inputValues[1].value.toAddress();
   }
 
+  get _value(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
+  }
+
   get _data(): Bytes {
-    return this._call.inputValues[2].value.toBytes();
+    return this._call.inputValues[3].value.toBytes();
   }
 }
 

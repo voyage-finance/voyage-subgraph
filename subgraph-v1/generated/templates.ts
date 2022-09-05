@@ -6,12 +6,30 @@ import {
   DataSourceContext
 } from "@graphprotocol/graph-ts";
 
-export class VToken extends DataSourceTemplate {
+export class JuniorDepositToken extends DataSourceTemplate {
   static create(address: Address): void {
-    DataSourceTemplate.create("VToken", [address.toHex()]);
+    DataSourceTemplate.create("JuniorDepositToken", [address.toHex()]);
   }
 
   static createWithContext(address: Address, context: DataSourceContext): void {
-    DataSourceTemplate.createWithContext("VToken", [address.toHex()], context);
+    DataSourceTemplate.createWithContext(
+      "JuniorDepositToken",
+      [address.toHex()],
+      context
+    );
+  }
+}
+
+export class SeniorDepositToken extends DataSourceTemplate {
+  static create(address: Address): void {
+    DataSourceTemplate.create("SeniorDepositToken", [address.toHex()]);
+  }
+
+  static createWithContext(address: Address, context: DataSourceContext): void {
+    DataSourceTemplate.createWithContext(
+      "SeniorDepositToken",
+      [address.toHex()],
+      context
+    );
   }
 }

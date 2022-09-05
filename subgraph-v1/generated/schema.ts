@@ -535,6 +535,15 @@ export class UserDepositData extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get user(): string {
+    let value = this.get("user");
+    return value!.toString();
+  }
+
+  set user(value: string) {
+    this.set("user", Value.fromString(value));
+  }
+
   get collection(): Bytes {
     let value = this.get("collection");
     return value!.toBytes();
@@ -544,94 +553,58 @@ export class UserDepositData extends Entity {
     this.set("collection", Value.fromBytes(value));
   }
 
-  get juniorTrancheBalance(): BigInt {
-    let value = this.get("juniorTrancheBalance");
+  get juniorTrancheShares(): BigInt {
+    let value = this.get("juniorTrancheShares");
     return value!.toBigInt();
   }
 
-  set juniorTrancheBalance(value: BigInt) {
-    this.set("juniorTrancheBalance", Value.fromBigInt(value));
+  set juniorTrancheShares(value: BigInt) {
+    this.set("juniorTrancheShares", Value.fromBigInt(value));
   }
 
-  get juniorDepositWithdrawalDiff(): BigInt {
-    let value = this.get("juniorDepositWithdrawalDiff");
+  get juniorTrancheCumulativeDeposits(): BigInt {
+    let value = this.get("juniorTrancheCumulativeDeposits");
     return value!.toBigInt();
   }
 
-  set juniorDepositWithdrawalDiff(value: BigInt) {
-    this.set("juniorDepositWithdrawalDiff", Value.fromBigInt(value));
+  set juniorTrancheCumulativeDeposits(value: BigInt) {
+    this.set("juniorTrancheCumulativeDeposits", Value.fromBigInt(value));
   }
 
-  get juniorTranchePnl(): BigInt {
-    let value = this.get("juniorTranchePnl");
+  get juniorTrancheCumulativeWithdrawals(): BigInt {
+    let value = this.get("juniorTrancheCumulativeWithdrawals");
     return value!.toBigInt();
   }
 
-  set juniorTranchePnl(value: BigInt) {
-    this.set("juniorTranchePnl", Value.fromBigInt(value));
+  set juniorTrancheCumulativeWithdrawals(value: BigInt) {
+    this.set("juniorTrancheCumulativeWithdrawals", Value.fromBigInt(value));
   }
 
-  get seniorTrancheBalance(): BigInt {
-    let value = this.get("seniorTrancheBalance");
+  get seniorTrancheShares(): BigInt {
+    let value = this.get("seniorTrancheShares");
     return value!.toBigInt();
   }
 
-  set seniorTrancheBalance(value: BigInt) {
-    this.set("seniorTrancheBalance", Value.fromBigInt(value));
+  set seniorTrancheShares(value: BigInt) {
+    this.set("seniorTrancheShares", Value.fromBigInt(value));
   }
 
-  get seniorDepositWithdrawalDiff(): BigInt {
-    let value = this.get("seniorDepositWithdrawalDiff");
+  get seniorTrancheCumulativeDeposits(): BigInt {
+    let value = this.get("seniorTrancheCumulativeDeposits");
     return value!.toBigInt();
   }
 
-  set seniorDepositWithdrawalDiff(value: BigInt) {
-    this.set("seniorDepositWithdrawalDiff", Value.fromBigInt(value));
+  set seniorTrancheCumulativeDeposits(value: BigInt) {
+    this.set("seniorTrancheCumulativeDeposits", Value.fromBigInt(value));
   }
 
-  get seniorTranchePnl(): BigInt {
-    let value = this.get("seniorTranchePnl");
+  get seniorTrancheCumulativeWithdrawals(): BigInt {
+    let value = this.get("seniorTrancheCumulativeWithdrawals");
     return value!.toBigInt();
   }
 
-  set seniorTranchePnl(value: BigInt) {
-    this.set("seniorTranchePnl", Value.fromBigInt(value));
-  }
-
-  get withdrawableJuniorBalance(): BigInt {
-    let value = this.get("withdrawableJuniorBalance");
-    return value!.toBigInt();
-  }
-
-  set withdrawableJuniorBalance(value: BigInt) {
-    this.set("withdrawableJuniorBalance", Value.fromBigInt(value));
-  }
-
-  get withdrawableSeniorBalance(): BigInt {
-    let value = this.get("withdrawableSeniorBalance");
-    return value!.toBigInt();
-  }
-
-  set withdrawableSeniorBalance(value: BigInt) {
-    this.set("withdrawableSeniorBalance", Value.fromBigInt(value));
-  }
-
-  get decimals(): BigInt {
-    let value = this.get("decimals");
-    return value!.toBigInt();
-  }
-
-  set decimals(value: BigInt) {
-    this.set("decimals", Value.fromBigInt(value));
-  }
-
-  get user(): string {
-    let value = this.get("user");
-    return value!.toString();
-  }
-
-  set user(value: string) {
-    this.set("user", Value.fromString(value));
+  set seniorTrancheCumulativeWithdrawals(value: BigInt) {
+    this.set("seniorTrancheCumulativeWithdrawals", Value.fromBigInt(value));
   }
 }
 
@@ -675,6 +648,15 @@ export class UserUnbondingData extends Entity {
 
   set time(value: BigInt) {
     this.set("time", Value.fromBigInt(value));
+  }
+
+  get collection(): Bytes {
+    let value = this.get("collection");
+    return value!.toBytes();
+  }
+
+  set collection(value: Bytes) {
+    this.set("collection", Value.fromBytes(value));
   }
 
   get blocknum(): BigInt {

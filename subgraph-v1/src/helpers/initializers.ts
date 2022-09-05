@@ -117,15 +117,12 @@ export function getOrInitUserDepositData(
   if (!userDepositData) {
     userDepositData = new UserDepositData(id);
     userDepositData.collection = collectionAddress;
-    userDepositData.decimals = BigInt.fromI32(18);
-    userDepositData.juniorDepositWithdrawalDiff = zeroBI();
-    userDepositData.seniorDepositWithdrawalDiff = zeroBI();
-    userDepositData.juniorTranchePnl = zeroBI();
-    userDepositData.seniorTranchePnl = zeroBI();
-    userDepositData.withdrawableJuniorBalance = zeroBI();
-    userDepositData.withdrawableSeniorBalance = zeroBI();
-    userDepositData.juniorTrancheBalance = zeroBI();
-    userDepositData.seniorTrancheBalance = zeroBI();
+    userDepositData.juniorTrancheShares = zeroBI();
+    userDepositData.juniorTrancheCumulativeDeposits = zeroBI();
+    userDepositData.juniorTrancheCumulativeWithdrawals = zeroBI();
+    userDepositData.seniorTrancheShares = zeroBI();
+    userDepositData.seniorTrancheCumulativeDeposits = zeroBI();
+    userDepositData.seniorTrancheCumulativeWithdrawals = zeroBI();
 
     const user = getOrInitUserData(userAddress);
     userDepositData.user = user.id;
@@ -145,6 +142,7 @@ export function getOrInitUserUnbondingData(
     unbonding = new UserUnbondingData(id);
     unbonding.time = event.block.timestamp;
     unbonding.blocknum = event.block.number;
+    unbonding.collection = collection;
     unbonding.shares = zeroBI();
     unbonding.maxUnderlying = zeroBI();
     unbonding.user = user.toHexString();

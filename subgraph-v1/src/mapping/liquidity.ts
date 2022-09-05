@@ -1,6 +1,7 @@
 import { Address } from '@graphprotocol/graph-ts';
-import { Claim, Deposit, Withdraw } from '../../generated/templates/VToken/VToken';
-import { JUNIOR_TRANCHE, SENIOR_TRANCHE, trancheFromString } from '../helpers/consts';
+import { Deposit, Withdraw } from '../../generated/templates/VToken/VToken';
+import { Claim } from '../../generated/templates/SeniorDepositToken/SeniorDepositToken';
+import { JUNIOR_TRANCHE, trancheFromString } from '../helpers/consts';
 import {
   getOrInitReserve,
   getOrInitReserveConfiguration,
@@ -39,15 +40,18 @@ export function handleDeposit(event: Deposit): void {
     Address.fromBytes(reserve.collection),
   );
   if (vToken.tranche == JUNIOR_TRANCHE) {
-    userDepositData.juniorTrancheBalance = userDepositData.juniorTrancheBalance.plus(
-      event.params.assets,
+    userDepositData.juniorTrancheCumulativeDeposits =
+      userDepositData.juniorTrancheCumulativeDeposits.plus(event.params.assets);
+    userDepositData.juniorTrancheShares = userDepositData.juniorTrancheShares.plus(
+      event.params.shares,
     );
   } else {
-    userDepositData.seniorTrancheBalance = userDepositData.juniorTrancheBalance.plus(
-      event.params.assets,
+    userDepositData.seniorTrancheCumulativeDeposits =
+      userDepositData.seniorTrancheCumulativeDeposits.plus(event.params.assets);
+    userDepositData.seniorTrancheShares = userDepositData.seniorTrancheShares.plus(
+      event.params.shares,
     );
   }
-  // updatePnL(userDepositData, event.params.amount, event.params._tranche);
   userDepositData.save();
 }
 
@@ -68,25 +72,20 @@ export function handleWithdraw(event: Withdraw): void {
   reserve.juniorTrancheDepositRate = computeJuniorDepositRate(reserve, reserveConfiguration);
   reserve.save();
 
-  const userDepositData = getOrInitUserDepositData(
-    event.params.owner,
-    Address.fromBytes(reserve.collection),
-  );
   if (vToken.tranche == JUNIOR_TRANCHE) {
-    userDepositData.juniorTrancheBalance = userDepositData.juniorTrancheBalance.minus(
-      event.params.assets,
+    // Junior Tranche withdrawals happen immediately.
+    const userDepositData = getOrInitUserDepositData(
+      event.params.owner,
+      Address.fromBytes(reserve.collection),
     );
+    userDepositData.juniorTrancheCumulativeWithdrawals =
+      userDepositData.juniorTrancheCumulativeWithdrawals.plus(event.params.assets);
+    userDepositData.juniorTrancheShares = userDepositData.juniorTrancheShares.minus(
+      event.params.shares,
+    );
+    userDepositData.save();
   } else {
-    userDepositData.seniorTrancheBalance = userDepositData.seniorTrancheBalance.minus(
-      event.params.assets,
-    );
-  }
-
-  // updatePnL(userDepositData, event.params.amount, event.params._tranche);
-  userDepositData.save();
-
-  // unbonding only applies to senior tranche withdrawals
-  if (vToken.tranche == SENIOR_TRANCHE) {
+    // Senior Tranche withdrawals enter unbonding.
     const userUnbondingData = getOrInitUserUnbondingData(
       event.params.owner,
       Address.fromBytes(reserve.collection),
@@ -100,13 +99,26 @@ export function handleWithdraw(event: Withdraw): void {
 
 export function handleClaim(event: Claim): void {
   const vToken = getOrInitVToken(event.address);
+  vToken.totalAssets = vToken.totalAssets.minus(event.params.assets);
+  vToken.totalShares = vToken.totalAssets.minus(event.params.shares);
+  vToken.save();
   const reserve = getOrInitReserve(Address.fromString(vToken.reserve));
+  const userDepositData = getOrInitUserDepositData(
+    event.params.owner,
+    Address.fromBytes(reserve.collection),
+  );
+  userDepositData.seniorTrancheShares = userDepositData.seniorTrancheShares.minus(
+    event.params.shares,
+  );
+  userDepositData.seniorTrancheCumulativeWithdrawals =
+    userDepositData.seniorTrancheCumulativeWithdrawals.plus(event.params.assets);
+  userDepositData.save();
   const unbonding = getOrInitUserUnbondingData(
-    event.params.receiver,
+    event.params.owner,
     Address.fromBytes(reserve.collection),
     event,
   );
+  unbonding.maxUnderlying = unbonding.maxUnderlying.minus(event.params.assets);
   unbonding.shares = unbonding.shares.minus(event.params.shares);
-  unbonding.maxUnderlying = unbonding.maxUnderlying.minus(event.params.amount);
   unbonding.save();
 }

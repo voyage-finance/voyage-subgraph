@@ -40,6 +40,8 @@ dataSources:
           handler: handleBorrow
         - event: VaultCreated(address,address,uint256)
           handler: handleVaultCreated
+        - event: ProtocolFeeUpdated(indexed address,uint256)
+          handler: handleProtocolFeeUpdated
       file: ./src/mapping/index.ts
 templates:
   - kind: ethereum

@@ -1,7 +1,9 @@
-import { Address, BigInt, Bytes, ethereum } from '@graphprotocol/graph-ts';
+import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts';
 import {
+  ContractToMarketMapping,
   Currency,
   Loan,
+  Market,
   Reserve,
   ReserveConfiguration,
   UserData,
@@ -14,17 +16,39 @@ import { IERC20Detailed } from '../../generated/Voyage/IERC20Detailed';
 import {
   getCurrencyId,
   getLoanEntityId,
+  getReserveId,
   getUserDepositDataId,
   getUserUnbondingDataId,
 } from '../utils/id';
-import { zeroAddress, zeroBD, zeroBI } from '../utils/math';
+import { zeroAddress, zeroBI } from '../utils/math';
 
-export function getOrInitReserve(collection: Address): Reserve {
-  const id = collection.toHex();
-  let reserve = Reserve.load(id);
+export function getMarketByContract(event: ethereum.Event): string {
+  let contractAddress = event.address.toHexString();
+  let contractToMarketMapping = ContractToMarketMapping.load(contractAddress);
+  if (contractToMarketMapping === null) {
+    throw new Error(contractAddress + 'is not registered in ContractToMarketMapping');
+  }
+  return contractToMarketMapping.market;
+}
+
+export function getOrInitMarket(event: ethereum.Event): Market {
+  const id = event.address.toHexString();
+  let market = Market.load(id);
+  if (!market) {
+    market = new Market(id);
+    market.protocolFee = zeroBI();
+    market.protocolTreasury = zeroAddress();
+    market.save();
+  }
+  return market;
+}
+
+export function getOrInitReserveById(reserveId: string): Reserve {
+  let reserve = Reserve.load(reserveId);
   if (!reserve) {
-    reserve = new Reserve(id);
-    reserve.collection = collection;
+    reserve = new Reserve(reserveId);
+    reserve.market = zeroAddress().toHexString();
+    reserve.collection = zeroAddress();
     reserve.currency = zeroAddress().toHexString();
 
     reserve.totalPrincipal = zeroBI();
@@ -49,12 +73,19 @@ export function getOrInitReserve(collection: Address): Reserve {
   return reserve;
 }
 
-export function getOrInitReserveConfiguration(reserveId: Bytes): ReserveConfiguration {
-  const id = reserveId.toHexString();
-  let reserveConfiguration = ReserveConfiguration.load(id);
+export function getOrInitReserve(collection: Address, marketId: string): Reserve {
+  const id = getReserveId(collection, marketId);
+  const reserve = getOrInitReserveById(id);
+  reserve.collection = collection;
+  reserve.save();
+  return reserve;
+}
+
+export function getOrInitReserveConfiguration(reserveId: string): ReserveConfiguration {
+  let reserveConfiguration = ReserveConfiguration.load(reserveId);
   if (!reserveConfiguration) {
-    reserveConfiguration = new ReserveConfiguration(id);
-    reserveConfiguration.reserve = id;
+    reserveConfiguration = new ReserveConfiguration(reserveId);
+    reserveConfiguration.reserve = reserveId;
     reserveConfiguration.liquidationBonus = zeroBI();
     reserveConfiguration.loanInterval = zeroBI();
     reserveConfiguration.loanTenure = zeroBI();

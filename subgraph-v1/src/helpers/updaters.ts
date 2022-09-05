@@ -1,5 +1,5 @@
-import { Address, BigInt, ethereum, log } from '@graphprotocol/graph-ts';
-import { Loan, Reserve, UserDepositData } from '../../generated/schema';
+import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts';
+import { Loan, Reserve } from '../../generated/schema';
 import { Voyage } from '../../generated/Voyage/Voyage';
 import { Tranche } from './consts';
 

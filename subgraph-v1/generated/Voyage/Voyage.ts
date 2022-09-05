@@ -144,6 +144,28 @@ export class Deposit__Params {
   }
 }
 
+export class ProtocolFeeUpdated extends ethereum.Event {
+  get params(): ProtocolFeeUpdated__Params {
+    return new ProtocolFeeUpdated__Params(this);
+  }
+}
+
+export class ProtocolFeeUpdated__Params {
+  _event: ProtocolFeeUpdated;
+
+  constructor(event: ProtocolFeeUpdated) {
+    this._event = event;
+  }
+
+  get _treasury(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get _fee(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+}
+
 export class ReserveActivated extends ethereum.Event {
   get params(): ReserveActivated__Params {
     return new ReserveActivated__Params(this);
@@ -737,7 +759,7 @@ export class Voyage__previewBuyNowParamsResultValue0Struct extends ethereum.Tupl
     return this[5].toBigInt();
   }
 
-  get cutRatio(): BigInt {
+  get takeRate(): BigInt {
     return this[6].toBigInt();
   }
 
@@ -765,8 +787,12 @@ export class Voyage__previewBuyNowParamsResultValue0PmtStruct extends ethereum.T
     return this[1].toBigInt();
   }
 
-  get pmt(): BigInt {
+  get fee(): BigInt {
     return this[2].toBigInt();
+  }
+
+  get pmt(): BigInt {
+    return this[3].toBigInt();
   }
 }
 
@@ -894,8 +920,12 @@ export class Voyage__getLoanDetailResultValue0PmtStruct extends ethereum.Tuple {
     return this[1].toBigInt();
   }
 
-  get pmt(): BigInt {
+  get fee(): BigInt {
     return this[2].toBigInt();
+  }
+
+  get pmt(): BigInt {
+    return this[3].toBigInt();
   }
 }
 
@@ -1592,7 +1622,7 @@ export class Voyage extends ethereum.SmartContract {
   ): Voyage__previewBuyNowParamsResultValue0Struct {
     let result = super.call(
       "previewBuyNowParams",
-      "previewBuyNowParams(address,address,uint256):((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,(uint256,uint256,uint256)))",
+      "previewBuyNowParams(address,address,uint256):((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,(uint256,uint256,uint256,uint256)))",
       [
         ethereum.Value.fromAddress(_collection),
         ethereum.Value.fromAddress(_vault),
@@ -1612,7 +1642,7 @@ export class Voyage extends ethereum.SmartContract {
   ): ethereum.CallResult<Voyage__previewBuyNowParamsResultValue0Struct> {
     let result = super.tryCall(
       "previewBuyNowParams",
-      "previewBuyNowParams(address,address,uint256):((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,(uint256,uint256,uint256)))",
+      "previewBuyNowParams(address,address,uint256):((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,(uint256,uint256,uint256,uint256)))",
       [
         ethereum.Value.fromAddress(_collection),
         ethereum.Value.fromAddress(_vault),
@@ -1933,7 +1963,7 @@ export class Voyage extends ethereum.SmartContract {
   ): Voyage__getLoanDetailResultValue0Struct {
     let result = super.call(
       "getLoanDetail",
-      "getLoanDetail(address,address,uint256):((uint256,uint256,uint256,uint256,uint256,address,(uint256,uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256))",
+      "getLoanDetail(address,address,uint256):((uint256,uint256,uint256,uint256,uint256,address,(uint256,uint256,uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256))",
       [
         ethereum.Value.fromAddress(_vault),
         ethereum.Value.fromAddress(_collection),
@@ -1953,7 +1983,7 @@ export class Voyage extends ethereum.SmartContract {
   ): ethereum.CallResult<Voyage__getLoanDetailResultValue0Struct> {
     let result = super.tryCall(
       "getLoanDetail",
-      "getLoanDetail(address,address,uint256):((uint256,uint256,uint256,uint256,uint256,address,(uint256,uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256))",
+      "getLoanDetail(address,address,uint256):((uint256,uint256,uint256,uint256,uint256,address,(uint256,uint256,uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256))",
       [
         ethereum.Value.fromAddress(_vault),
         ethereum.Value.fromAddress(_collection),
@@ -2896,7 +2926,7 @@ export class UpdateProtocolFeeCall__Inputs {
     return this._call.inputValues[0].value.toAddress();
   }
 
-  get _cutRatio(): BigInt {
+  get _takeRate(): BigInt {
     return this._call.inputValues[1].value.toBigInt();
   }
 }

@@ -1,5 +1,9 @@
 import { Address, BigInt } from '@graphprotocol/graph-ts';
 
+export function getReserveId(collection: Address, marketId: string): string {
+  return [collection.toHexString(), marketId].join('_');
+}
+
 export function getUserDepositDataId(user: Address, collection: Address): string {
   return [user.toHex(), collection.toHex()].join('_');
 }

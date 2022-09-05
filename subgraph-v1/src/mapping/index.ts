@@ -1,7 +1,4 @@
-import { Paused, Unpaused } from '../../generated/Voyage/Voyage';
-
-export { handleDeposit, handleWithdraw, handleClaim } from './liquidity';
-export { handleBorrow, handleLiquidate, handleRepay } from './loan';
+export { handleProtocolFeeUpdated } from './market';
 export {
   handleIncomeRatioUpdated,
   handleLiquidationConfigurationUpdated,
@@ -9,8 +6,6 @@ export {
   handleReserveActivated,
   handleReserveInitialized,
 } from './reserves';
+export { handleDeposit, handleWithdraw, handleClaim } from './liquidity';
+export { handleBorrow, handleLiquidate, handleRepay } from './loan';
 export { handleVaultCreated } from './vault';
-
-export function handlePaused(event: Paused): void {}
-
-export function handleUnpaused(event: Unpaused): void {}

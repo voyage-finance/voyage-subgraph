@@ -11,7 +11,7 @@ import {
   BigDecimal
 } from "@graphprotocol/graph-ts";
 
-export class ReserveConfiguration extends Entity {
+export class Market extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -19,19 +19,81 @@ export class ReserveConfiguration extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save ReserveConfiguration entity without an ID");
+    assert(id != null, "Cannot save Market entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type ReserveConfiguration must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type Market must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("ReserveConfiguration", id.toString(), this);
+      store.set("Market", id.toString(), this);
     }
   }
 
-  static load(id: string): ReserveConfiguration | null {
-    return changetype<ReserveConfiguration | null>(
-      store.get("ReserveConfiguration", id)
+  static load(id: string): Market | null {
+    return changetype<Market | null>(store.get("Market", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get reserves(): Array<string> {
+    let value = this.get("reserves");
+    return value!.toStringArray();
+  }
+
+  set reserves(value: Array<string>) {
+    this.set("reserves", Value.fromStringArray(value));
+  }
+
+  get protocolFee(): BigInt {
+    let value = this.get("protocolFee");
+    return value!.toBigInt();
+  }
+
+  set protocolFee(value: BigInt) {
+    this.set("protocolFee", Value.fromBigInt(value));
+  }
+
+  get protocolTreasury(): Bytes {
+    let value = this.get("protocolTreasury");
+    return value!.toBytes();
+  }
+
+  set protocolTreasury(value: Bytes) {
+    this.set("protocolTreasury", Value.fromBytes(value));
+  }
+}
+
+export class ContractToMarketMapping extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id != null,
+      "Cannot save ContractToMarketMapping entity without an ID"
+    );
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type ContractToMarketMapping must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("ContractToMarketMapping", id.toString(), this);
+    }
+  }
+
+  static load(id: string): ContractToMarketMapping | null {
+    return changetype<ContractToMarketMapping | null>(
+      store.get("ContractToMarketMapping", id)
     );
   }
 
@@ -44,126 +106,13 @@ export class ReserveConfiguration extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get reserve(): string {
-    let value = this.get("reserve");
+  get market(): string {
+    let value = this.get("market");
     return value!.toString();
   }
 
-  set reserve(value: string) {
-    this.set("reserve", Value.fromString(value));
-  }
-
-  get isInitialized(): boolean {
-    let value = this.get("isInitialized");
-    return value!.toBoolean();
-  }
-
-  set isInitialized(value: boolean) {
-    this.set("isInitialized", Value.fromBoolean(value));
-  }
-
-  get isActive(): boolean {
-    let value = this.get("isActive");
-    return value!.toBoolean();
-  }
-
-  set isActive(value: boolean) {
-    this.set("isActive", Value.fromBoolean(value));
-  }
-
-  get incomeRatio(): BigInt {
-    let value = this.get("incomeRatio");
-    return value!.toBigInt();
-  }
-
-  set incomeRatio(value: BigInt) {
-    this.set("incomeRatio", Value.fromBigInt(value));
-  }
-
-  get loanInterval(): BigInt {
-    let value = this.get("loanInterval");
-    return value!.toBigInt();
-  }
-
-  set loanInterval(value: BigInt) {
-    this.set("loanInterval", Value.fromBigInt(value));
-  }
-
-  get loanTenure(): BigInt {
-    let value = this.get("loanTenure");
-    return value!.toBigInt();
-  }
-
-  set loanTenure(value: BigInt) {
-    this.set("loanTenure", Value.fromBigInt(value));
-  }
-
-  get gracePeriod(): BigInt {
-    let value = this.get("gracePeriod");
-    return value!.toBigInt();
-  }
-
-  set gracePeriod(value: BigInt) {
-    this.set("gracePeriod", Value.fromBigInt(value));
-  }
-
-  get liquidationBonus(): BigInt {
-    let value = this.get("liquidationBonus");
-    return value!.toBigInt();
-  }
-
-  set liquidationBonus(value: BigInt) {
-    this.set("liquidationBonus", Value.fromBigInt(value));
-  }
-}
-
-export class Currency extends Entity {
-  constructor(id: string) {
-    super();
-    this.set("id", Value.fromString(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save Currency entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.STRING,
-        `Entities of type Currency must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
-      );
-      store.set("Currency", id.toString(), this);
-    }
-  }
-
-  static load(id: string): Currency | null {
-    return changetype<Currency | null>(store.get("Currency", id));
-  }
-
-  get id(): string {
-    let value = this.get("id");
-    return value!.toString();
-  }
-
-  set id(value: string) {
-    this.set("id", Value.fromString(value));
-  }
-
-  get symbol(): string {
-    let value = this.get("symbol");
-    return value!.toString();
-  }
-
-  set symbol(value: string) {
-    this.set("symbol", Value.fromString(value));
-  }
-
-  get decimals(): BigInt {
-    let value = this.get("decimals");
-    return value!.toBigInt();
-  }
-
-  set decimals(value: BigInt) {
-    this.set("decimals", Value.fromBigInt(value));
+  set market(value: string) {
+    this.set("market", Value.fromString(value));
   }
 }
 
@@ -196,6 +145,15 @@ export class Reserve extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get market(): string {
+    let value = this.get("market");
+    return value!.toString();
+  }
+
+  set market(value: string) {
+    this.set("market", Value.fromString(value));
   }
 
   get collection(): Bytes {
@@ -357,6 +315,162 @@ export class Reserve extends Entity {
 
   set juniorTrancheDepositRate(value: BigInt) {
     this.set("juniorTrancheDepositRate", Value.fromBigInt(value));
+  }
+}
+
+export class ReserveConfiguration extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save ReserveConfiguration entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type ReserveConfiguration must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("ReserveConfiguration", id.toString(), this);
+    }
+  }
+
+  static load(id: string): ReserveConfiguration | null {
+    return changetype<ReserveConfiguration | null>(
+      store.get("ReserveConfiguration", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get reserve(): string {
+    let value = this.get("reserve");
+    return value!.toString();
+  }
+
+  set reserve(value: string) {
+    this.set("reserve", Value.fromString(value));
+  }
+
+  get isInitialized(): boolean {
+    let value = this.get("isInitialized");
+    return value!.toBoolean();
+  }
+
+  set isInitialized(value: boolean) {
+    this.set("isInitialized", Value.fromBoolean(value));
+  }
+
+  get isActive(): boolean {
+    let value = this.get("isActive");
+    return value!.toBoolean();
+  }
+
+  set isActive(value: boolean) {
+    this.set("isActive", Value.fromBoolean(value));
+  }
+
+  get incomeRatio(): BigInt {
+    let value = this.get("incomeRatio");
+    return value!.toBigInt();
+  }
+
+  set incomeRatio(value: BigInt) {
+    this.set("incomeRatio", Value.fromBigInt(value));
+  }
+
+  get loanInterval(): BigInt {
+    let value = this.get("loanInterval");
+    return value!.toBigInt();
+  }
+
+  set loanInterval(value: BigInt) {
+    this.set("loanInterval", Value.fromBigInt(value));
+  }
+
+  get loanTenure(): BigInt {
+    let value = this.get("loanTenure");
+    return value!.toBigInt();
+  }
+
+  set loanTenure(value: BigInt) {
+    this.set("loanTenure", Value.fromBigInt(value));
+  }
+
+  get gracePeriod(): BigInt {
+    let value = this.get("gracePeriod");
+    return value!.toBigInt();
+  }
+
+  set gracePeriod(value: BigInt) {
+    this.set("gracePeriod", Value.fromBigInt(value));
+  }
+
+  get liquidationBonus(): BigInt {
+    let value = this.get("liquidationBonus");
+    return value!.toBigInt();
+  }
+
+  set liquidationBonus(value: BigInt) {
+    this.set("liquidationBonus", Value.fromBigInt(value));
+  }
+}
+
+export class Currency extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Currency entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Currency must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Currency", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Currency | null {
+    return changetype<Currency | null>(store.get("Currency", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get symbol(): string {
+    let value = this.get("symbol");
+    return value!.toString();
+  }
+
+  set symbol(value: string) {
+    this.set("symbol", Value.fromString(value));
+  }
+
+  get decimals(): BigInt {
+    let value = this.get("decimals");
+    return value!.toBigInt();
+  }
+
+  set decimals(value: BigInt) {
+    this.set("decimals", Value.fromBigInt(value));
   }
 }
 

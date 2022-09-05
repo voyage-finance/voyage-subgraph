@@ -1,9 +1,9 @@
 import { Address } from '@graphprotocol/graph-ts';
-import { Deposit, Withdraw } from '../../generated/templates/VToken/VToken';
 import { Claim } from '../../generated/templates/SeniorDepositToken/SeniorDepositToken';
+import { Deposit, Withdraw } from '../../generated/templates/VToken/VToken';
 import { JUNIOR_TRANCHE, trancheFromString } from '../helpers/consts';
 import {
-  getOrInitReserve,
+  getOrInitReserveById,
   getOrInitReserveConfiguration,
   getOrInitUserDepositData,
   getOrInitUserUnbondingData,
@@ -24,8 +24,8 @@ export function handleDeposit(event: Deposit): void {
   vToken.totalShares = vToken.totalShares.plus(event.params.shares);
   vToken.save();
 
-  const reserve = getOrInitReserve(Address.fromString(vToken.reserve));
-  const reserveConfiguration = getOrInitReserveConfiguration(Address.fromHexString(reserve.id));
+  const reserve = getOrInitReserveById(vToken.reserve);
+  const reserveConfiguration = getOrInitReserveConfiguration(reserve.id);
   reserve.totalLiquidity = reserve.totalLiquidity.plus(event.params.assets);
   increaseTrancheLiquidity(reserve, trancheFromString(vToken.tranche), event.params.assets);
   reserve.liquidityRatio = computeLiquidityRatio(reserve);
@@ -61,8 +61,8 @@ export function handleWithdraw(event: Withdraw): void {
   vToken.totalShares = vToken.totalShares.minus(event.params.shares);
   vToken.save();
 
-  const reserve = getOrInitReserve(Address.fromString(vToken.reserve));
-  const reserveConfiguration = getOrInitReserveConfiguration(Address.fromHexString(reserve.id));
+  const reserve = getOrInitReserveById(vToken.reserve);
+  const reserveConfiguration = getOrInitReserveConfiguration(reserve.id);
   reserve.totalLiquidity = reserve.totalLiquidity.minus(event.params.assets);
   decreaseTrancheLiquidity(reserve, trancheFromString(vToken.tranche), event.params.assets);
   reserve.liquidityRatio = computeLiquidityRatio(reserve);
@@ -102,7 +102,7 @@ export function handleClaim(event: Claim): void {
   vToken.totalAssets = vToken.totalAssets.minus(event.params.assets);
   vToken.totalShares = vToken.totalAssets.minus(event.params.shares);
   vToken.save();
-  const reserve = getOrInitReserve(Address.fromString(vToken.reserve));
+  const reserve = getOrInitReserveById(vToken.reserve);
   const userDepositData = getOrInitUserDepositData(
     event.params.owner,
     Address.fromBytes(reserve.collection),

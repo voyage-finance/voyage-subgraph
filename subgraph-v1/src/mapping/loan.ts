@@ -1,22 +1,18 @@
 import { BigInt, log } from '@graphprotocol/graph-ts';
 import { Liquidation, Loan, Repayment } from '../../generated/schema';
-import {
-  Borrow,
-  Liquidate,
-  Repayment as RepaymentEvent,
-  Voyage,
-} from '../../generated/Voyage/Voyage';
+import { Borrow, Liquidate, Repayment as RepaymentEvent } from '../../generated/Voyage/Voyage';
 import {
   getOrInitLoan,
-  getOrInitReserve,
+  getOrInitReserveById,
   getOrInitReserveConfiguration,
 } from '../helpers/initializers';
 import { updateLoanEntity } from '../helpers/updaters';
-import { getLoanEntityId, getRepaymentEntityId } from '../utils/id';
+import { getLoanEntityId, getRepaymentEntityId, getReserveId } from '../utils/id';
 import { rayDiv, rayMul } from '../utils/math';
 
 export function handleBorrow(event: Borrow): void {
-  const configuration = getOrInitReserveConfiguration(event.params._collection);
+  const reserveId = getReserveId(event.params._collection, event.address.toHexString());
+  const configuration = getOrInitReserveConfiguration(reserveId);
   const loan = getOrInitLoan(
     event.params._vault,
     event.params._collection,
@@ -42,7 +38,7 @@ export function handleBorrow(event: Borrow): void {
   loan.paidTimes = BigInt.fromI32(1);
   loan.save();
 
-  const reserve = getOrInitReserve(event.params._collection);
+  const reserve = getOrInitReserveById(reserveId);
   const numer = rayMul(reserve.totalPrincipal, reserve.borrowRate).plus(
     rayMul(loan.principal, loan.apr),
   );
@@ -57,7 +53,6 @@ export function handleBorrow(event: Borrow): void {
 }
 
 export function handleRepay(event: RepaymentEvent): void {
-  const voyage = Voyage.bind(event.address);
   const loanId = getLoanEntityId(
     event.params._vault,
     event.params._collection,

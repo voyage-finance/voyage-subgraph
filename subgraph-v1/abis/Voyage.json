@@ -562,6 +562,25 @@
       {
         "indexed": true,
         "internalType": "address",
+        "name": "_treasury",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_fee",
+        "type": "uint256"
+      }
+    ],
+    "name": "ProtocolFeeUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "_collection",
         "type": "address"
       }
@@ -848,7 +867,7 @@
       },
       {
         "internalType": "uint40",
-        "name": "_cutRatio",
+        "name": "_takeRate",
         "type": "uint40"
       }
     ],
@@ -1397,7 +1416,7 @@
           },
           {
             "internalType": "uint256",
-            "name": "cutRatio",
+            "name": "takeRate",
             "type": "uint256"
           },
           {
@@ -1420,6 +1439,11 @@
               {
                 "internalType": "uint256",
                 "name": "interest",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "fee",
                 "type": "uint256"
               },
               {
@@ -2198,6 +2222,11 @@
               {
                 "internalType": "uint256",
                 "name": "interest",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "fee",
                 "type": "uint256"
               },
               {

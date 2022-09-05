@@ -1,23 +1,16 @@
-type ReserveConfiguration @entity {
+"""
+Market represents a deployment of the Voyage protocol
+"""
+type Market @entity {
   id: ID!
-  reserve: Reserve!
-  isInitialized: Boolean!
-  isActive: Boolean!
-  incomeRatio: BigInt!
-  loanInterval: BigInt!
-  loanTenure: BigInt!
-  gracePeriod: BigInt!
-  liquidationBonus: BigInt!
-}
-
-type Currency @entity(immutable: true) {
-  id: ID! # id is the address of the currency
-  symbol: String!
-  decimals: BigInt!
+  reserves: [Reserve!]! @derivedFrom(field: "market")
+  protocolFee: BigInt!
+  protocolTreasury: Bytes!
 }
 
 type Reserve @entity {
   id: ID!
+  market: Market!
   collection: Bytes!
   currency: Currency!
   configuration: ReserveConfiguration
@@ -39,6 +32,24 @@ type Reserve @entity {
   juniorTrancheVToken: VToken!
   juniorTrancheLiquidity: BigInt!
   juniorTrancheDepositRate: BigInt!
+}
+
+type ReserveConfiguration @entity {
+  id: ID!
+  reserve: Reserve!
+  isInitialized: Boolean!
+  isActive: Boolean!
+  incomeRatio: BigInt!
+  loanInterval: BigInt!
+  loanTenure: BigInt!
+  gracePeriod: BigInt!
+  liquidationBonus: BigInt!
+}
+
+type Currency @entity(immutable: true) {
+  id: ID! # id is the address of the currency
+  symbol: String!
+  decimals: BigInt!
 }
 
 type VToken @entity {

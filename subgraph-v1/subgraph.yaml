@@ -43,9 +43,9 @@ dataSources:
       file: ./src/mapping/index.ts
 templates:
   - kind: ethereum
-    name: VToken
+    name: JuniorDepositToken
     source:
-      abi: VToken
+      abi: JuniorDepositToken
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -55,12 +55,36 @@ templates:
       abis:
         - name: VToken
           file: ./abis/templates/VToken.json
+        - name: JuniorDepositToken
+          file: ./abis/templates/JuniorDepositToken.json
       eventHandlers:
         - event: Deposit(indexed address,indexed address,uint256,uint256)
           handler: handleDeposit
         - event: Withdraw(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleWithdraw
-        - event: Claim(address,uint256,uint256)
+      file: ./src/mapping/index.ts
+    network: localhost
+  - kind: ethereum
+    name: SeniorDepositToken
+    source:
+      abi: SeniorDepositToken
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - VToken
+      abis:
+        - name: VToken
+          file: ./abis/templates/VToken.json
+        - name: SeniorDepositToken
+          file: ./abis/templates/SeniorDepositToken.json
+      eventHandlers:
+        - event: Deposit(indexed address,indexed address,uint256,uint256)
+          handler: handleDeposit
+        - event: Withdraw(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleWithdraw
+        - event: Claim(indexed address,uint256,uint256)
           handler: handleClaim
       file: ./src/mapping/index.ts
     network: localhost

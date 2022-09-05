@@ -62,17 +62,20 @@ type UserDepositData @entity {
   user address + collection address
   """
   id: ID!
-  collection: Bytes!
-  juniorTrancheBalance: BigInt!
-  juniorDepositWithdrawalDiff: BigInt!
-  juniorTranchePnl: BigInt!
-  seniorTrancheBalance: BigInt!
-  seniorDepositWithdrawalDiff: BigInt!
-  seniorTranchePnl: BigInt!
-  withdrawableJuniorBalance: BigInt!
-  withdrawableSeniorBalance: BigInt!
-  decimals: BigInt!
   user: UserData!
+  collection: Bytes!
+  # The **current** shares held by the user. Used to compute current holdings (maxWithdraw)
+  juniorTrancheShares: BigInt!
+  # The cumulative deposits (in assets) as emitted in the Deposit event. Used for PnL.
+  juniorTrancheCumulativeDeposits: BigInt!
+  # The cumulative withdrawals (in assets) as emitted in the Withdraw event. Used for PnL.
+  juniorTrancheCumulativeWithdrawals: BigInt!
+  # The **current** shares held by the user. Used to compute current holdings (maxWithdraw)
+  seniorTrancheShares: BigInt!
+  # The cumulative deposits (in assets) as emitted in the Deposit event. Used for PnL.
+  seniorTrancheCumulativeDeposits: BigInt!
+  # The cumulative withdrawals (in assets) as emitted in the Claim event. Used for PnL.
+  seniorTrancheCumulativeWithdrawals: BigInt!
 }
 
 type UserUnbondingData @entity {
@@ -81,6 +84,7 @@ type UserUnbondingData @entity {
   """
   id: ID!
   time: BigInt!
+  collection: Bytes!
   blocknum: BigInt!
   shares: BigInt!
   maxUnderlying: BigInt!

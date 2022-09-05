@@ -29,41 +29,6 @@ export function decreaseTrancheLiquidity(reserve: Reserve, tranche: Tranche, amo
   }
 }
 
-export function updateUserDepositData(
-  userDepositData: UserDepositData,
-  event: ethereum.Event,
-): void {
-  const voyage = Voyage.bind(event.address);
-  const userAddress = Address.fromHexString(userDepositData.user);
-  const collection = userDepositData.collection;
-  const userPoolData = voyage.getUserPoolData(
-    Address.fromBytes(collection),
-    Address.fromBytes(userAddress),
-  );
-  userDepositData.juniorTrancheBalance = userPoolData.juniorTrancheBalance;
-  userDepositData.seniorTrancheBalance = userPoolData.seniorTrancheBalance;
-  userDepositData.withdrawableJuniorBalance = userPoolData.withdrawableJuniorTrancheBalance;
-  userDepositData.withdrawableSeniorBalance = userPoolData.withdrawableSeniorTrancheBalance;
-}
-
-// sum(withdrawalsFromJunior) + juniorTrancheBalance - sum(depositsInJunior)
-export function updatePnL(userDepositData: UserDepositData, amount: BigInt, tranche: number): void {
-  log.info('[updateTranchePnl]', []);
-  if (tranche === 1) {
-    userDepositData.seniorDepositWithdrawalDiff =
-      userDepositData.seniorDepositWithdrawalDiff.plus(amount);
-    userDepositData.seniorTranchePnl = userDepositData.seniorTrancheBalance.plus(
-      userDepositData.seniorDepositWithdrawalDiff,
-    );
-  } else {
-    userDepositData.juniorDepositWithdrawalDiff =
-      userDepositData.juniorDepositWithdrawalDiff.plus(amount);
-    userDepositData.juniorTranchePnl = userDepositData.juniorTrancheBalance.plus(
-      userDepositData.juniorDepositWithdrawalDiff,
-    );
-  }
-}
-
 export function updateLoanEntity(
   loan: Loan,
   vaultAddress: Address,

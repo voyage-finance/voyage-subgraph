@@ -1,5 +1,5 @@
 import { log } from '@graphprotocol/graph-ts';
-import { VToken as VTokenSource } from '../../generated/templates';
+import { JuniorDepositToken, SeniorDepositToken } from '../../generated/templates';
 import {
   IncomeRatioUpdated,
   LiquidationConfigurationUpdated,
@@ -7,8 +7,9 @@ import {
   ReserveActivated,
   ReserveInitialized,
 } from '../../generated/Voyage/Voyage';
-import { JUNIOR_TRANCHE, SENIOR_TRANCHE, Tranche } from '../helpers/consts';
+import { JUNIOR_TRANCHE, SENIOR_TRANCHE } from '../helpers/consts';
 import {
+  getOrInitCurrency,
   getOrInitReserve,
   getOrInitReserveConfiguration,
   getOrInitVToken,
@@ -20,8 +21,10 @@ export function handleReserveInitialized(event: ReserveInitialized): void {
   reserveConfiguration.isInitialized = true;
   reserveConfiguration.save();
   reserve.configuration = reserveConfiguration.id;
+  const currency = getOrInitCurrency(event.params._currency);
+  reserve.currency = currency.id;
 
-  VTokenSource.create(event.params._juniorDepositTokenAddress);
+  JuniorDepositToken.create(event.params._juniorDepositTokenAddress);
   const juniorTrancheVToken = getOrInitVToken(
     event.params._juniorDepositTokenAddress,
     JUNIOR_TRANCHE,
@@ -30,7 +33,7 @@ export function handleReserveInitialized(event: ReserveInitialized): void {
   juniorTrancheVToken.asset = event.params._currency.toHexString();
   juniorTrancheVToken.save();
 
-  VTokenSource.create(event.params._seniorDepositTokenAddress);
+  SeniorDepositToken.create(event.params._seniorDepositTokenAddress);
   const seniorTrancheVToken = getOrInitVToken(
     event.params._seniorDepositTokenAddress,
     SENIOR_TRANCHE,

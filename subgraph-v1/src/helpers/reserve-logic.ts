@@ -1,9 +1,10 @@
 import { BigInt } from '@graphprotocol/graph-ts';
-import { Reserve, ReserveConfiguration } from '../../generated/schema';
+import { Loan, Reserve, ReserveConfiguration } from '../../generated/schema';
 import {
   MAX_U64_BI,
   PERCENT,
   percentMul,
+  rayDiv,
   rayMul,
   wadDiv,
   wadToPercent,
@@ -18,6 +19,22 @@ export function computeLiquidityRatio(reserve: Reserve): BigInt {
   return reserve.juniorTrancheLiquidity.equals(BigInt.zero())
     ? BigInt.fromU64(U64.MAX_VALUE)
     : wadToPercent(wadDiv(reserve.seniorTrancheLiquidity, reserve.juniorTrancheLiquidity));
+}
+
+export function getJuniorInterest(loan: Loan, incomeRatio: BigInt): BigInt {
+  return loan.interest.minus(getSeniorInterest(loan, incomeRatio));
+}
+
+export function getSeniorInterest(loan: Loan, incomeRatio: BigInt): BigInt {
+  return percentMul(loan.interest, incomeRatio);
+}
+
+export function computeBorrowRateOnNewBorrow(reserve: Reserve, loan: Loan): BigInt {
+  const numer = rayMul(reserve.totalPrincipal, reserve.borrowRate).plus(
+    rayMul(loan.principal, loan.apr),
+  );
+  const denom = reserve.totalPrincipal.plus(loan.principal);
+  return rayDiv(numer, denom);
 }
 
 export function computeDepositRate(reserve: Reserve): BigInt {

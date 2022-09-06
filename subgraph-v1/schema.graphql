@@ -52,6 +52,11 @@ type Currency @entity(immutable: true) {
   decimals: BigInt!
 }
 
+enum Tranche {
+  Senior
+  Junior
+}
+
 type VToken @entity {
   id: ID! # address of Junior/Senior deposit token
   reserve: Reserve!
@@ -65,7 +70,6 @@ type UserData @entity {
   id: ID!
   deposits: [UserDepositData!]! @derivedFrom(field: "user")
   unbonding: [UserUnbondingData!]! @derivedFrom(field: "user")
-  vault: Vault # a user may only be a depositor. vault is optional.
 }
 
 type UserDepositData @entity {
@@ -102,50 +106,47 @@ type UserUnbondingData @entity {
   user: UserData!
 }
 
-enum Tranche {
-  Senior
-  Junior
-}
-
 type Vault @entity {
+  """
+  The vault proxy address
+  """
   id: ID!
-  user: UserData!
-  creditLines: [CreditLine!]! @derivedFrom(field: "vault")
+  # The EOA used to sign on behalf of the Vault. In most cases, generated through Web3Auth.
+  signer: Bytes!
   loans: [Loan!]! @derivedFrom(field: "vault")
+  assets: [Asset!]! @derivedFrom(field: "vault")
 }
 
-type CreditLine @entity {
-  id: ID! # concat(vault address, underlying asset)
+type Asset @entity {
+  """
+  collection + token id
+  """
+  id: ID!
   vault: Vault!
-  reserve: Reserve!
-  marginEscrow: Bytes!
-  creditEscrow: Bytes!
-  borrowRate: BigInt! # weighted average, updated on every borrow and final repayment
-  totalDebt: BigInt!
-  totalMargin: BigInt!
-  marginRequirement: BigInt!
-  withdrawableSecurityDeposit: BigInt!
-  creditLimit: BigInt!
-  spendableBalance: BigInt!
-  gav: BigInt!
-  ltv: BigInt!
-  healthFactor: BigInt!
+  loan: Loan!
+  collection: Bytes!
+  tokenId: BigInt!
+  isUnderLien: Boolean!
+  isLiquidated: Boolean!
 }
 
 type Loan @entity {
   """
-  vault + collection + loan id
+  vault + loan id
   """
   id: ID!
   reserve: Reserve!
   vault: Vault!
   loanId: BigInt!
-  tokenId: BigInt!
+  collateral: Asset
 
   principal: BigInt!
   interest: BigInt!
+  protocolFee: BigInt!
+
   pmt_principal: BigInt!
   pmt_interest: BigInt!
+  pmt_fee: BigInt!
   pmt_payment: BigInt!
 
   term: BigInt!
@@ -159,30 +160,29 @@ type Loan @entity {
   totalPrincipalPaid: BigInt!
   totalInterestPaid: BigInt!
   paidTimes: BigInt!
+
   repayments: [Repayment!]! @derivedFrom(field: "loan")
-  liquidations: [Liquidation!]! @derivedFrom(field: "loan")
+  liquidation: Liquidation @derivedFrom(field: "loan")
 }
 
 type Repayment @entity {
-  id: ID! # concat(vault address, underlying asset, loan id, repayment index)
+  id: ID! # concat(vault + loanId + repaymentId)
   loan: Loan!
   principal: BigInt!
   interest: BigInt!
+  fee: BigInt!
   total: BigInt!
   paidAt: BigInt!
   repaid: Boolean!
-  isLiquidated: Boolean!
-  liquidation: Liquidation!
+  liquidation: Liquidation
 }
 
 type Liquidation @entity {
   id: ID! # same as Repayment.id
-  liquidator: String! # address of user
   vault: Vault!
-  reserve: Reserve!
-  loanId: BigInt! # id in sc's
-  repaymentId: BigInt! # id in sc's
   loan: Loan!
+  liquidator: String! # address of user
+  repaymentId: BigInt! # id in sc
   repayment: Repayment!
   totalDebt: BigInt!
   amountToWriteDown: BigInt!

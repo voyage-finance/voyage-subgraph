@@ -12,20 +12,20 @@ export function getUserUnbondingDataId(user: Address, collection: Address): stri
   return [user.toHex(), collection.toHex()].join('_');
 }
 
-export function getLoanEntityId(
-  vaultAddress: Address,
-  collection: Address,
-  loanId: BigInt,
-): string {
-  return [vaultAddress.toHex(), collection.toHex(), loanId.toString()].join('_');
+export function getAssetId(collection: Address, tokenId: BigInt): string {
+  return [collection.toHexString(), tokenId.toString()].join('.');
+}
+
+export function getLoanId(vaultAddress: Address, loanId: BigInt): string {
+  return [vaultAddress.toHex(), loanId.toString()].join('_');
 }
 
 export function getCreditLineEntityId(vaultAddress: Address, collection: Address): string {
   return [vaultAddress.toHex(), collection.toHex()].join('_');
 }
 
-export function getRepaymentEntityId(loanId: string, repaymentId: BigInt): string {
-  return [loanId, repaymentId.toString()].join('_');
+export function getRepaymentId(vault: Address, loanId: BigInt, repaymentId: BigInt): string {
+  return [vault.toHexString(), loanId.toString(), repaymentId.toString()].join('_');
 }
 
 export function getCurrencyId(address: Address, symbol: string): string {

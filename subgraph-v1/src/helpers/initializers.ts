@@ -1,9 +1,10 @@
 import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts';
 import {
-  ContractToMarketMapping,
+  Asset,
   Currency,
   Loan,
   Market,
+  Repayment,
   Reserve,
   ReserveConfiguration,
   UserData,
@@ -14,22 +15,15 @@ import {
 } from '../../generated/schema';
 import { IERC20Detailed } from '../../generated/Voyage/IERC20Detailed';
 import {
+  getAssetId,
   getCurrencyId,
-  getLoanEntityId,
+  getLoanId,
+  getRepaymentId,
   getReserveId,
   getUserDepositDataId,
   getUserUnbondingDataId,
 } from '../utils/id';
 import { zeroAddress, zeroBI } from '../utils/math';
-
-export function getMarketByContract(event: ethereum.Event): string {
-  let contractAddress = event.address.toHexString();
-  let contractToMarketMapping = ContractToMarketMapping.load(contractAddress);
-  if (contractToMarketMapping === null) {
-    throw new Error(contractAddress + 'is not registered in ContractToMarketMapping');
-  }
-  return contractToMarketMapping.market;
-}
 
 export function getOrInitMarket(event: ethereum.Event): Market {
   const id = event.address.toHexString();
@@ -183,24 +177,26 @@ export function getOrInitUserUnbondingData(
 
 export function getOrInitLoan(
   vault: Address,
-  collection: Address,
+  reserveId: string,
   loanId: BigInt,
   event: ethereum.Event,
 ): Loan {
-  const id = getLoanEntityId(vault, collection, loanId);
+  const id = getLoanId(vault, loanId);
   let loan = Loan.load(id);
   if (!loan) {
     loan = new Loan(id);
-    loan.reserve = collection.toHexString();
+    loan.reserve = reserveId;
     loan.vault = vault.toHexString();
     loan.loanId = loanId;
-    loan.tokenId = zeroBI();
 
+    loan.protocolFee = zeroBI();
     loan.principal = zeroBI();
     loan.interest = zeroBI();
+
     loan.pmt_principal = zeroBI();
     loan.pmt_interest = zeroBI();
     loan.pmt_payment = zeroBI();
+    loan.pmt_fee = zeroBI();
 
     loan.term = zeroBI();
     loan.epoch = zeroBI();
@@ -219,11 +215,51 @@ export function getOrInitLoan(
   return loan;
 }
 
+export function getOrInitAsset(
+  collection: Address,
+  tokenId: BigInt,
+  vaultId: string,
+  loanId: string,
+): Asset {
+  const id = getAssetId(collection, tokenId);
+  let asset = Asset.load(id);
+  if (!asset) {
+    asset = new Asset(id);
+    asset.vault = vaultId;
+    asset.loan = loanId;
+    asset.collection = collection;
+    asset.tokenId = tokenId;
+    asset.isUnderLien = false;
+    asset.isLiquidated = false;
+    asset.save();
+  }
+  return asset;
+}
+
+export function getOrInitRepayment(vault: Address, loanId: BigInt, repaymentId: BigInt): Repayment {
+  const id = getRepaymentId(vault, loanId, repaymentId);
+  let repayment = Repayment.load(id);
+  if (!repayment) {
+    repayment = new Repayment(id);
+    repayment.loan = getLoanId(vault, loanId);
+    repayment.principal = zeroBI();
+    repayment.interest = zeroBI();
+    repayment.fee = zeroBI();
+    repayment.total = zeroBI();
+    repayment.paidAt = zeroBI();
+    repayment.repaid = false;
+    repayment.save();
+  }
+
+  return repayment;
+}
+
 export function getOrInitVault(vaultAddress: Address): Vault {
   const id = vaultAddress.toHex();
   let vault = Vault.load(id);
   if (!vault) {
     vault = new Vault(id);
+    vault.signer = zeroAddress();
     vault.save();
   }
   return vault;

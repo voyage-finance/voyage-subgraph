@@ -1,3 +1,4 @@
+import { BigInt } from '@graphprotocol/graph-ts';
 export enum Tranche {
   Junior,
   Senior,
@@ -22,3 +23,5 @@ export function trancheToString(tranche: Tranche): string {
       throw new Error(`Unable to convert unknown tranche to string: ${tranche}`);
   }
 }
+
+export const SECONDS_PER_DAY: BigInt = BigInt.fromI32(86400);

@@ -18,6 +18,7 @@ type Reserve @entity {
   totalPrincipal: BigInt!
   totalInterest: BigInt!
   totalBorrow: BigInt!
+  availableLiquidity: BigInt!
   totalLiquidity: BigInt!
   liquidityRatio: BigInt!
   utilizationRate: BigInt!
@@ -160,6 +161,7 @@ type Loan @entity {
   totalPrincipalPaid: BigInt!
   totalInterestPaid: BigInt!
   paidTimes: BigInt!
+  closed: Boolean!
 
   repayments: [Repayment!]! @derivedFrom(field: "loan")
   liquidation: Liquidation @derivedFrom(field: "loan")
@@ -173,7 +175,7 @@ type Repayment @entity {
   fee: BigInt!
   total: BigInt!
   paidAt: BigInt!
-  repaid: Boolean!
+  isFinal: Boolean!
   liquidation: Liquidation
 }
 

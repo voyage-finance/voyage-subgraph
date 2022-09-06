@@ -26,6 +26,7 @@ export function handleDeposit(event: Deposit): void {
 
   const reserve = getOrInitReserveById(vToken.reserve);
   const reserveConfiguration = getOrInitReserveConfiguration(reserve.id);
+  reserve.availableLiquidity = reserve.availableLiquidity.plus(event.params.assets);
   reserve.totalLiquidity = reserve.totalLiquidity.plus(event.params.assets);
   increaseTrancheLiquidity(reserve, trancheFromString(vToken.tranche), event.params.assets);
   reserve.liquidityRatio = computeLiquidityRatio(reserve);
@@ -63,6 +64,7 @@ export function handleWithdraw(event: Withdraw): void {
 
   const reserve = getOrInitReserveById(vToken.reserve);
   const reserveConfiguration = getOrInitReserveConfiguration(reserve.id);
+  reserve.availableLiquidity = reserve.availableLiquidity.minus(event.params.assets);
   reserve.totalLiquidity = reserve.totalLiquidity.minus(event.params.assets);
   decreaseTrancheLiquidity(reserve, trancheFromString(vToken.tranche), event.params.assets);
   reserve.liquidityRatio = computeLiquidityRatio(reserve);

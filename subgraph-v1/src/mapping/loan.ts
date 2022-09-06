@@ -1,6 +1,7 @@
 import { Address, BigInt, log } from '@graphprotocol/graph-ts';
-import { Liquidation, Loan, Repayment } from '../../generated/schema';
+import { Asset, Liquidation } from '../../generated/schema';
 import { Borrow, Liquidate, Repayment as RepaymentEvent } from '../../generated/Voyage/Voyage';
+import { SECONDS_PER_DAY } from '../helpers/consts';
 import {
   getOrInitAsset,
   getOrInitLoan,
@@ -11,6 +12,7 @@ import {
 } from '../helpers/initializers';
 import {
   computeBorrowRateOnNewBorrow,
+  computeBorrowRateOnNewRepay,
   computeDepositRate,
   computeJuniorDepositRate,
   computeSeniorDepositRate,
@@ -18,14 +20,13 @@ import {
   getJuniorInterest,
   getSeniorInterest,
 } from '../helpers/reserve-logic';
-import { updateLoanEntity } from '../helpers/updaters';
-import { getLoanId, getRepaymentId, getReserveId } from '../utils/id';
+import { getReserveId } from '../utils/id';
+import { zeroBI } from '../utils/math';
 
 export function handleBorrow(event: Borrow): void {
   log.info('---- handling borrow ----', []);
   const reserveId = getReserveId(event.params._collection, event.address.toHexString());
   const reserveConfiguration = getOrInitReserveConfiguration(reserveId);
-
   const loan = getOrInitLoan(event.params._vault, reserveId, event.params._loanId, event);
   const collateral = getOrInitAsset(
     event.params._collection,
@@ -54,6 +55,8 @@ export function handleBorrow(event: Borrow): void {
 
   loan.totalPrincipalPaid = loan.pmt_principal;
   loan.totalInterestPaid = loan.pmt_interest;
+  loan.timestamp = event.block.timestamp;
+  loan.nextPaymentDue = loan.timestamp.plus(loan.epoch.times(SECONDS_PER_DAY));
   loan.paidTimes = BigInt.fromI32(1);
   loan.save();
 
@@ -65,14 +68,22 @@ export function handleBorrow(event: Borrow): void {
   repayment.fee = loan.pmt_fee;
   repayment.total = loan.pmt_payment;
   repayment.paidAt = event.block.timestamp;
-  repayment.repaid = true;
   repayment.save();
 
   const reserve = getOrInitReserveById(reserveId);
-  reserve.totalPrincipal = reserve.totalPrincipal.plus(event.params._principal);
-  reserve.totalInterest = reserve.totalInterest.plus(event.params._interest);
-  reserve.totalBorrow = reserve.totalBorrow.plus(loan.principal).plus(loan.interest);
-  reserve.totalLiquidity = reserve.totalLiquidity.plus(event.params._interest);
+  const totalAdditionalPrincipal = event.params._principal.minus(loan.pmt_principal);
+  const totalAdditionalInterest = event.params._interest.minus(loan.pmt_interest);
+  reserve.totalPrincipal = reserve.totalPrincipal.plus(totalAdditionalPrincipal);
+  reserve.totalInterest = reserve.totalInterest.plus(totalAdditionalInterest);
+  reserve.totalBorrow = reserve.totalBorrow
+    .plus(totalAdditionalPrincipal)
+    .plus(totalAdditionalInterest);
+  reserve.availableLiquidity = reserve.availableLiquidity
+    .minus(totalAdditionalPrincipal)
+    .plus(loan.pmt_interest);
+  reserve.totalLiquidity = reserve.totalLiquidity
+    .plus(event.params._interest)
+    .plus(event.params._protocolFee);
   reserve.utilizationRate = computeUtilizationRate(reserve);
   reserve.borrowRate = computeBorrowRateOnNewBorrow(reserve, loan);
   reserve.depositRate = computeDepositRate(reserve);
@@ -95,37 +106,85 @@ export function handleBorrow(event: Borrow): void {
 }
 
 export function handleRepay(event: RepaymentEvent): void {
-  const loanId = getLoanId(event.params._vault, event.params._loanId);
-  const loan = Loan.load(loanId);
-  if (!loan) {
-    // Should not happen, since a loan should exist in order for a repay to happen.
-    log.error('tried to handle repay event for a non-existent loan. vault: {} asset: {} loan: {}', [
-      event.params._vault.toHex(),
-      event.params._collection.toHex(),
-      event.params._loanId.toString(),
-    ]);
-    return;
+  const reserveId = getReserveId(event.params._collection, event.address.toHexString());
+  const loan = getOrInitLoan(event.params._vault, reserveId, event.params._loanId, event);
+  loan.nextPaymentDue = event.block.timestamp.plus(loan.epoch.times(SECONDS_PER_DAY));
+  loan.totalPrincipalPaid = loan.totalPrincipalPaid.plus(loan.pmt_principal);
+  loan.totalInterestPaid = loan.totalInterestPaid.plus(loan.pmt_interest);
+  loan.paidTimes = loan.paidTimes.plus(BigInt.fromI32(1));
+  if (event.params.isFinal) {
+    loan.closed = true;
   }
-  updateLoanEntity(
-    loan,
-    event.params._vault,
-    event.params._collection,
-    event.params._loanId,
-    event,
-  );
   loan.save();
 
-  const id = getRepaymentId(event.params._vault, event.params._loanId, event.params._repaymentId);
-  const repayment = new Repayment(id);
+  const repayment = getOrInitRepayment(event.params._vault, loan.loanId, loan.paidTimes);
   repayment.loan = loan.id;
-  repayment.principal = loan.pmt_principal;
-  repayment.interest = loan.pmt_interest;
-  // we cannot use pmt.amount, as this may be a liquidation.
-  // in the event of liquidation, the amount repaid could fall short if there is a partial or even complete write down of the debt.
+  repayment.isFinal = event.params.isFinal;
+  // it could be a liquidation, in which case the repayment could cover > 1 instalment.
+  const numPaymentsCovered = repayment.isFinal
+    ? loan.nper.minus(loan.paidTimes.minus(BigInt.fromI32(1)))
+    : BigInt.fromI32(1);
+  const principalExpected = loan.pmt_principal.times(numPaymentsCovered);
+  const interestExpected = loan.pmt_interest.times(numPaymentsCovered);
+  const feesExpected = loan.pmt_fee.times(numPaymentsCovered);
+  const totalExpected = principalExpected.plus(interestExpected).plus(feesExpected);
+
+  let amount = event.params._amount;
+  let principalRepaid = zeroBI();
+  let interestRepaid = zeroBI();
+  let feesRepaid = zeroBI();
+
+  // highest seniority
+  if (amount.ge(principalExpected)) {
+    principalRepaid = principalExpected;
+  } else {
+    // liquidation case
+    principalRepaid = amount;
+  }
+  amount = amount.minus(principalRepaid);
+
+  // consider interest next
+  if (amount.gt(zeroBI())) {
+    interestRepaid = amount.ge(interestExpected) ? interestExpected : amount;
+  }
+  amount = amount.minus(interestRepaid);
+
+  if (amount.gt(zeroBI())) {
+    feesRepaid = amount.ge(feesExpected) ? feesExpected : amount;
+  }
+  amount = amount.minus(feesRepaid);
+
+  const writeDown = totalExpected.gt(event.params._amount)
+    ? totalExpected.minus(event.params._amount)
+    : zeroBI();
+
+  repayment.principal = principalRepaid;
+  repayment.interest = interestRepaid;
+  repayment.fee = feesRepaid;
   repayment.total = event.params._amount;
   repayment.paidAt = event.block.timestamp;
-  repayment.repaid = event.params.isFinal;
   repayment.save();
+
+  const reserve = getOrInitReserveById(reserveId);
+  reserve.availableLiquidity = reserve.availableLiquidity.plus(event.params._amount);
+  reserve.totalLiquidity = reserve.totalLiquidity.minus(writeDown);
+  reserve.totalPrincipal = reserve.totalPrincipal.minus(repayment.principal);
+  reserve.totalInterest = reserve.totalInterest.minus(repayment.interest);
+  reserve.totalBorrow = reserve.totalBorrow.minus(repayment.total);
+  reserve.utilizationRate = computeUtilizationRate(reserve);
+  reserve.borrowRate = computeBorrowRateOnNewRepay(reserve, loan, repayment.principal);
+  reserve.depositRate = computeDepositRate(reserve);
+  reserve.save();
+
+  if (event.params.isFinal) {
+    const collateral = Asset.load(loan.collateral!);
+    if (!collateral) {
+      throw new Error(`Unable to find asset for loan`);
+    }
+    // only release the lien; set liquidation status in handleLiquidate
+    collateral.isUnderLien = false;
+    collateral.save();
+  }
 }
 
 export function handleLiquidate(event: Liquidate): void {

@@ -981,6 +981,11 @@
   },
   {
     "inputs": [],
+    "name": "InsufficientMaxCreditLimit",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "InsufficientVaultBalance",
     "type": "error"
   },
@@ -1074,6 +1079,12 @@
         "indexed": false,
         "internalType": "uint256",
         "name": "_apr",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_protocolFee",
         "type": "uint256"
       }
     ],

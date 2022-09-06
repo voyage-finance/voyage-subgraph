@@ -314,6 +314,10 @@ export class Borrow__Params {
   get _apr(): BigInt {
     return this._event.parameters[7].value.toBigInt();
   }
+
+  get _protocolFee(): BigInt {
+    return this._event.parameters[8].value.toBigInt();
+  }
 }
 
 export class CollateralTransferred extends ethereum.Event {

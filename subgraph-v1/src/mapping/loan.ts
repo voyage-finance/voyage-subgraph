@@ -1,63 +1,101 @@
-import { BigInt, log } from '@graphprotocol/graph-ts';
+import { Address, BigInt, log } from '@graphprotocol/graph-ts';
 import { Liquidation, Loan, Repayment } from '../../generated/schema';
 import { Borrow, Liquidate, Repayment as RepaymentEvent } from '../../generated/Voyage/Voyage';
 import {
+  getOrInitAsset,
   getOrInitLoan,
+  getOrInitRepayment,
   getOrInitReserveById,
   getOrInitReserveConfiguration,
+  getOrInitVToken,
 } from '../helpers/initializers';
+import {
+  computeBorrowRateOnNewBorrow,
+  computeDepositRate,
+  computeJuniorDepositRate,
+  computeSeniorDepositRate,
+  computeUtilizationRate,
+  getJuniorInterest,
+  getSeniorInterest,
+} from '../helpers/reserve-logic';
 import { updateLoanEntity } from '../helpers/updaters';
-import { getLoanEntityId, getRepaymentEntityId, getReserveId } from '../utils/id';
-import { rayDiv, rayMul } from '../utils/math';
+import { getLoanId, getRepaymentId, getReserveId } from '../utils/id';
 
 export function handleBorrow(event: Borrow): void {
+  log.info('---- handling borrow ----', []);
   const reserveId = getReserveId(event.params._collection, event.address.toHexString());
-  const configuration = getOrInitReserveConfiguration(reserveId);
-  const loan = getOrInitLoan(
-    event.params._vault,
-    event.params._collection,
-    event.params._loanId,
-    event,
-  );
+  const reserveConfiguration = getOrInitReserveConfiguration(reserveId);
 
-  const nper = configuration.loanTenure.div(configuration.loanInterval);
-  loan.tokenId = event.params._tokenId;
+  const loan = getOrInitLoan(event.params._vault, reserveId, event.params._loanId, event);
+  const collateral = getOrInitAsset(
+    event.params._collection,
+    event.params._tokenId,
+    event.params._vault.toHexString(),
+    loan.id,
+  );
+  collateral.isUnderLien = true;
+  collateral.isLiquidated = false;
+  collateral.save();
+  loan.collateral = collateral.id;
+
+  const nper = reserveConfiguration.loanTenure.div(reserveConfiguration.loanInterval);
   loan.apr = event.params._apr;
-  loan.epoch = configuration.loanInterval;
-  loan.term = configuration.loanTenure;
+  loan.epoch = reserveConfiguration.loanInterval;
+  loan.term = reserveConfiguration.loanTenure;
   loan.nper = nper;
 
   loan.principal = event.params._principal;
   loan.interest = event.params._interest;
+  loan.protocolFee = event.params._protocolFee;
   loan.pmt_principal = event.params._principal.div(nper);
   loan.pmt_interest = event.params._interest.div(nper);
-  loan.pmt_payment = loan.pmt_principal.plus(loan.pmt_interest);
+  loan.pmt_fee = event.params._protocolFee.div(nper);
+  loan.pmt_payment = loan.pmt_principal.plus(loan.pmt_interest).plus(loan.pmt_fee);
 
   loan.totalPrincipalPaid = loan.pmt_principal;
   loan.totalInterestPaid = loan.pmt_interest;
   loan.paidTimes = BigInt.fromI32(1);
   loan.save();
 
+  // save the first instalment
+  const repayment = getOrInitRepayment(event.params._vault, loan.loanId, loan.paidTimes);
+  repayment.loan = loan.id;
+  repayment.principal = loan.pmt_principal;
+  repayment.interest = loan.pmt_interest;
+  repayment.fee = loan.pmt_fee;
+  repayment.total = loan.pmt_payment;
+  repayment.paidAt = event.block.timestamp;
+  repayment.repaid = true;
+  repayment.save();
+
   const reserve = getOrInitReserveById(reserveId);
-  const numer = rayMul(reserve.totalPrincipal, reserve.borrowRate).plus(
-    rayMul(loan.principal, loan.apr),
-  );
-  const denom = reserve.totalPrincipal.plus(loan.principal);
-  reserve.borrowRate = rayDiv(numer, denom);
   reserve.totalPrincipal = reserve.totalPrincipal.plus(event.params._principal);
   reserve.totalInterest = reserve.totalInterest.plus(event.params._interest);
-  const loanBorrow = event.params._principal.plus(event.params._interest);
-  reserve.totalBorrow = reserve.totalBorrow.plus(loanBorrow);
+  reserve.totalBorrow = reserve.totalBorrow.plus(loan.principal).plus(loan.interest);
   reserve.totalLiquidity = reserve.totalLiquidity.plus(event.params._interest);
+  reserve.utilizationRate = computeUtilizationRate(reserve);
+  reserve.borrowRate = computeBorrowRateOnNewBorrow(reserve, loan);
+  reserve.depositRate = computeDepositRate(reserve);
+
+  const juniorInterest = getJuniorInterest(loan, reserveConfiguration.incomeRatio);
+  reserve.juniorTrancheLiquidity = reserve.juniorTrancheLiquidity.plus(juniorInterest);
+  reserve.juniorTrancheDepositRate = computeJuniorDepositRate(reserve, reserveConfiguration);
+  const juniorVToken = getOrInitVToken(Address.fromString(reserve.juniorTrancheVToken));
+  juniorVToken.totalAssets = juniorVToken.totalAssets.plus(juniorInterest);
+  juniorVToken.save();
+
+  const seniorInterest = getSeniorInterest(loan, reserveConfiguration.incomeRatio);
+  reserve.seniorTrancheLiquidity = reserve.seniorTrancheLiquidity.plus(seniorInterest);
+  reserve.seniorTrancheDepositRate = computeSeniorDepositRate(reserve, reserveConfiguration);
+  const seniorVToken = getOrInitVToken(Address.fromString(reserve.seniorTrancheVToken));
+  seniorVToken.totalAssets = seniorVToken.totalAssets.plus(seniorInterest);
+  seniorVToken.save();
+
   reserve.save();
 }
 
 export function handleRepay(event: RepaymentEvent): void {
-  const loanId = getLoanEntityId(
-    event.params._vault,
-    event.params._collection,
-    event.params._loanId,
-  );
+  const loanId = getLoanId(event.params._vault, event.params._loanId);
   const loan = Loan.load(loanId);
   if (!loan) {
     // Should not happen, since a loan should exist in order for a repay to happen.
@@ -77,7 +115,7 @@ export function handleRepay(event: RepaymentEvent): void {
   );
   loan.save();
 
-  const id = getRepaymentEntityId(loan.id, event.params._repaymentId);
+  const id = getRepaymentId(event.params._vault, event.params._loanId, event.params._repaymentId);
   const repayment = new Repayment(id);
   repayment.loan = loan.id;
   repayment.principal = loan.pmt_principal;
@@ -105,8 +143,8 @@ export function handleLiquidate(event: Liquidate): void {
 
   liquidationEntity.liquidator = userAddress;
   liquidationEntity.vault = vaultAddress;
-  liquidationEntity.reserve = collection;
-  liquidationEntity.loanId = event.params._drowDownId;
+  // liquidationEntity.reserve = collection;
+  // liquidationEntity.loanId = event.params._drowDownId;
   liquidationEntity.repaymentId = event.params._repaymentId;
   liquidationEntity.loan = loanId;
   liquidationEntity.repayment = repaymentId;

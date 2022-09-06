@@ -172,6 +172,15 @@ export class Reserve extends Entity {
     this.set("totalBorrow", Value.fromBigInt(value));
   }
 
+  get availableLiquidity(): BigInt {
+    let value = this.get("availableLiquidity");
+    return value!.toBigInt();
+  }
+
+  set availableLiquidity(value: BigInt) {
+    this.set("availableLiquidity", Value.fromBigInt(value));
+  }
+
   get totalLiquidity(): BigInt {
     let value = this.get("totalLiquidity");
     return value!.toBigInt();
@@ -1111,6 +1120,15 @@ export class Loan extends Entity {
     this.set("paidTimes", Value.fromBigInt(value));
   }
 
+  get closed(): boolean {
+    let value = this.get("closed");
+    return value!.toBoolean();
+  }
+
+  set closed(value: boolean) {
+    this.set("closed", Value.fromBoolean(value));
+  }
+
   get repayments(): Array<string> {
     let value = this.get("repayments");
     return value!.toStringArray();
@@ -1223,13 +1241,13 @@ export class Repayment extends Entity {
     this.set("paidAt", Value.fromBigInt(value));
   }
 
-  get repaid(): boolean {
-    let value = this.get("repaid");
+  get isFinal(): boolean {
+    let value = this.get("isFinal");
     return value!.toBoolean();
   }
 
-  set repaid(value: boolean) {
-    this.set("repaid", Value.fromBoolean(value));
+  set isFinal(value: boolean) {
+    this.set("isFinal", Value.fromBoolean(value));
   }
 
   get liquidation(): string | null {

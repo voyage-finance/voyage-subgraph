@@ -35,8 +35,11 @@ dataSources:
           handler: handleIncomeRatioUpdated
         - event: LoanParametersUpdated(indexed address,uint256,uint256,uint256)
           handler: handleLoanParametersUpdated
-        - event: Borrow(indexed address,indexed address,indexed address,uint256,uint256,uint256,uint256,uint256,uint256)
+        - event: Borrow(indexed address,indexed address,indexed
+            address,uint256,uint256,uint256,uint256,uint256,uint256)
           handler: handleBorrow
+        - event: Repayment(indexed address,indexed address,indexed address,address,uint256,uint256,uint256,bool)
+          handler: handleRepay
         - event: VaultCreated(address,address,uint256)
           handler: handleVaultCreated
         - event: ProtocolFeeUpdated(indexed address,uint256)

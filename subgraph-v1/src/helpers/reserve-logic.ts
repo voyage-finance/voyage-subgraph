@@ -37,6 +37,18 @@ export function computeBorrowRateOnNewBorrow(reserve: Reserve, loan: Loan): BigI
   return rayDiv(numer, denom);
 }
 
+export function computeBorrowRateOnNewRepay(
+  reserve: Reserve,
+  loan: Loan,
+  repayment: BigInt,
+): BigInt {
+  const numer = rayMul(reserve.totalPrincipal, reserve.borrowRate).minus(
+    rayMul(repayment, loan.apr),
+  );
+  const denom = reserve.totalPrincipal.minus(repayment);
+  return rayDiv(numer, denom);
+}
+
 export function computeDepositRate(reserve: Reserve): BigInt {
   return rayMul(reserve.borrowRate, wadToRay(reserve.utilizationRate));
 }

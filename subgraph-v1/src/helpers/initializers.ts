@@ -48,6 +48,7 @@ export function getOrInitReserveById(reserveId: string): Reserve {
     reserve.totalPrincipal = zeroBI();
     reserve.totalInterest = zeroBI();
     reserve.totalBorrow = zeroBI();
+    reserve.availableLiquidity = zeroBI();
     reserve.totalLiquidity = zeroBI();
     reserve.utilizationRate = zeroBI();
     reserve.liquidityRatio = zeroBI();
@@ -209,6 +210,7 @@ export function getOrInitLoan(
     loan.totalPrincipalPaid = zeroBI();
     loan.totalInterestPaid = zeroBI();
     loan.paidTimes = zeroBI();
+    loan.closed = false;
 
     loan.save();
   }
@@ -247,7 +249,7 @@ export function getOrInitRepayment(vault: Address, loanId: BigInt, repaymentId: 
     repayment.fee = zeroBI();
     repayment.total = zeroBI();
     repayment.paidAt = zeroBI();
-    repayment.repaid = false;
+    repayment.isFinal = false;
     repayment.save();
   }
 

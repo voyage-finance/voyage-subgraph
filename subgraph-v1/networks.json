@@ -13,8 +13,8 @@
   },
   "rinkeby": {
     "Voyage": {
-      "address": "0xE273C1D2716374391A9B12d4066215CaAc26beC5",
-      "startBlock": 11061131
+      "address": "0x4aFb3904e9f0615Aa15eb3208484BdcE7595bb79",
+      "startBlock": 11372314
     }
   }
 }

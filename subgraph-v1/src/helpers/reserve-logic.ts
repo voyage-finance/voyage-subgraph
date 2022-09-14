@@ -1,4 +1,4 @@
-import { BigInt } from '@graphprotocol/graph-ts';
+import { BigInt, log } from '@graphprotocol/graph-ts';
 import { Loan, Reserve, ReserveConfiguration } from '../../generated/schema';
 import {
   MAX_U64_BI,
@@ -9,16 +9,32 @@ import {
   wadDiv,
   wadToPercent,
   wadToRay,
+  zeroBI,
 } from '../utils/math';
 
 export function computeUtilizationRate(reserve: Reserve): BigInt {
+  if (reserve.totalBorrow.isZero() || reserve.totalLiquidity.isZero()) return zeroBI();
   return wadDiv(reserve.totalBorrow, reserve.totalLiquidity);
 }
 
 export function computeLiquidityRatio(reserve: Reserve): BigInt {
-  return reserve.juniorTrancheLiquidity.equals(BigInt.zero())
-    ? BigInt.fromU64(U64.MAX_VALUE)
-    : wadToPercent(wadDiv(reserve.seniorTrancheLiquidity, reserve.juniorTrancheLiquidity));
+  log.info('reserve.seniorTrancheLiquidity: {}\n, isZero: {}', [
+    reserve.seniorTrancheLiquidity.toString(),
+    reserve.seniorTrancheLiquidity.isZero().toString(),
+  ]);
+  log.info('reserve.juniorTrancheLiquidity: {}\n', [
+    reserve.juniorTrancheLiquidity.toString(),
+    reserve.juniorTrancheLiquidity.isZero().toString(),
+  ]);
+  if (reserve.seniorTrancheLiquidity.isZero()) {
+    return zeroBI();
+  }
+
+  if (reserve.juniorTrancheLiquidity.isZero()) {
+    return BigInt.fromU64(U64.MAX_VALUE);
+  }
+
+  return wadToPercent(wadDiv(reserve.seniorTrancheLiquidity, reserve.juniorTrancheLiquidity));
 }
 
 export function getJuniorInterest(loan: Loan, incomeRatio: BigInt): BigInt {

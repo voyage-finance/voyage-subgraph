@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: Voyage
-    network: localhost
+    network: goerli
     source:
       abi: Voyage
-      address: "0xb8723e8B731123616b82AF7e171B5808ddDa7Fbc"
-      startBlock: 1
+      address: "0x4aFb3904e9f0615Aa15eb3208484BdcE7595bb79"
+      startBlock: 7595354
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -38,7 +38,8 @@ dataSources:
         - event: Borrow(indexed address,indexed address,indexed
             address,uint256,uint256,uint256,uint256,uint256,uint256)
           handler: handleBorrow
-        - event: Repayment(indexed address,indexed address,indexed address,address,uint256,uint256,uint256,bool)
+        - event: Repayment(indexed address,indexed address,indexed
+            address,address,uint256,uint256,uint256,bool)
           handler: handleRepay
         - event: VaultCreated(address,address,uint256)
           handler: handleVaultCreated
@@ -67,7 +68,7 @@ templates:
         - event: Withdraw(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleWithdraw
       file: ./src/mapping/index.ts
-    network: localhost
+    network: goerli
   - kind: ethereum
     name: SeniorDepositToken
     source:
@@ -91,4 +92,4 @@ templates:
         - event: Claim(indexed address,uint256,uint256)
           handler: handleClaim
       file: ./src/mapping/index.ts
-    network: localhost
+    network: goerli

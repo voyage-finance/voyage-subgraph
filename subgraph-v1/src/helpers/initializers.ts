@@ -134,15 +134,12 @@ export function getOrInitVToken(vTokenAddress: Address, tranche: string = ''): V
   return vToken;
 }
 
-export function getOrInitUserDepositData(
-  userAddress: Address,
-  collectionAddress: Address,
-): UserDepositData {
-  const id = getUserDepositDataId(userAddress, collectionAddress);
+export function getOrInitUserDepositData(userAddress: Address, reserveId: string): UserDepositData {
+  const id = getUserDepositDataId(userAddress, reserveId);
   let userDepositData = UserDepositData.load(id);
   if (!userDepositData) {
     userDepositData = new UserDepositData(id);
-    userDepositData.collection = collectionAddress;
+    userDepositData.reserve = reserveId;
     userDepositData.juniorTrancheShares = zeroBI();
     userDepositData.juniorTrancheCumulativeDeposits = zeroBI();
     userDepositData.juniorTrancheCumulativeWithdrawals = zeroBI();

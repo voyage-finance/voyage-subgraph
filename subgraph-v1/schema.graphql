@@ -33,6 +33,9 @@ type Reserve @entity {
   juniorTrancheVToken: VToken!
   juniorTrancheLiquidity: BigInt!
   juniorTrancheDepositRate: BigInt!
+
+  # relations
+  userDeposits: [UserDepositData!]! @derivedFrom(field: "reserve")
 }
 
 type ReserveConfiguration @entity {
@@ -75,11 +78,11 @@ type UserData @entity {
 
 type UserDepositData @entity {
   """
-  user address + collection address
+  user address + reserve id
   """
   id: ID!
   user: UserData!
-  collection: Bytes!
+  reserve: Reserve!
   # The **current** shares held by the user. Used to compute current holdings (maxWithdraw)
   juniorTrancheShares: BigInt!
   # The cumulative deposits (in assets) as emitted in the Deposit event. Used for PnL.

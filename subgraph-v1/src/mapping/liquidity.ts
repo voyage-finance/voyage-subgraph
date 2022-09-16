@@ -36,10 +36,7 @@ export function handleDeposit(event: Deposit): void {
   reserve.juniorTrancheDepositRate = computeJuniorDepositRate(reserve, reserveConfiguration);
   reserve.save();
 
-  const userDepositData = getOrInitUserDepositData(
-    event.params.owner,
-    Address.fromBytes(reserve.collection),
-  );
+  const userDepositData = getOrInitUserDepositData(event.params.owner, vToken.reserve);
   if (vToken.tranche == JUNIOR_TRANCHE) {
     userDepositData.juniorTrancheCumulativeDeposits =
       userDepositData.juniorTrancheCumulativeDeposits.plus(event.params.assets);
@@ -76,10 +73,7 @@ export function handleWithdraw(event: Withdraw): void {
 
   if (vToken.tranche == JUNIOR_TRANCHE) {
     // Junior Tranche withdrawals happen immediately.
-    const userDepositData = getOrInitUserDepositData(
-      event.params.owner,
-      Address.fromBytes(reserve.collection),
-    );
+    const userDepositData = getOrInitUserDepositData(event.params.owner, vToken.reserve);
     userDepositData.juniorTrancheCumulativeWithdrawals =
       userDepositData.juniorTrancheCumulativeWithdrawals.plus(event.params.assets);
     userDepositData.juniorTrancheShares = userDepositData.juniorTrancheShares.minus(
@@ -105,10 +99,7 @@ export function handleClaim(event: Claim): void {
   vToken.totalShares = vToken.totalAssets.minus(event.params.shares);
   vToken.save();
   const reserve = getOrInitReserveById(vToken.reserve);
-  const userDepositData = getOrInitUserDepositData(
-    event.params.owner,
-    Address.fromBytes(reserve.collection),
-  );
+  const userDepositData = getOrInitUserDepositData(event.params.owner, vToken.reserve);
   userDepositData.seniorTrancheShares = userDepositData.seniorTrancheShares.minus(
     event.params.shares,
   );

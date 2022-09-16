@@ -7,10 +7,8 @@
     "remove-local": "graph remove --node http://localhost:8020/ voyage-finance/subgraph-v1",
     "build-local": "graph build --network localhost",
     "build-goerli": "graph build --network goerli",
-    "build-rinkeby": "graph build --network rinkeby",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 voyage-finance/subgraph-v1",
     "deploy-goerli": "graph deploy --product hosted-service voyage-finance/protocol-v1-goerli",
-    "deploy-rinkeby": "graph deploy --product hosted-service voyage-finance/protocol-v1-rinkeby",
     "fmt": "prettier --write ./src/**/*.ts"
   },
   "dependencies": {

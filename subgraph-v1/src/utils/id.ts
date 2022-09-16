@@ -4,8 +4,8 @@ export function getReserveId(collection: Address, marketId: string): string {
   return [collection.toHexString(), marketId].join('_');
 }
 
-export function getUserDepositDataId(user: Address, collection: Address): string {
-  return [user.toHex(), collection.toHex()].join('_');
+export function getUserDepositDataId(user: Address, reserveId: string): string {
+  return [user.toHex(), reserveId].join('_');
 }
 
 export function getUserUnbondingDataId(user: Address, collection: Address): string {

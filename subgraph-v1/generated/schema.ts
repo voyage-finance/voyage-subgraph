@@ -279,6 +279,15 @@ export class Reserve extends Entity {
   set juniorTrancheDepositRate(value: BigInt) {
     this.set("juniorTrancheDepositRate", Value.fromBigInt(value));
   }
+
+  get userDeposits(): Array<string> {
+    let value = this.get("userDeposits");
+    return value!.toStringArray();
+  }
+
+  set userDeposits(value: Array<string>) {
+    this.set("userDeposits", Value.fromStringArray(value));
+  }
 }
 
 export class ReserveConfiguration extends Entity {
@@ -604,13 +613,13 @@ export class UserDepositData extends Entity {
     this.set("user", Value.fromString(value));
   }
 
-  get collection(): Bytes {
-    let value = this.get("collection");
-    return value!.toBytes();
+  get reserve(): string {
+    let value = this.get("reserve");
+    return value!.toString();
   }
 
-  set collection(value: Bytes) {
-    this.set("collection", Value.fromBytes(value));
+  set reserve(value: string) {
+    this.set("reserve", Value.fromString(value));
   }
 
   get juniorTrancheShares(): BigInt {

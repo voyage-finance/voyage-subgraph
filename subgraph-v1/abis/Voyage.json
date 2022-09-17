@@ -1,24 +1,5 @@
 [
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_owner",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "stateMutability": "payable",
-    "type": "fallback"
-  },
-  {
-    "stateMutability": "payable",
-    "type": "receive"
-  },
-  {
     "anonymous": false,
     "inputs": [
       {
@@ -956,6 +937,11 @@
   },
   {
     "inputs": [],
+    "name": "BuyNowStaleTwap",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "ExceedsFloorPrice",
     "type": "error"
   },
@@ -1012,6 +998,11 @@
   {
     "inputs": [],
     "name": "InvalidTokenid",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LiquidateStaleTwap",
     "type": "error"
   },
   {
@@ -1086,40 +1077,15 @@
         "internalType": "uint256",
         "name": "_protocolFee",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_marketplace",
+        "type": "address"
       }
     ],
     "name": "Borrow",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "collection",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256[]",
-        "name": "collaterals",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "CollateralTransferred",
     "type": "event"
   },
   {
@@ -1559,16 +1525,6 @@
   },
   {
     "inputs": [],
-    "name": "InvalidVaultAddress",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "InvalidVaultCall",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "InvalidVaultImpl",
     "type": "error"
   },
@@ -1600,6 +1556,19 @@
       }
     ],
     "name": "VaultCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_impl",
+        "type": "address"
+      }
+    ],
+    "name": "VaultImplementationUpdated",
     "type": "event"
   },
   {
@@ -1812,6 +1781,24 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_vault",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_vaule",
+        "type": "uint256"
+      }
+    ],
+    "name": "unwrapVaultETH",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "vaultBeacon",
     "outputs": [
@@ -1848,8 +1835,31 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_vault",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "wrapVaultETH",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "IllegalLoanParameters",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidGSNConfiguration",
     "type": "error"
   },
   {
@@ -1879,8 +1889,32 @@
   },
   {
     "inputs": [],
+    "name": "InvalidMaxTwapStaleness",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "InvalidOptimalRatio",
     "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_paymaster",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_trustedForwarder",
+        "type": "address"
+      }
+    ],
+    "name": "GSNConfigurationUpdated",
+    "type": "event"
   },
   {
     "anonymous": false,
@@ -1963,6 +1997,25 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "_maxTwapStaleness",
+        "type": "uint256"
+      }
+    ],
+    "name": "MaxTwapStaleness",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_collection",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "_optimalRatio",
         "type": "uint256"
       }
@@ -1987,6 +2040,43 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_collection",
+        "type": "address"
+      }
+    ],
+    "name": "getMaxTwapStaleness",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_paymaster",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_trustedForwarder",
+        "type": "address"
+      }
+    ],
+    "name": "setGSNConfiguration",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -2049,6 +2139,24 @@
       }
     ],
     "name": "setLoanParams",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_collection",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_maxTwapStaleness",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMaxTwapStaleness",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -2279,6 +2387,11 @@
             "internalType": "uint256",
             "name": "paidTimes",
             "type": "uint256"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "collateral",
+            "type": "uint256[]"
           }
         ],
         "internalType": "struct LibLoan.LoanDetail",

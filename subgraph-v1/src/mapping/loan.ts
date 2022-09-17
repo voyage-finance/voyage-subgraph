@@ -3,7 +3,7 @@ import { Asset, Liquidation } from '../../generated/schema';
 import { Borrow, Liquidate, Repayment as RepaymentEvent } from '../../generated/Voyage/Voyage';
 import { SECONDS_PER_DAY } from '../helpers/consts';
 import {
-  getOrInitAsset,
+  getOrInitAsset, getOrInitBuyNowTransaction,
   getOrInitLoan,
   getOrInitRepayment,
   getOrInitReserveById,
@@ -102,6 +102,17 @@ export function handleBorrow(event: Borrow): void {
   seniorVToken.save();
 
   reserve.save();
+
+
+
+  const buyNowTx = getOrInitBuyNowTransaction(
+    event.params._vault,
+    event.params._collection,
+    event.params._tokenId,
+    )
+  buyNowTx.txHash = event.transaction.hash
+  buyNowTx.marketplace = event.params._marketplace
+  buyNowTx.save()
 }
 
 export function handleRepay(event: RepaymentEvent): void {

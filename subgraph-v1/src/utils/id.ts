@@ -28,6 +28,10 @@ export function getRepaymentId(vault: Address, loanId: BigInt, repaymentId: BigI
   return [vault.toHexString(), loanId.toString(), repaymentId.toString()].join('_');
 }
 
-export function getCurrencyId(address: Address, symbol: string): string {
-  return [address.toHex(), symbol].join('_');
+export function getCurrencyId(address: Address): string {
+  return address.toHex();
+}
+
+export function getBuyNowTransactionId(vault: Address, collection: Address, tokenId: BigInt): string {
+  return [vault.toHexString(), collection.toHexString(), tokenId.toString()].join('_');
 }

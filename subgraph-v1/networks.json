@@ -2,12 +2,12 @@
   "goerli": {
     "Voyage": {
       "address": "0x4aFb3904e9f0615Aa15eb3208484BdcE7595bb79",
-      "startBlock": 7595354
+      "startBlock": 7603178
     }
   },
   "localhost": {
     "Voyage": {
-      "address": "0xb8723e8B731123616b82AF7e171B5808ddDa7Fbc",
+      "address": "0x4aFb3904e9f0615Aa15eb3208484BdcE7595bb79",
       "startBlock": 1
     }
   }

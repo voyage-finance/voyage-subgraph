@@ -318,35 +318,9 @@ export class Borrow__Params {
   get _protocolFee(): BigInt {
     return this._event.parameters[8].value.toBigInt();
   }
-}
 
-export class CollateralTransferred extends ethereum.Event {
-  get params(): CollateralTransferred__Params {
-    return new CollateralTransferred__Params(this);
-  }
-}
-
-export class CollateralTransferred__Params {
-  _event: CollateralTransferred;
-
-  constructor(event: CollateralTransferred) {
-    this._event = event;
-  }
-
-  get collection(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
-  get from(): Address {
-    return this._event.parameters[1].value.toAddress();
-  }
-
-  get to(): Address {
-    return this._event.parameters[2].value.toAddress();
-  }
-
-  get collaterals(): Array<BigInt> {
-    return this._event.parameters[3].value.toBigIntArray();
+  get _marketplace(): Address {
+    return this._event.parameters[9].value.toAddress();
   }
 }
 
@@ -468,6 +442,24 @@ export class VaultCreated__Params {
   }
 }
 
+export class VaultImplementationUpdated extends ethereum.Event {
+  get params(): VaultImplementationUpdated__Params {
+    return new VaultImplementationUpdated__Params(this);
+  }
+}
+
+export class VaultImplementationUpdated__Params {
+  _event: VaultImplementationUpdated;
+
+  constructor(event: VaultImplementationUpdated) {
+    this._event = event;
+  }
+
+  get _impl(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
 export class VaultMarginCredited extends ethereum.Event {
   get params(): VaultMarginCredited__Params {
     return new VaultMarginCredited__Params(this);
@@ -525,6 +517,28 @@ export class VaultMarginRedeemed__Params {
 
   get _amount(): BigInt {
     return this._event.parameters[3].value.toBigInt();
+  }
+}
+
+export class GSNConfigurationUpdated extends ethereum.Event {
+  get params(): GSNConfigurationUpdated__Params {
+    return new GSNConfigurationUpdated__Params(this);
+  }
+}
+
+export class GSNConfigurationUpdated__Params {
+  _event: GSNConfigurationUpdated;
+
+  constructor(event: GSNConfigurationUpdated) {
+    this._event = event;
+  }
+
+  get _paymaster(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get _trustedForwarder(): Address {
+    return this._event.parameters[1].value.toAddress();
   }
 }
 
@@ -599,6 +613,28 @@ export class LoanParametersUpdated__Params {
 
   get _gracePeriod(): BigInt {
     return this._event.parameters[3].value.toBigInt();
+  }
+}
+
+export class MaxTwapStaleness extends ethereum.Event {
+  get params(): MaxTwapStaleness__Params {
+    return new MaxTwapStaleness__Params(this);
+  }
+}
+
+export class MaxTwapStaleness__Params {
+  _event: MaxTwapStaleness;
+
+  constructor(event: MaxTwapStaleness) {
+    this._event = event;
+  }
+
+  get _collection(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get _maxTwapStaleness(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
   }
 }
 
@@ -912,6 +948,10 @@ export class Voyage__getLoanDetailResultValue0Struct extends ethereum.Tuple {
 
   get paidTimes(): BigInt {
     return this[12].toBigInt();
+  }
+
+  get collateral(): Array<BigInt> {
+    return this[13].toBigIntArray();
   }
 }
 
@@ -1863,6 +1903,29 @@ export class Voyage extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
+  getMaxTwapStaleness(_collection: Address): BigInt {
+    let result = super.call(
+      "getMaxTwapStaleness",
+      "getMaxTwapStaleness(address):(uint256)",
+      [ethereum.Value.fromAddress(_collection)]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_getMaxTwapStaleness(_collection: Address): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "getMaxTwapStaleness",
+      "getMaxTwapStaleness(address):(uint256)",
+      [ethereum.Value.fromAddress(_collection)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
   getCollections(): Array<Address> {
     let result = super.call(
       "getCollections",
@@ -1967,7 +2030,7 @@ export class Voyage extends ethereum.SmartContract {
   ): Voyage__getLoanDetailResultValue0Struct {
     let result = super.call(
       "getLoanDetail",
-      "getLoanDetail(address,address,uint256):((uint256,uint256,uint256,uint256,uint256,address,(uint256,uint256,uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256))",
+      "getLoanDetail(address,address,uint256):((uint256,uint256,uint256,uint256,uint256,address,(uint256,uint256,uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256,uint256[]))",
       [
         ethereum.Value.fromAddress(_vault),
         ethereum.Value.fromAddress(_collection),
@@ -1987,7 +2050,7 @@ export class Voyage extends ethereum.SmartContract {
   ): ethereum.CallResult<Voyage__getLoanDetailResultValue0Struct> {
     let result = super.tryCall(
       "getLoanDetail",
-      "getLoanDetail(address,address,uint256):((uint256,uint256,uint256,uint256,uint256,address,(uint256,uint256,uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256))",
+      "getLoanDetail(address,address,uint256):((uint256,uint256,uint256,uint256,uint256,address,(uint256,uint256,uint256,uint256),uint256,uint256,uint256,uint256,uint256,uint256,uint256[]))",
       [
         ethereum.Value.fromAddress(_vault),
         ethereum.Value.fromAddress(_collection),
@@ -2266,62 +2329,6 @@ export class Voyage extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(
       changetype<Voyage__extractAssetInfoResultValue0Struct>(value[0].toTuple())
     );
-  }
-}
-
-export class ConstructorCall extends ethereum.Call {
-  get inputs(): ConstructorCall__Inputs {
-    return new ConstructorCall__Inputs(this);
-  }
-
-  get outputs(): ConstructorCall__Outputs {
-    return new ConstructorCall__Outputs(this);
-  }
-}
-
-export class ConstructorCall__Inputs {
-  _call: ConstructorCall;
-
-  constructor(call: ConstructorCall) {
-    this._call = call;
-  }
-
-  get _owner(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-}
-
-export class ConstructorCall__Outputs {
-  _call: ConstructorCall;
-
-  constructor(call: ConstructorCall) {
-    this._call = call;
-  }
-}
-
-export class DefaultCall extends ethereum.Call {
-  get inputs(): DefaultCall__Inputs {
-    return new DefaultCall__Inputs(this);
-  }
-
-  get outputs(): DefaultCall__Outputs {
-    return new DefaultCall__Outputs(this);
-  }
-}
-
-export class DefaultCall__Inputs {
-  _call: DefaultCall;
-
-  constructor(call: DefaultCall) {
-    this._call = call;
-  }
-}
-
-export class DefaultCall__Outputs {
-  _call: DefaultCall;
-
-  constructor(call: DefaultCall) {
-    this._call = call;
   }
 }
 
@@ -3273,6 +3280,40 @@ export class TransferCurrencyCall__Outputs {
   }
 }
 
+export class UnwrapVaultETHCall extends ethereum.Call {
+  get inputs(): UnwrapVaultETHCall__Inputs {
+    return new UnwrapVaultETHCall__Inputs(this);
+  }
+
+  get outputs(): UnwrapVaultETHCall__Outputs {
+    return new UnwrapVaultETHCall__Outputs(this);
+  }
+}
+
+export class UnwrapVaultETHCall__Inputs {
+  _call: UnwrapVaultETHCall;
+
+  constructor(call: UnwrapVaultETHCall) {
+    this._call = call;
+  }
+
+  get _vault(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get _vaule(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+}
+
+export class UnwrapVaultETHCall__Outputs {
+  _call: UnwrapVaultETHCall;
+
+  constructor(call: UnwrapVaultETHCall) {
+    this._call = call;
+  }
+}
+
 export class WithdrawNFTCall extends ethereum.Call {
   get inputs(): WithdrawNFTCall__Inputs {
     return new WithdrawNFTCall__Inputs(this);
@@ -3307,6 +3348,74 @@ export class WithdrawNFTCall__Outputs {
   _call: WithdrawNFTCall;
 
   constructor(call: WithdrawNFTCall) {
+    this._call = call;
+  }
+}
+
+export class WrapVaultETHCall extends ethereum.Call {
+  get inputs(): WrapVaultETHCall__Inputs {
+    return new WrapVaultETHCall__Inputs(this);
+  }
+
+  get outputs(): WrapVaultETHCall__Outputs {
+    return new WrapVaultETHCall__Outputs(this);
+  }
+}
+
+export class WrapVaultETHCall__Inputs {
+  _call: WrapVaultETHCall;
+
+  constructor(call: WrapVaultETHCall) {
+    this._call = call;
+  }
+
+  get _vault(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get _value(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+}
+
+export class WrapVaultETHCall__Outputs {
+  _call: WrapVaultETHCall;
+
+  constructor(call: WrapVaultETHCall) {
+    this._call = call;
+  }
+}
+
+export class SetGSNConfigurationCall extends ethereum.Call {
+  get inputs(): SetGSNConfigurationCall__Inputs {
+    return new SetGSNConfigurationCall__Inputs(this);
+  }
+
+  get outputs(): SetGSNConfigurationCall__Outputs {
+    return new SetGSNConfigurationCall__Outputs(this);
+  }
+}
+
+export class SetGSNConfigurationCall__Inputs {
+  _call: SetGSNConfigurationCall;
+
+  constructor(call: SetGSNConfigurationCall) {
+    this._call = call;
+  }
+
+  get _paymaster(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get _trustedForwarder(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+}
+
+export class SetGSNConfigurationCall__Outputs {
+  _call: SetGSNConfigurationCall;
+
+  constructor(call: SetGSNConfigurationCall) {
     this._call = call;
   }
 }
@@ -3417,6 +3526,40 @@ export class SetLoanParamsCall__Outputs {
   _call: SetLoanParamsCall;
 
   constructor(call: SetLoanParamsCall) {
+    this._call = call;
+  }
+}
+
+export class SetMaxTwapStalenessCall extends ethereum.Call {
+  get inputs(): SetMaxTwapStalenessCall__Inputs {
+    return new SetMaxTwapStalenessCall__Inputs(this);
+  }
+
+  get outputs(): SetMaxTwapStalenessCall__Outputs {
+    return new SetMaxTwapStalenessCall__Outputs(this);
+  }
+}
+
+export class SetMaxTwapStalenessCall__Inputs {
+  _call: SetMaxTwapStalenessCall;
+
+  constructor(call: SetMaxTwapStalenessCall) {
+    this._call = call;
+  }
+
+  get _collection(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get _maxTwapStaleness(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+}
+
+export class SetMaxTwapStalenessCall__Outputs {
+  _call: SetMaxTwapStalenessCall;
+
+  constructor(call: SetMaxTwapStalenessCall) {
     this._call = call;
   }
 }

@@ -1,6 +1,6 @@
 import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts';
 import {
-  Asset,
+  Asset, BuyNowTransaction,
   Currency,
   Loan,
   Market,
@@ -15,7 +15,7 @@ import {
 } from '../../generated/schema';
 import { IERC20Detailed } from '../../generated/Voyage/IERC20Detailed';
 import {
-  getAssetId,
+  getAssetId, getBuyNowTransactionId,
   getCurrencyId,
   getLoanId,
   getRepaymentId,
@@ -96,7 +96,7 @@ export function getOrInitReserveConfiguration(reserveId: string): ReserveConfigu
 
 export function getOrInitCurrency(address: Address): Currency {
   const erc20Instance = IERC20Detailed.bind(address);
-  const id = getCurrencyId(address, erc20Instance.symbol());
+  const id = getCurrencyId(address);
 
   let currencyInstance = Currency.load(id);
   if (!currencyInstance) {
@@ -262,4 +262,26 @@ export function getOrInitVault(vaultAddress: Address): Vault {
     vault.save();
   }
   return vault;
+}
+
+
+export function getOrInitBuyNowTransaction(
+  vault: Address,
+  collection: Address,
+  tokenId: BigInt
+): BuyNowTransaction {
+  const id = getBuyNowTransactionId(vault, collection, tokenId);
+  let buyNowTransaction = BuyNowTransaction.load(id);
+  if (!buyNowTransaction) {
+    buyNowTransaction = new BuyNowTransaction(id);
+    buyNowTransaction.tokenId = tokenId;
+    buyNowTransaction.collection = collection;
+    buyNowTransaction.vault = vault;
+
+    buyNowTransaction.txHash = zeroAddress();
+    buyNowTransaction.marketplace = zeroAddress();
+
+    buyNowTransaction.save();
+  }
+  return buyNowTransaction;
 }

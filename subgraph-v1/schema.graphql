@@ -192,3 +192,15 @@ type Liquidation @entity {
   totalDebt: BigInt!
   amountToWriteDown: BigInt!
 }
+
+
+type BuyNowTransaction @entity {
+  id: ID! # concat(vault + loanId + collection)
+
+  tokenId: BigInt!
+  collection: Bytes!
+  vault: Bytes!
+
+  txHash: Bytes!
+  marketplace: Bytes!
+}

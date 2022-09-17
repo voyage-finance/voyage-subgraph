@@ -13,19 +13,11 @@ import {
 } from '../utils/math';
 
 export function computeUtilizationRate(reserve: Reserve): BigInt {
-  if (reserve.totalBorrow.isZero() || reserve.totalLiquidity.isZero()) return zeroBI();
-  return wadDiv(reserve.totalBorrow, reserve.totalLiquidity);
+  if (reserve.totalBorrow.isZero() || reserve.seniorTrancheLiquidity.isZero()) return zeroBI();
+  return wadDiv(reserve.totalBorrow, reserve.seniorTrancheLiquidity);
 }
 
 export function computeLiquidityRatio(reserve: Reserve): BigInt {
-  log.info('reserve.seniorTrancheLiquidity: {}\n, isZero: {}', [
-    reserve.seniorTrancheLiquidity.toString(),
-    reserve.seniorTrancheLiquidity.isZero().toString(),
-  ]);
-  log.info('reserve.juniorTrancheLiquidity: {}\n', [
-    reserve.juniorTrancheLiquidity.toString(),
-    reserve.juniorTrancheLiquidity.isZero().toString(),
-  ]);
   if (reserve.seniorTrancheLiquidity.isZero()) {
     return zeroBI();
   }

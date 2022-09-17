@@ -24,7 +24,6 @@ import { getReserveId } from '../utils/id';
 import { zeroBI } from '../utils/math';
 
 export function handleBorrow(event: Borrow): void {
-  log.info('---- handling borrow ----', []);
   const reserveId = getReserveId(event.params._collection, event.address.toHexString());
   const reserveConfiguration = getOrInitReserveConfiguration(reserveId);
   const loan = getOrInitLoan(event.params._vault, reserveId, event.params._loanId, event);

@@ -38,11 +38,11 @@ export function getSeniorInterest(loan: Loan, incomeRatio: BigInt): BigInt {
 }
 
 export function computeBorrowRateOnNewBorrow(reserve: Reserve, loan: Loan): BigInt {
-  const numer = rayMul(reserve.totalPrincipal, reserve.borrowRate).plus(
-    rayMul(loan.principal, loan.apr),
+  const numer = rayMul(wadToRay(reserve.totalPrincipal), reserve.borrowRate).plus(
+    rayMul(wadToRay(loan.principal), loan.apr),
   );
   const denom = reserve.totalPrincipal.plus(loan.principal);
-  return rayDiv(numer, denom);
+  return rayDiv(numer, wadToRay(denom));
 }
 
 export function computeBorrowRateOnNewRepay(
@@ -50,10 +50,10 @@ export function computeBorrowRateOnNewRepay(
   loan: Loan,
   repayment: BigInt,
 ): BigInt {
-  const numer = rayMul(reserve.totalPrincipal, reserve.borrowRate).minus(
-    rayMul(repayment, loan.apr),
+  const numer = rayMul(wadToRay(reserve.totalPrincipal), reserve.borrowRate).minus(
+    rayMul(wadToRay(repayment), loan.apr),
   );
-  const denom = reserve.totalPrincipal.minus(repayment);
+  const denom = wadToRay(reserve.totalPrincipal.minus(repayment));
   return rayDiv(numer, denom);
 }
 

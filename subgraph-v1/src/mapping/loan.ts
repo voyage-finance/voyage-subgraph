@@ -38,7 +38,8 @@ export function handleBorrow(event: Borrow): void {
   collateral.save();
   loan.collateral = collateral.id;
 
-  const nper = reserveConfiguration.loanTenure.div(reserveConfiguration.loanInterval);
+  const zeroBigInt = zeroBI()
+  const nper = !reserveConfiguration.loanInterval.isZero() ? reserveConfiguration.loanTenure.div(reserveConfiguration.loanInterval) : zeroBigInt;
   loan.apr = event.params._apr;
   loan.epoch = reserveConfiguration.loanInterval;
   loan.term = reserveConfiguration.loanTenure;
@@ -47,9 +48,9 @@ export function handleBorrow(event: Borrow): void {
   loan.principal = event.params._principal;
   loan.interest = event.params._interest;
   loan.protocolFee = event.params._protocolFee;
-  loan.pmt_principal = event.params._principal.div(nper);
-  loan.pmt_interest = event.params._interest.div(nper);
-  loan.pmt_fee = event.params._protocolFee.div(nper);
+  loan.pmt_principal = !nper.isZero() ? event.params._principal.div(nper) : zeroBigInt;
+  loan.pmt_interest = !nper.isZero() ? event.params._interest.div(nper) : zeroBigInt;
+  loan.pmt_fee = !nper.isZero() ? event.params._protocolFee.div(nper) : zeroBigInt;
   loan.pmt_payment = loan.pmt_principal.plus(loan.pmt_interest).plus(loan.pmt_fee);
 
   loan.totalPrincipalPaid = loan.pmt_principal;
@@ -186,7 +187,7 @@ export function handleRepay(event: RepaymentEvent): void {
   reserve.depositRate = computeDepositRate(reserve);
   reserve.save();
 
-  if (event.params.isFinal) {
+  if (event.params.isFinal && loan.collateral != null) {
     const collateral = Asset.load(loan.collateral!);
     if (!collateral) {
       throw new Error(`Unable to find asset for loan`);

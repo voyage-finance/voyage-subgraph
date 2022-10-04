@@ -1,6 +1,7 @@
 import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts';
 import {
-  Asset, BuyNowTransaction,
+  Asset,
+  BuyNowTransaction,
   Currency,
   Loan,
   Market,
@@ -15,7 +16,8 @@ import {
 } from '../../generated/schema';
 import { IERC20Detailed } from '../../generated/Voyage/IERC20Detailed';
 import {
-  getAssetId, getBuyNowTransactionId,
+  getAssetId,
+  getBuyNowTransactionId,
   getCurrencyId,
   getLoanId,
   getRepaymentId,
@@ -184,7 +186,7 @@ export function getOrInitLoan(
   if (!loan) {
     loan = new Loan(id);
     loan.reserve = reserveId;
-    loan.vault = vault.toHexString();
+    loan.vault = getOrInitVault(vault).id;
     loan.loanId = loanId;
 
     loan.protocolFee = zeroBI();
@@ -264,11 +266,10 @@ export function getOrInitVault(vaultAddress: Address): Vault {
   return vault;
 }
 
-
 export function getOrInitBuyNowTransaction(
   vault: Address,
   collection: Address,
-  tokenId: BigInt
+  tokenId: BigInt,
 ): BuyNowTransaction {
   const id = getBuyNowTransactionId(vault, collection, tokenId);
   let buyNowTransaction = BuyNowTransaction.load(id);

@@ -249,6 +249,7 @@ export function getOrInitRepayment(vault: Address, loanId: BigInt, repaymentId: 
     repayment.total = zeroBI();
     repayment.paidAt = zeroBI();
     repayment.isFinal = false;
+    repayment.txHash = zeroAddress();
     repayment.save();
   }
 

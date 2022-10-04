@@ -180,6 +180,7 @@ type Repayment @entity {
   paidAt: BigInt!
   isFinal: Boolean!
   liquidation: Liquidation
+  txHash: Bytes!
 }
 
 type Liquidation @entity {
@@ -193,10 +194,8 @@ type Liquidation @entity {
   amountToWriteDown: BigInt!
 }
 
-
 type BuyNowTransaction @entity {
   id: ID! # concat(vault + loanId + collection)
-
   tokenId: BigInt!
   collection: Bytes!
   vault: Bytes!

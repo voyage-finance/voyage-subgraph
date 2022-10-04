@@ -3,7 +3,8 @@ import { Asset, Liquidation } from '../../generated/schema';
 import { Borrow, Liquidate, Repayment as RepaymentEvent } from '../../generated/Voyage/Voyage';
 import { SECONDS_PER_DAY } from '../helpers/consts';
 import {
-  getOrInitAsset, getOrInitBuyNowTransaction,
+  getOrInitAsset,
+  getOrInitBuyNowTransaction,
   getOrInitLoan,
   getOrInitRepayment,
   getOrInitReserveById,
@@ -38,8 +39,10 @@ export function handleBorrow(event: Borrow): void {
   collateral.save();
   loan.collateral = collateral.id;
 
-  const zeroBigInt = zeroBI()
-  const nper = !reserveConfiguration.loanInterval.isZero() ? reserveConfiguration.loanTenure.div(reserveConfiguration.loanInterval) : zeroBigInt;
+  const zeroBigInt = zeroBI();
+  const nper = !reserveConfiguration.loanInterval.isZero()
+    ? reserveConfiguration.loanTenure.div(reserveConfiguration.loanInterval)
+    : zeroBigInt;
   loan.apr = event.params._apr;
   loan.epoch = reserveConfiguration.loanInterval;
   loan.term = reserveConfiguration.loanTenure;
@@ -104,16 +107,14 @@ export function handleBorrow(event: Borrow): void {
 
   reserve.save();
 
-
-
   const buyNowTx = getOrInitBuyNowTransaction(
     event.params._vault,
     event.params._collection,
     event.params._tokenId,
-    )
-  buyNowTx.txHash = event.transaction.hash
-  buyNowTx.marketplace = event.params._marketplace
-  buyNowTx.save()
+  );
+  buyNowTx.txHash = event.transaction.hash;
+  buyNowTx.marketplace = event.params._marketplace;
+  buyNowTx.save();
 }
 
 export function handleRepay(event: RepaymentEvent): void {
@@ -128,7 +129,7 @@ export function handleRepay(event: RepaymentEvent): void {
   }
   loan.save();
 
-  const repayment = getOrInitRepayment(event.params._vault, loan.loanId, loan.paidTimes);
+  const repayment = getOrInitRepayment(event.params._vault, loan.loanId, event.params._repaymentId);
   repayment.loan = loan.id;
   repayment.isFinal = event.params.isFinal;
   // it could be a liquidation, in which case the repayment could cover > 1 instalment.
@@ -145,7 +146,7 @@ export function handleRepay(event: RepaymentEvent): void {
   let interestRepaid = zeroBI();
   let feesRepaid = zeroBI();
 
-  // highest seniority
+  // highest
   if (amount.ge(principalExpected)) {
     principalRepaid = principalExpected;
   } else {
@@ -174,6 +175,7 @@ export function handleRepay(event: RepaymentEvent): void {
   repayment.fee = feesRepaid;
   repayment.total = event.params._amount;
   repayment.paidAt = event.block.timestamp;
+  repayment.txHash = event.transaction.hash;
   repayment.save();
 
   const reserve = getOrInitReserveById(reserveId);

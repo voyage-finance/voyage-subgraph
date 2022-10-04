@@ -45,6 +45,9 @@ dataSources:
           handler: handleVaultCreated
         - event: ProtocolFeeUpdated(indexed address,uint256)
           handler: handleProtocolFeeUpdated
+        - event: Liquidate(indexed address,indexed address,indexed
+            address,uint256,uint256,uint256,uint256,uint256)
+          handler: handleLiquidate
       file: ./src/mapping/index.ts
 templates:
   - kind: ethereum

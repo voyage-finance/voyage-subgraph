@@ -120,10 +120,12 @@ export function handleBorrow(event: Borrow): void {
 export function handleRepay(event: RepaymentEvent): void {
   const reserveId = getReserveId(event.params._collection, event.address.toHexString());
   const loan = getOrInitLoan(event.params._vault, reserveId, event.params._loanId, event);
-  loan.nextPaymentDue = event.block.timestamp.plus(loan.epoch.times(SECONDS_PER_DAY));
   loan.totalPrincipalPaid = loan.totalPrincipalPaid.plus(loan.pmt_principal);
   loan.totalInterestPaid = loan.totalInterestPaid.plus(loan.pmt_interest);
   loan.paidTimes = loan.paidTimes.plus(BigInt.fromI32(1));
+  loan.nextPaymentDue = loan.timestamp.plus(
+    loan.epoch.times(loan.paidTimes).times(SECONDS_PER_DAY),
+  );
   if (event.params.isFinal) {
     loan.closed = true;
   }

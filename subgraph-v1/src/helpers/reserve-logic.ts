@@ -42,7 +42,7 @@ export function computeBorrowRateOnNewBorrow(reserve: Reserve, loan: Loan): BigI
     rayMul(wadToRay(loan.principal), loan.apr),
   );
   const denom = reserve.totalPrincipal.plus(loan.principal);
-  return denom.isZero() ? rayDiv(numer, wadToRay(denom)) : zeroBI();
+  return denom.isZero() ? zeroBI() : rayDiv(numer, wadToRay(denom));
 }
 
 export function computeBorrowRateOnNewRepay(

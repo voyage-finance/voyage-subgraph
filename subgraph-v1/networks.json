@@ -8,7 +8,13 @@
   "localhost": {
     "Voyage": {
       "address": "0x4aFb3904e9f0615Aa15eb3208484BdcE7595bb79",
-      "startBlock": 1
+      "startBlock": 7595354
+    }
+  },
+  "mainnet": {
+    "Voyage": {
+      "address": "0xbaf6FD0b5D060899AfE7d0717eE65D80Fe6911F5",
+      "startBlock": 15616313
     }
   }
 }

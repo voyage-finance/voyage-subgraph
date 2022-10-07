@@ -41,7 +41,7 @@ dataSources:
         - event: Repayment(indexed address,indexed address,indexed
             address,address,uint256,uint256,uint256,bool)
           handler: handleRepay
-        - event: VaultCreated(address,address,uint256)
+        - event: VaultCreated(address,address,uint256,uint256)
           handler: handleVaultCreated
         - event: ProtocolFeeUpdated(indexed address,uint256)
           handler: handleProtocolFeeUpdated

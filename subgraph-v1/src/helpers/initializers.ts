@@ -204,6 +204,7 @@ export function getOrInitLoan(
     loan.apr = zeroBI();
 
     loan.timestamp = event.block.timestamp;
+    loan.blocknum = event.block.number;
     loan.nextPaymentDue = event.block.timestamp.plus(loan.epoch);
 
     loan.totalPrincipalPaid = zeroBI();
@@ -271,6 +272,7 @@ export function getOrInitBuyNowTransaction(
   vault: Address,
   collection: Address,
   tokenId: BigInt,
+  loanId: string,
 ): BuyNowTransaction {
   const id = getBuyNowTransactionId(vault, collection, tokenId);
   let buyNowTransaction = BuyNowTransaction.load(id);
@@ -282,6 +284,7 @@ export function getOrInitBuyNowTransaction(
 
     buyNowTransaction.txHash = zeroAddress();
     buyNowTransaction.marketplace = zeroAddress();
+    buyNowTransaction.loan = loanId;
 
     buyNowTransaction.save();
   }

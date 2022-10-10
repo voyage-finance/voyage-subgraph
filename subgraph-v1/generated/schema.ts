@@ -1093,6 +1093,15 @@ export class Loan extends Entity {
     this.set("timestamp", Value.fromBigInt(value));
   }
 
+  get blocknum(): BigInt {
+    let value = this.get("blocknum");
+    return value!.toBigInt();
+  }
+
+  set blocknum(value: BigInt) {
+    this.set("blocknum", Value.fromBigInt(value));
+  }
+
   get nextPaymentDue(): BigInt {
     let value = this.get("nextPaymentDue");
     return value!.toBigInt();
@@ -1161,6 +1170,23 @@ export class Loan extends Entity {
       this.unset("liquidation");
     } else {
       this.set("liquidation", Value.fromString(<string>value));
+    }
+  }
+
+  get transaction(): string | null {
+    let value = this.get("transaction");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set transaction(value: string | null) {
+    if (!value) {
+      this.unset("transaction");
+    } else {
+      this.set("transaction", Value.fromString(<string>value));
     }
   }
 }
@@ -1439,6 +1465,15 @@ export class BuyNowTransaction extends Entity {
 
   set vault(value: Bytes) {
     this.set("vault", Value.fromBytes(value));
+  }
+
+  get loan(): string {
+    let value = this.get("loan");
+    return value!.toString();
+  }
+
+  set loan(value: string) {
+    this.set("loan", Value.fromString(value));
   }
 
   get txHash(): Bytes {

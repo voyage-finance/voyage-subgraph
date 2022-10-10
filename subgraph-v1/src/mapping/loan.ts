@@ -111,6 +111,7 @@ export function handleBorrow(event: Borrow): void {
     event.params._vault,
     event.params._collection,
     event.params._tokenId,
+    loan.id,
   );
   buyNowTx.txHash = event.transaction.hash;
   buyNowTx.marketplace = event.params._marketplace;

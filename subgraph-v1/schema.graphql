@@ -159,6 +159,7 @@ type Loan @entity {
   apr: BigInt!
 
   timestamp: BigInt!
+  blocknum: BigInt!
   nextPaymentDue: BigInt!
 
   totalPrincipalPaid: BigInt!
@@ -168,6 +169,7 @@ type Loan @entity {
 
   repayments: [Repayment!]! @derivedFrom(field: "loan")
   liquidation: Liquidation @derivedFrom(field: "loan")
+  transaction: BuyNowTransaction @derivedFrom(field: "loan")
 }
 
 type Repayment @entity {
@@ -199,7 +201,7 @@ type BuyNowTransaction @entity {
   tokenId: BigInt!
   collection: Bytes!
   vault: Bytes!
-
+  loan: Loan!
   txHash: Bytes!
   marketplace: Bytes!
 }

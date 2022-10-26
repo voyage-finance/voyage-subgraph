@@ -51,6 +51,33 @@ export class Market extends Entity {
     this.set("reserves", Value.fromStringArray(value));
   }
 
+  get reserveCount(): BigInt {
+    let value = this.get("reserveCount");
+    return value!.toBigInt();
+  }
+
+  set reserveCount(value: BigInt) {
+    this.set("reserveCount", Value.fromBigInt(value));
+  }
+
+  get vaults(): Array<string> {
+    let value = this.get("vaults");
+    return value!.toStringArray();
+  }
+
+  set vaults(value: Array<string>) {
+    this.set("vaults", Value.fromStringArray(value));
+  }
+
+  get vaultCount(): BigInt {
+    let value = this.get("vaultCount");
+    return value!.toBigInt();
+  }
+
+  set vaultCount(value: BigInt) {
+    this.set("vaultCount", Value.fromBigInt(value));
+  }
+
   get protocolFee(): BigInt {
     let value = this.get("protocolFee");
     return value!.toBigInt();
@@ -803,6 +830,15 @@ export class Vault extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get market(): string {
+    let value = this.get("market");
+    return value!.toString();
+  }
+
+  set market(value: string) {
+    this.set("market", Value.fromString(value));
   }
 
   get signer(): Bytes {

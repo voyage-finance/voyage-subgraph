@@ -1,3 +1,4 @@
+import { BigInt } from '@graphprotocol/graph-ts';
 import { JuniorDepositToken, SeniorDepositToken } from '../../generated/templates';
 import {
   IncomeRatioUpdated,
@@ -18,6 +19,9 @@ import { getReserveId } from '../utils/id';
 
 export function handleReserveInitialized(event: ReserveInitialized): void {
   const market = getOrInitMarket(event);
+  market.reserveCount = market.reserveCount.plus(BigInt.fromI32(1));
+  market.save();
+
   const reserve = getOrInitReserve(event.params._collection, market.id);
   reserve.market = market.id;
   const reserveConfiguration = getOrInitReserveConfiguration(reserve.id);

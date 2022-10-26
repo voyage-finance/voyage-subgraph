@@ -4,6 +4,9 @@ Market represents a deployment of the Voyage protocol
 type Market @entity {
   id: ID!
   reserves: [Reserve!]! @derivedFrom(field: "market")
+  reserveCount: BigInt!
+  vaults: [Vault!]! @derivedFrom(field: "market")
+  vaultCount: BigInt!
   protocolFee: BigInt!
   protocolTreasury: Bytes!
 }
@@ -116,6 +119,7 @@ type Vault @entity {
   The vault proxy address
   """
   id: ID!
+  market: Market!
   # The EOA used to sign on behalf of the Vault. In most cases, generated through Web3Auth.
   signer: Bytes!
   loans: [Loan!]! @derivedFrom(field: "vault")

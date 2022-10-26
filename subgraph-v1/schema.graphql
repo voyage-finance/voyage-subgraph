@@ -23,6 +23,8 @@ type Reserve @entity {
   totalBorrow: BigInt!
   availableLiquidity: BigInt!
   totalLiquidity: BigInt!
+  totalMaxUnderlying: BigInt!
+  totalUnbonding: BigInt!
   liquidityRatio: BigInt!
   utilizationRate: BigInt!
 

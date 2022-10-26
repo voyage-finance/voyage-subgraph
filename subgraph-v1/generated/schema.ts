@@ -217,6 +217,24 @@ export class Reserve extends Entity {
     this.set("totalLiquidity", Value.fromBigInt(value));
   }
 
+  get totalMaxUnderlying(): BigInt {
+    let value = this.get("totalMaxUnderlying");
+    return value!.toBigInt();
+  }
+
+  set totalMaxUnderlying(value: BigInt) {
+    this.set("totalMaxUnderlying", Value.fromBigInt(value));
+  }
+
+  get totalUnbonding(): BigInt {
+    let value = this.get("totalUnbonding");
+    return value!.toBigInt();
+  }
+
+  set totalUnbonding(value: BigInt) {
+    this.set("totalUnbonding", Value.fromBigInt(value));
+  }
+
   get liquidityRatio(): BigInt {
     let value = this.get("liquidityRatio");
     return value!.toBigInt();

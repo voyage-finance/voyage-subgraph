@@ -54,6 +54,8 @@ export function getOrInitReserveById(reserveId: string): Reserve {
     reserve.totalBorrow = zeroBI();
     reserve.availableLiquidity = zeroBI();
     reserve.totalLiquidity = zeroBI();
+    reserve.totalMaxUnderlying = zeroBI();
+    reserve.totalUnbonding = zeroBI();
     reserve.utilizationRate = zeroBI();
     reserve.liquidityRatio = zeroBI();
     reserve.borrowRate = zeroBI();

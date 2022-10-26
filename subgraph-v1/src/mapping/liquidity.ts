@@ -1,4 +1,3 @@
-import { Address } from '@graphprotocol/graph-ts';
 import { Claim } from '../../generated/templates/SeniorDepositToken/SeniorDepositToken';
 import { Deposit, Withdraw } from '../../generated/templates/VToken/VToken';
 import { JUNIOR_TRANCHE, trancheFromString } from '../helpers/consts';
@@ -55,10 +54,6 @@ export function handleDeposit(event: Deposit): void {
 
 export function handleWithdraw(event: Withdraw): void {
   const vToken = getOrInitVToken(event.address);
-  vToken.totalAssets = vToken.totalAssets.minus(event.params.assets);
-  vToken.totalShares = vToken.totalShares.minus(event.params.shares);
-  vToken.save();
-
   const reserve = getOrInitReserveById(vToken.reserve);
   const reserveConfiguration = getOrInitReserveConfiguration(reserve.id);
   reserve.availableLiquidity = reserve.availableLiquidity.minus(event.params.assets);
@@ -69,10 +64,12 @@ export function handleWithdraw(event: Withdraw): void {
   reserve.depositRate = computeDepositRate(reserve);
   reserve.seniorTrancheDepositRate = computeSeniorDepositRate(reserve, reserveConfiguration);
   reserve.juniorTrancheDepositRate = computeJuniorDepositRate(reserve, reserveConfiguration);
-  reserve.save();
 
   if (vToken.tranche == JUNIOR_TRANCHE) {
     // Junior Tranche withdrawals happen immediately.
+    vToken.totalAssets = vToken.totalAssets.minus(event.params.assets);
+    vToken.totalShares = vToken.totalShares.minus(event.params.shares);
+    vToken.save();
     const userDepositData = getOrInitUserDepositData(event.params.owner, vToken.reserve);
     userDepositData.juniorTrancheCumulativeWithdrawals =
       userDepositData.juniorTrancheCumulativeWithdrawals.plus(event.params.assets);
@@ -86,14 +83,25 @@ export function handleWithdraw(event: Withdraw): void {
     userUnbondingData.maxUnderlying = userUnbondingData.maxUnderlying.plus(event.params.assets);
     userUnbondingData.shares = userUnbondingData.shares.plus(event.params.shares);
     userUnbondingData.save();
+    // handle global reserve unbonding state
+    reserve.totalMaxUnderlying = reserve.totalMaxUnderlying.plus(event.params.assets);
+    reserve.totalUnbonding = reserve.totalUnbonding.plus(event.params.shares);
   }
+
+  reserve.save();
 }
 
 export function handleClaim(event: Claim): void {
   const vToken = getOrInitVToken(event.address);
   vToken.totalAssets = vToken.totalAssets.minus(event.params.assets);
-  vToken.totalShares = vToken.totalAssets.minus(event.params.shares);
+  vToken.totalShares = vToken.totalShares.minus(event.params.shares);
   vToken.save();
+  const reserve = getOrInitReserveById(vToken.reserve);
+  // handle global reserve unbonding state
+  reserve.totalMaxUnderlying = reserve.totalMaxUnderlying.minus(event.params.assets);
+  reserve.totalUnbonding = reserve.totalUnbonding.minus(event.params.shares);
+  reserve.save();
+
   const userDepositData = getOrInitUserDepositData(event.params.owner, vToken.reserve);
   userDepositData.seniorTrancheShares = userDepositData.seniorTrancheShares.minus(
     event.params.shares,

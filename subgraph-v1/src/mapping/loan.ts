@@ -1,6 +1,11 @@
 import { Address, BigInt } from '@graphprotocol/graph-ts';
 import { Asset, Liquidation } from '../../generated/schema';
-import { Borrow, Liquidate, Repayment as RepaymentEvent } from '../../generated/Voyage/Voyage';
+import {
+  Borrow as BorrowLegacy,
+  Borrow1 as Borrow,
+  Liquidate,
+  Repayment as RepaymentEvent,
+} from '../../generated/Voyage/Voyage';
 import { SECONDS_PER_DAY } from '../helpers/consts';
 import {
   getOrInitAsset,
@@ -23,6 +28,99 @@ import {
 } from '../helpers/reserve-logic';
 import { getReserveId } from '../utils/id';
 import { zeroBI } from '../utils/math';
+
+export function handleBorrowLegacy(event: BorrowLegacy): void {
+  const reserveId = getReserveId(event.params._collection, event.address.toHexString());
+  const reserveConfiguration = getOrInitReserveConfiguration(reserveId);
+  const loan = getOrInitLoan(event.params._vault, reserveId, event.params._loanId, event);
+  const collateral = getOrInitAsset(
+    event.params._collection,
+    event.params._tokenId,
+    event.params._vault.toHexString(),
+    loan.id,
+  );
+  collateral.isUnderLien = true;
+  collateral.isLiquidated = false;
+  collateral.save();
+  loan.collateral = collateral.id;
+
+  const zeroBigInt = zeroBI();
+  const nper = !reserveConfiguration.loanInterval.isZero()
+    ? reserveConfiguration.loanTenure.div(reserveConfiguration.loanInterval)
+    : zeroBigInt;
+  loan.apr = event.params._apr;
+  loan.epoch = reserveConfiguration.loanInterval;
+  loan.term = reserveConfiguration.loanTenure;
+  loan.nper = nper;
+
+  loan.principal = event.params._principal;
+  loan.interest = event.params._interest;
+  loan.protocolFee = event.params._protocolFee;
+  loan.pmt_principal = !nper.isZero() ? event.params._principal.div(nper) : zeroBigInt;
+  loan.pmt_interest = !nper.isZero() ? event.params._interest.div(nper) : zeroBigInt;
+  loan.pmt_fee = !nper.isZero() ? event.params._protocolFee.div(nper) : zeroBigInt;
+  loan.pmt_payment = loan.pmt_principal.plus(loan.pmt_interest).plus(loan.pmt_fee);
+
+  loan.totalPrincipalPaid = loan.pmt_principal;
+  loan.totalInterestPaid = loan.pmt_interest;
+  loan.timestamp = event.block.timestamp;
+  loan.nextPaymentDue = loan.timestamp.plus(loan.epoch.times(SECONDS_PER_DAY));
+  loan.paidTimes = BigInt.fromI32(1);
+  loan.save();
+
+  // save the first instalment
+  const repayment = getOrInitRepayment(event.params._vault, loan.loanId, loan.paidTimes);
+  repayment.loan = loan.id;
+  repayment.principal = loan.pmt_principal;
+  repayment.interest = loan.pmt_interest;
+  repayment.fee = loan.pmt_fee;
+  repayment.total = loan.pmt_payment;
+  repayment.paidAt = event.block.timestamp;
+  repayment.save();
+
+  const reserve = getOrInitReserveById(reserveId);
+  const totalAdditionalPrincipal = event.params._principal.minus(loan.pmt_principal);
+  const totalAdditionalInterest = event.params._interest.minus(loan.pmt_interest);
+  reserve.totalPrincipal = reserve.totalPrincipal.plus(totalAdditionalPrincipal);
+  reserve.totalInterest = reserve.totalInterest.plus(totalAdditionalInterest);
+  reserve.totalBorrow = reserve.totalBorrow
+    .plus(totalAdditionalPrincipal)
+    .plus(totalAdditionalInterest);
+  reserve.availableLiquidity = reserve.availableLiquidity
+    .minus(totalAdditionalPrincipal)
+    .plus(loan.pmt_interest);
+  reserve.totalLiquidity = reserve.totalLiquidity
+    .plus(event.params._interest)
+    .plus(event.params._protocolFee);
+  reserve.utilizationRate = computeUtilizationRate(reserve);
+  reserve.borrowRate = computeBorrowRateOnNewBorrow(reserve, loan);
+  reserve.depositRate = computeDepositRate(reserve);
+
+  const juniorInterest = getJuniorInterest(loan, reserveConfiguration.incomeRatio);
+  reserve.juniorTrancheLiquidity = reserve.juniorTrancheLiquidity.plus(juniorInterest);
+  reserve.juniorTrancheDepositRate = computeJuniorDepositRate(reserve, reserveConfiguration);
+  const juniorVToken = getOrInitVToken(Address.fromString(reserve.juniorTrancheVToken));
+  juniorVToken.totalAssets = juniorVToken.totalAssets.plus(juniorInterest);
+  juniorVToken.save();
+
+  const seniorInterest = getSeniorInterest(loan, reserveConfiguration.incomeRatio);
+  reserve.seniorTrancheLiquidity = reserve.seniorTrancheLiquidity.plus(seniorInterest);
+  reserve.seniorTrancheDepositRate = computeSeniorDepositRate(reserve, reserveConfiguration);
+  const seniorVToken = getOrInitVToken(Address.fromString(reserve.seniorTrancheVToken));
+  seniorVToken.totalAssets = seniorVToken.totalAssets.plus(seniorInterest);
+  seniorVToken.save();
+
+  reserve.save();
+
+  const buyNowTx = getOrInitBuyNowTransaction(
+    event.params._vault,
+    event.params._collection,
+    event.params._tokenId,
+    loan.id,
+  );
+  buyNowTx.txHash = event.transaction.hash;
+  buyNowTx.save();
+}
 
 export function handleBorrow(event: Borrow): void {
   const reserveId = getReserveId(event.params._collection, event.address.toHexString());

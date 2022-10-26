@@ -38,6 +38,9 @@ dataSources:
         - event: Borrow(indexed address,indexed address,indexed
             address,uint256,uint256,uint256,uint256,uint256,uint256,address)
           handler: handleBorrow
+        - event: Borrow(indexed address,indexed address,indexed
+            address,uint256,uint256,uint256,uint256,uint256,uint256)
+          handler: handleBorrowLegacy
         - event: Repayment(indexed address,indexed address,indexed
             address,address,uint256,uint256,uint256,bool)
           handler: handleRepay

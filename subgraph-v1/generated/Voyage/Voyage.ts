@@ -470,6 +470,56 @@ export class Borrow__Params {
   get _protocolFee(): BigInt {
     return this._event.parameters[8].value.toBigInt();
   }
+}
+
+export class Borrow1 extends ethereum.Event {
+  get params(): Borrow1__Params {
+    return new Borrow1__Params(this);
+  }
+}
+
+export class Borrow1__Params {
+  _event: Borrow1;
+
+  constructor(event: Borrow1) {
+    this._event = event;
+  }
+
+  get _vault(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get _collection(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get _currency(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get _tokenId(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+
+  get _loanId(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
+  }
+
+  get _principal(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
+  }
+
+  get _interest(): BigInt {
+    return this._event.parameters[6].value.toBigInt();
+  }
+
+  get _apr(): BigInt {
+    return this._event.parameters[7].value.toBigInt();
+  }
+
+  get _protocolFee(): BigInt {
+    return this._event.parameters[8].value.toBigInt();
+  }
 
   get _marketplace(): Address {
     return this._event.parameters[9].value.toAddress();
@@ -1650,38 +1700,6 @@ export class Voyage extends ethereum.SmartContract {
       [
         ethereum.Value.fromAddress(_collection),
         ethereum.Value.fromAddress(_user)
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
-  utilizationRate(_collection: Address, _currency: Address): BigInt {
-    let result = super.call(
-      "utilizationRate",
-      "utilizationRate(address,address):(uint256)",
-      [
-        ethereum.Value.fromAddress(_collection),
-        ethereum.Value.fromAddress(_currency)
-      ]
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_utilizationRate(
-    _collection: Address,
-    _currency: Address
-  ): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "utilizationRate",
-      "utilizationRate(address,address):(uint256)",
-      [
-        ethereum.Value.fromAddress(_collection),
-        ethereum.Value.fromAddress(_currency)
       ]
     );
     if (result.reverted) {
@@ -3583,8 +3601,12 @@ export class WithdrawNFTCall__Inputs {
     return this._call.inputValues[1].value.toAddress();
   }
 
+  get _to(): Address {
+    return this._call.inputValues[2].value.toAddress();
+  }
+
   get _tokenId(): BigInt {
-    return this._call.inputValues[2].value.toBigInt();
+    return this._call.inputValues[3].value.toBigInt();
   }
 }
 

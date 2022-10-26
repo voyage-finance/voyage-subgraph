@@ -10,5 +10,6 @@ export function handleVaultCreated(event: VaultCreated): void {
   const vault = getOrInitVault(event.params._vault, event);
   vault.market = market.id;
   vault.signer = event.params._owner;
+  vault.createdAt = event.block.timestamp;
   vault.save();
 }

@@ -269,6 +269,7 @@ export function getOrInitVault(vaultAddress: Address, event: ethereum.Event): Va
     vault = new Vault(id);
     vault.market = event.address.toHexString();
     vault.signer = zeroAddress();
+    vault.createdAt = zeroBI();
     vault.save();
   }
   return vault;

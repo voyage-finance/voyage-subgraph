@@ -124,6 +124,7 @@ type Vault @entity {
   market: Market!
   # The EOA used to sign on behalf of the Vault. In most cases, generated through Web3Auth.
   signer: Bytes!
+  createdAt: BigInt!
   loans: [Loan!]! @derivedFrom(field: "vault")
   assets: [Asset!]! @derivedFrom(field: "vault")
 }

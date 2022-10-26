@@ -158,19 +158,20 @@ export function getOrInitUserDepositData(userAddress: Address, reserveId: string
 
 export function getOrInitUserUnbondingData(
   user: Address,
-  collection: Address,
+  reserveId: string,
   event: ethereum.Event,
 ): UserUnbondingData {
-  const id = getUserUnbondingDataId(user, collection);
+  const id = getUserUnbondingDataId(user, reserveId);
   let unbonding = UserUnbondingData.load(id);
   if (!unbonding) {
     unbonding = new UserUnbondingData(id);
+    unbonding.reserve = reserveId;
+    unbonding.user = user.toHexString();
     unbonding.time = event.block.timestamp;
     unbonding.blocknum = event.block.number;
-    unbonding.collection = collection;
     unbonding.shares = zeroBI();
     unbonding.maxUnderlying = zeroBI();
-    unbonding.user = user.toHexString();
+    unbonding.save();
   }
   return unbonding;
 }

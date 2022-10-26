@@ -8,8 +8,8 @@ export function getUserDepositDataId(user: Address, reserveId: string): string {
   return [user.toHex(), reserveId].join('_');
 }
 
-export function getUserUnbondingDataId(user: Address, collection: Address): string {
-  return [user.toHex(), collection.toHex()].join('_');
+export function getUserUnbondingDataId(user: Address, reserveId: string): string {
+  return [user.toHex(), reserveId].join('_');
 }
 
 export function getAssetId(collection: Address, tokenId: BigInt): string {
@@ -32,6 +32,10 @@ export function getCurrencyId(address: Address): string {
   return address.toHex();
 }
 
-export function getBuyNowTransactionId(vault: Address, collection: Address, tokenId: BigInt): string {
+export function getBuyNowTransactionId(
+  vault: Address,
+  collection: Address,
+  tokenId: BigInt,
+): string {
   return [vault.toHexString(), collection.toHexString(), tokenId.toString()].join('_');
 }

@@ -288,6 +288,15 @@ export class Reserve extends Entity {
   set userDeposits(value: Array<string>) {
     this.set("userDeposits", Value.fromStringArray(value));
   }
+
+  get userUnbondings(): Array<string> {
+    let value = this.get("userUnbondings");
+    return value!.toStringArray();
+  }
+
+  set userUnbondings(value: Array<string>) {
+    this.set("userUnbondings", Value.fromStringArray(value));
+  }
 }
 
 export class ReserveConfiguration extends Entity {
@@ -710,6 +719,24 @@ export class UserUnbondingData extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get user(): string {
+    let value = this.get("user");
+    return value!.toString();
+  }
+
+  set user(value: string) {
+    this.set("user", Value.fromString(value));
+  }
+
+  get reserve(): string {
+    let value = this.get("reserve");
+    return value!.toString();
+  }
+
+  set reserve(value: string) {
+    this.set("reserve", Value.fromString(value));
+  }
+
   get time(): BigInt {
     let value = this.get("time");
     return value!.toBigInt();
@@ -717,15 +744,6 @@ export class UserUnbondingData extends Entity {
 
   set time(value: BigInt) {
     this.set("time", Value.fromBigInt(value));
-  }
-
-  get collection(): Bytes {
-    let value = this.get("collection");
-    return value!.toBytes();
-  }
-
-  set collection(value: Bytes) {
-    this.set("collection", Value.fromBytes(value));
   }
 
   get blocknum(): BigInt {
@@ -753,15 +771,6 @@ export class UserUnbondingData extends Entity {
 
   set maxUnderlying(value: BigInt) {
     this.set("maxUnderlying", Value.fromBigInt(value));
-  }
-
-  get user(): string {
-    let value = this.get("user");
-    return value!.toString();
-  }
-
-  set user(value: string) {
-    this.set("user", Value.fromString(value));
   }
 }
 

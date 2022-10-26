@@ -32,6 +32,8 @@ export function getOrInitMarket(event: ethereum.Event): Market {
   let market = Market.load(id);
   if (!market) {
     market = new Market(id);
+    market.reserveCount = zeroBI();
+    market.vaultCount = zeroBI();
     market.protocolFee = zeroBI();
     market.protocolTreasury = zeroAddress();
     market.save();
@@ -187,7 +189,7 @@ export function getOrInitLoan(
   if (!loan) {
     loan = new Loan(id);
     loan.reserve = reserveId;
-    loan.vault = getOrInitVault(vault).id;
+    loan.vault = getOrInitVault(vault, event).id;
     loan.loanId = loanId;
 
     loan.protocolFee = zeroBI();
@@ -258,11 +260,12 @@ export function getOrInitRepayment(vault: Address, loanId: BigInt, repaymentId: 
   return repayment;
 }
 
-export function getOrInitVault(vaultAddress: Address): Vault {
+export function getOrInitVault(vaultAddress: Address, event: ethereum.Event): Vault {
   const id = vaultAddress.toHex();
   let vault = Vault.load(id);
   if (!vault) {
     vault = new Vault(id);
+    vault.market = event.address.toHexString();
     vault.signer = zeroAddress();
     vault.save();
   }

@@ -82,11 +82,7 @@ export function handleWithdraw(event: Withdraw): void {
     userDepositData.save();
   } else {
     // Senior Tranche withdrawals enter unbonding.
-    const userUnbondingData = getOrInitUserUnbondingData(
-      event.params.owner,
-      Address.fromBytes(reserve.collection),
-      event,
-    );
+    const userUnbondingData = getOrInitUserUnbondingData(event.params.owner, vToken.reserve, event);
     userUnbondingData.maxUnderlying = userUnbondingData.maxUnderlying.plus(event.params.assets);
     userUnbondingData.shares = userUnbondingData.shares.plus(event.params.shares);
     userUnbondingData.save();
@@ -98,7 +94,6 @@ export function handleClaim(event: Claim): void {
   vToken.totalAssets = vToken.totalAssets.minus(event.params.assets);
   vToken.totalShares = vToken.totalAssets.minus(event.params.shares);
   vToken.save();
-  const reserve = getOrInitReserveById(vToken.reserve);
   const userDepositData = getOrInitUserDepositData(event.params.owner, vToken.reserve);
   userDepositData.seniorTrancheShares = userDepositData.seniorTrancheShares.minus(
     event.params.shares,
@@ -106,11 +101,7 @@ export function handleClaim(event: Claim): void {
   userDepositData.seniorTrancheCumulativeWithdrawals =
     userDepositData.seniorTrancheCumulativeWithdrawals.plus(event.params.assets);
   userDepositData.save();
-  const unbonding = getOrInitUserUnbondingData(
-    event.params.owner,
-    Address.fromBytes(reserve.collection),
-    event,
-  );
+  const unbonding = getOrInitUserUnbondingData(event.params.owner, vToken.reserve, event);
   unbonding.maxUnderlying = unbonding.maxUnderlying.minus(event.params.assets);
   unbonding.shares = unbonding.shares.minus(event.params.shares);
   unbonding.save();

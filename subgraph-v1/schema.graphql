@@ -36,6 +36,7 @@ type Reserve @entity {
 
   # relations
   userDeposits: [UserDepositData!]! @derivedFrom(field: "reserve")
+  userUnbondings: [UserUnbondingData!]! @derivedFrom(field: "reserve")
 }
 
 type ReserveConfiguration @entity {
@@ -102,12 +103,12 @@ type UserUnbondingData @entity {
   user address + collection address
   """
   id: ID!
+  user: UserData!
+  reserve: Reserve!
   time: BigInt!
-  collection: Bytes!
   blocknum: BigInt!
   shares: BigInt!
   maxUnderlying: BigInt!
-  user: UserData!
 }
 
 type Vault @entity {

@@ -5,6 +5,7 @@ import {
   LiquidationConfigurationUpdated,
   LoanParametersUpdated,
   ReserveActivated,
+  ReserveInactived,
   ReserveInitialized,
 } from '../../generated/Voyage/Voyage';
 import { JUNIOR_TRANCHE, SENIOR_TRANCHE } from '../helpers/consts';
@@ -59,6 +60,13 @@ export function handleReserveActivated(event: ReserveActivated): void {
   const reserveId = getReserveId(event.params._collection, event.address.toHexString());
   const reserveConfiguration = getOrInitReserveConfiguration(reserveId);
   reserveConfiguration.isActive = true;
+  reserveConfiguration.save();
+}
+
+export function handleReserveDeactivated(event: ReserveInactived): void {
+  const reserveId = getReserveId(event.params._collection, event.address.toHexString());
+  const reserveConfiguration = getOrInitReserveConfiguration(reserveId);
+  reserveConfiguration.isActive = false;
   reserveConfiguration.save();
 }
 

@@ -4,6 +4,7 @@ export {
   handleLiquidationConfigurationUpdated,
   handleLoanParametersUpdated,
   handleReserveActivated,
+  handleReserveDeactivated,
   handleReserveInitialized,
 } from './reserves';
 export { handleDeposit, handleWithdraw, handleClaim } from './liquidity';

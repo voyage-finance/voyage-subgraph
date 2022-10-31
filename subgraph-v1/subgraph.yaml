@@ -29,6 +29,8 @@ dataSources:
           handler: handleReserveInitialized
         - event: ReserveActivated(indexed address)
           handler: handleReserveActivated
+        - event: ReserveInactived(indexed address)
+          handler: handleReserveDeactivated
         - event: LiquidationConfigurationUpdated(indexed address,uint256)
           handler: handleLiquidationConfigurationUpdated
         - event: IncomeRatioUpdated(indexed address,uint256)

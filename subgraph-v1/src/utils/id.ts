@@ -16,8 +16,8 @@ export function getAssetId(collection: Address, tokenId: BigInt): string {
   return [collection.toHexString(), tokenId.toString()].join('.');
 }
 
-export function getLoanId(vaultAddress: Address, loanId: BigInt): string {
-  return [vaultAddress.toHex(), loanId.toString()].join('_');
+export function getLoanId(vaultAddress: Address, collection: Address, loanId: BigInt): string {
+  return [vaultAddress.toHex(), collection.toHex(), loanId.toString()].join('_');
 }
 
 export function getCreditLineEntityId(vaultAddress: Address, collection: Address): string {

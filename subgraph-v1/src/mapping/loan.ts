@@ -32,7 +32,13 @@ import { zeroBI } from '../utils/math';
 export function handleBorrowLegacy(event: BorrowLegacy): void {
   const reserveId = getReserveId(event.params._collection, event.address.toHexString());
   const reserveConfiguration = getOrInitReserveConfiguration(reserveId);
-  const loan = getOrInitLoan(event.params._vault, reserveId, event.params._loanId, event);
+  const loan = getOrInitLoan(
+    event.params._vault,
+    event.params._collection,
+    reserveId,
+    event.params._loanId,
+    event,
+  );
   const collateral = getOrInitAsset(
     event.params._collection,
     event.params._tokenId,
@@ -69,7 +75,12 @@ export function handleBorrowLegacy(event: BorrowLegacy): void {
   loan.save();
 
   // save the first instalment
-  const repayment = getOrInitRepayment(event.params._vault, loan.loanId, loan.paidTimes);
+  const repayment = getOrInitRepayment(
+    event.params._vault,
+    event.params._collection,
+    loan.loanId,
+    loan.paidTimes,
+  );
   repayment.loan = loan.id;
   repayment.principal = loan.pmt_principal;
   repayment.interest = loan.pmt_interest;
@@ -125,7 +136,13 @@ export function handleBorrowLegacy(event: BorrowLegacy): void {
 export function handleBorrow(event: Borrow): void {
   const reserveId = getReserveId(event.params._collection, event.address.toHexString());
   const reserveConfiguration = getOrInitReserveConfiguration(reserveId);
-  const loan = getOrInitLoan(event.params._vault, reserveId, event.params._loanId, event);
+  const loan = getOrInitLoan(
+    event.params._vault,
+    event.params._collection,
+    reserveId,
+    event.params._loanId,
+    event,
+  );
   const collateral = getOrInitAsset(
     event.params._collection,
     event.params._tokenId,
@@ -136,6 +153,17 @@ export function handleBorrow(event: Borrow): void {
   collateral.isLiquidated = false;
   collateral.save();
   loan.collateral = collateral.id;
+
+  const buyNowTx = getOrInitBuyNowTransaction(
+    event.params._vault,
+    event.params._collection,
+    event.params._tokenId,
+    loan.id,
+  );
+  buyNowTx.txHash = event.transaction.hash;
+  buyNowTx.marketplace = event.params._marketplace;
+  buyNowTx.save();
+  loan.transaction = buyNowTx.id;
 
   const zeroBigInt = zeroBI();
   const nper = !reserveConfiguration.loanInterval.isZero()
@@ -162,7 +190,12 @@ export function handleBorrow(event: Borrow): void {
   loan.save();
 
   // save the first instalment
-  const repayment = getOrInitRepayment(event.params._vault, loan.loanId, loan.paidTimes);
+  const repayment = getOrInitRepayment(
+    event.params._vault,
+    event.params._collection,
+    loan.loanId,
+    loan.paidTimes,
+  );
   repayment.loan = loan.id;
   repayment.principal = loan.pmt_principal;
   repayment.interest = loan.pmt_interest;
@@ -204,21 +237,17 @@ export function handleBorrow(event: Borrow): void {
   seniorVToken.save();
 
   reserve.save();
-
-  const buyNowTx = getOrInitBuyNowTransaction(
-    event.params._vault,
-    event.params._collection,
-    event.params._tokenId,
-    loan.id,
-  );
-  buyNowTx.txHash = event.transaction.hash;
-  buyNowTx.marketplace = event.params._marketplace;
-  buyNowTx.save();
 }
 
 export function handleRepay(event: RepaymentEvent): void {
   const reserveId = getReserveId(event.params._collection, event.address.toHexString());
-  const loan = getOrInitLoan(event.params._vault, reserveId, event.params._loanId, event);
+  const loan = getOrInitLoan(
+    event.params._vault,
+    event.params._collection,
+    reserveId,
+    event.params._loanId,
+    event,
+  );
   loan.totalPrincipalPaid = loan.totalPrincipalPaid.plus(loan.pmt_principal);
   loan.totalInterestPaid = loan.totalInterestPaid.plus(loan.pmt_interest);
   loan.paidTimes = loan.paidTimes.plus(BigInt.fromI32(1));
@@ -230,7 +259,12 @@ export function handleRepay(event: RepaymentEvent): void {
   }
   loan.save();
 
-  const repayment = getOrInitRepayment(event.params._vault, loan.loanId, event.params._repaymentId);
+  const repayment = getOrInitRepayment(
+    event.params._vault,
+    event.params._collection,
+    loan.loanId,
+    event.params._repaymentId,
+  );
   repayment.loan = loan.id;
   repayment.isFinal = event.params.isFinal;
   // it could be a liquidation, in which case the repayment could cover > 1 instalment.

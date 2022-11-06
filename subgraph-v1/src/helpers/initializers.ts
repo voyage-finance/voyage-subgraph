@@ -182,11 +182,12 @@ export function getOrInitUserUnbondingData(
 
 export function getOrInitLoan(
   vault: Address,
+  collection: Address,
   reserveId: string,
   loanId: BigInt,
   event: ethereum.Event,
 ): Loan {
-  const id = getLoanId(vault, loanId);
+  const id = getLoanId(vault, collection, loanId);
   let loan = Loan.load(id);
   if (!loan) {
     loan = new Loan(id);
@@ -243,12 +244,17 @@ export function getOrInitAsset(
   return asset;
 }
 
-export function getOrInitRepayment(vault: Address, loanId: BigInt, repaymentId: BigInt): Repayment {
+export function getOrInitRepayment(
+  vault: Address,
+  collection: Address,
+  loanId: BigInt,
+  repaymentId: BigInt,
+): Repayment {
   const id = getRepaymentId(vault, loanId, repaymentId);
   let repayment = Repayment.load(id);
   if (!repayment) {
     repayment = new Repayment(id);
-    repayment.loan = getLoanId(vault, loanId);
+    repayment.loan = getLoanId(vault, collection, loanId);
     repayment.principal = zeroBI();
     repayment.interest = zeroBI();
     repayment.fee = zeroBI();

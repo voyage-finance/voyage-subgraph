@@ -177,7 +177,7 @@ type Loan @entity {
 
   repayments: [Repayment!]! @derivedFrom(field: "loan")
   liquidation: Liquidation @derivedFrom(field: "loan")
-  transaction: BuyNowTransaction @derivedFrom(field: "loan")
+  transaction: BuyNowTransaction
 }
 
 type Repayment @entity {
@@ -204,12 +204,12 @@ type Liquidation @entity {
   amountToWriteDown: BigInt!
 }
 
-type BuyNowTransaction @entity {
+type BuyNowTransaction @entity(immutable: true) {
   id: ID! # concat(vault + loanId + collection)
   tokenId: BigInt!
   collection: Bytes!
   vault: Bytes!
-  loan: Loan!
+  loan: Loan
   txHash: Bytes!
   marketplace: Bytes!
 }
